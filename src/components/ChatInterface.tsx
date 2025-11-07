@@ -2,9 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Send, Bot, User, Loader2 } from "lucide-react";
+import { Send, Bot, User, Loader2, AlertCircle, Download, Trash2, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import Onboarding from "./Onboarding";
+import CrisisHelp from "./CrisisHelp";
+import QuickActions from "./QuickActions";
 
 interface Message {
   role: "user" | "assistant";
@@ -15,6 +19,9 @@ const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showCrisisHelp, setShowCrisisHelp] = useState(false);
+  const [distressMode, setDistressMode] = useState(false);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useLocalStorage("mental-health-onboarding", false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -24,6 +31,18 @@ const ChatInterface = () => {
 
   useEffect(() => {
     scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    // Check last message for distress indicators
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role === "assistant") {
+      const distressKeywords = ["crisis", "emergency", "harm", "suicide", "hopeless"];
+      const hasDistress = distressKeywords.some(keyword => 
+        lastMessage.content.toLowerCase().includes(keyword)
+      );
+      setDistressMode(hasDistress);
+    }
   }, [messages]);
 
   const streamChat = async (userMessage: string) => {
@@ -150,17 +169,100 @@ const ChatInterface = () => {
     }
   };
 
+  const handleQuickAction = (prompt: string) => {
+    setInput(prompt);
+    setTimeout(() => handleSend(), 100);
+  };
+
+  const exportConversation = () => {
+    const conversationText = messages
+      .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+      .join('\n\n');
+    
+    const blob = new Blob([conversationText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mental-health-chat-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Conversation exported",
+      description: "Your chat has been saved to a file."
+    });
+  };
+
+  const clearConversation = () => {
+    setMessages([]);
+    setDistressMode(false);
+    toast({
+      title: "Conversation cleared",
+      description: "All messages have been deleted from this session."
+    });
+  };
+
   return (
-    <div className="flex flex-col h-[600px] w-full max-w-4xl mx-auto">
-      <Card className="flex-1 p-6 overflow-y-auto space-y-4 bg-card/80 backdrop-blur-sm border-2">
+    <>
+      <Onboarding 
+        isOpen={!hasCompletedOnboarding} 
+        onComplete={() => setHasCompletedOnboarding(true)} 
+      />
+      <CrisisHelp isOpen={showCrisisHelp} onClose={() => setShowCrisisHelp(false)} />
+      
+      <div className="flex flex-col h-[600px] w-full max-w-4xl mx-auto">
+        {/* Crisis Help Button */}
+        <div className="mb-3 flex items-center justify-between">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setShowCrisisHelp(true)}
+            className="gap-2 font-semibold"
+          >
+            <AlertCircle className="w-4 h-4" />
+            I Need Help Now
+          </Button>
+          
+          {messages.length > 0 && (
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={exportConversation}
+                className="gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Export
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearConversation}
+                className="gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <Card className={`flex-1 p-6 overflow-y-auto space-y-4 backdrop-blur-sm border-2 transition-colors ${
+          distressMode ? "bg-card/60 border-destructive/20" : "bg-card/80"
+        }`}>
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-6 px-4">
             <Bot className="w-16 h-16 text-primary opacity-50" />
             <div>
               <h3 className="text-xl font-semibold mb-2">Welcome to Your Safe Space</h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-6">
                 Share what's on your mind. I'm here to listen and support you.
               </p>
+            </div>
+            <div className="w-full max-w-md">
+              <QuickActions onAction={handleQuickAction} disabled={isLoading} />
             </div>
           </div>
         ) : (
@@ -206,6 +308,24 @@ const ChatInterface = () => {
         )}
       </Card>
 
+      {distressMode && (
+        <Card className="mt-3 p-4 bg-destructive/5 border-destructive/20">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">If you're in crisis, please reach out for immediate help.</p>
+            </div>
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={() => setShowCrisisHelp(true)}
+            >
+              Get Help
+            </Button>
+          </div>
+        </Card>
+      )}
+
       <div className="flex gap-2 mt-4">
         <Input
           value={input}
@@ -226,6 +346,7 @@ const ChatInterface = () => {
         </Button>
       </div>
     </div>
+    </>
   );
 };
 
