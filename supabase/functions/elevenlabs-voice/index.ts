@@ -11,9 +11,12 @@ serve(async (req) => {
   }
 
   try {
+    const agentId = "agent_5701k32zrnt1fym841gajcnfsc8r";
+    console.log("Using Agent ID:", agentId);
+    
     // Get signed URL from ElevenLabs
     const signedUrlResponse = await fetch(
-      "https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=agent_5701k32zrnt1fym841gajcnfsc8r",
+      `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`,
       {
         method: "GET",
         headers: {
