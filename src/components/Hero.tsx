@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, MessageCircle, Brain, LogIn } from "lucide-react";
+import { ArrowRight, Heart, MessageCircle, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroBackground from "@/assets/hero-background.jpg";
 
@@ -19,18 +19,6 @@ const Hero = () => {
         style={{ backgroundImage: `url(${heroBackground})` }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/20 to-transparent" />
-      </div>
-
-      {/* Sign In Button */}
-      <div className="absolute top-4 right-4 z-20">
-        <Button 
-          variant="outline"
-          onClick={() => navigate("/auth")}
-          className="bg-card/80 backdrop-blur-sm border-2"
-        >
-          <LogIn className="mr-2 h-4 w-4" />
-          Sign In
-        </Button>
       </div>
 
       {/* Content */}
