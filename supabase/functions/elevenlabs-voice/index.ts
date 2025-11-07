@@ -13,7 +13,7 @@ serve(async (req) => {
   try {
     // Get signed URL from ElevenLabs
     const signedUrlResponse = await fetch(
-      "https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=YOUR_AGENT_ID_HERE",
+      "https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=agent_5701k32zrnt1fym841gajcnfsc8r",
       {
         method: "GET",
         headers: {
