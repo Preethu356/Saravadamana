@@ -5,35 +5,45 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Users, Phone, Calendar, Shield, Heart, ArrowLeft, Play } from "lucide-react";
 import Footer from "@/components/Footer";
+import PracticeModal from "@/components/PracticeModal";
 
 const ResourcesPage = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("self-care");
+  const [activePractice, setActivePractice] = useState<{
+    title: string;
+    icon: string;
+    type: "breathing" | "meditation" | "muscle-relaxation" | "grounding";
+  } | null>(null);
 
   const selfCareContent = [
     {
       title: "Breathing Exercises",
       description: "Deep breathing techniques to reduce anxiety and stress",
       content: "Practice 4-7-8 breathing: Inhale for 4 counts, hold for 7, exhale for 8. Repeat 4 times.",
-      icon: "🫁"
+      icon: "🫁",
+      type: "breathing" as const
     },
     {
       title: "Guided Meditation",
       description: "5-minute mindfulness meditation for beginners",
       content: "Find a quiet space, close your eyes, and focus on your breath. When thoughts arise, gently return focus to breathing.",
-      icon: "🧘"
+      icon: "🧘",
+      type: "meditation" as const
     },
     {
       title: "Progressive Muscle Relaxation",
       description: "Release physical tension throughout your body",
       content: "Tense each muscle group for 5 seconds, then release. Start from toes and work up to your head.",
-      icon: "💪"
+      icon: "💪",
+      type: "muscle-relaxation" as const
     },
     {
       title: "Grounding Techniques",
       description: "5-4-3-2-1 method for managing anxiety",
       content: "Identify 5 things you see, 4 you can touch, 3 you hear, 2 you smell, and 1 you taste.",
-      icon: "🌿"
+      icon: "🌿",
+      type: "grounding" as const
     }
   ];
 
@@ -154,7 +164,10 @@ const ResourcesPage = () => {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm mb-4">{item.content}</p>
-                    <Button className="w-full gap-2">
+                    <Button 
+                      className="w-full gap-2"
+                      onClick={() => setActivePractice({ title: item.title, icon: item.icon, type: item.type })}
+                    >
                       <Play className="w-4 h-4" />
                       Start Practice
                     </Button>
@@ -290,6 +303,14 @@ const ResourcesPage = () => {
         </Tabs>
       </div>
       <Footer />
+      
+      {activePractice && (
+        <PracticeModal
+          open={!!activePractice}
+          onOpenChange={(open) => !open && setActivePractice(null)}
+          practice={activePractice}
+        />
+      )}
     </div>
   );
 };
