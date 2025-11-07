@@ -1,37 +1,34 @@
-import { useConversation } from "@11labs/react";
-import { useEffect, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { AudioRecorder, encodeAudioForAPI, AudioQueue } from "@/utils/audioUtils";
 
 const VoiceAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const { toast } = useToast();
   
-  const conversation = useConversation({
-    onConnect: () => {
-      console.log("Voice assistant connected");
-      toast({
-        title: "Connected",
-        description: "Voice assistant is ready to help you",
-      });
-    },
-    onDisconnect: () => {
-      console.log("Voice assistant disconnected");
-    },
-    onMessage: (message) => {
-      console.log("Message received:", message);
-    },
-    onError: (error) => {
-      console.error("Voice assistant error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to connect to voice assistant",
-        variant: "destructive",
-      });
-    },
-  });
+  const wsRef = useRef<WebSocket | null>(null);
+  const recorderRef = useRef<AudioRecorder | null>(null);
+  const audioQueueRef = useRef<AudioQueue | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    return () => {
+      cleanup();
+    };
+  }, []);
+
+  const cleanup = () => {
+    recorderRef.current?.stop();
+    wsRef.current?.close();
+    audioQueueRef.current?.clear();
+    audioContextRef.current?.close();
+    setIsConnected(false);
+    setIsSpeaking(false);
+  };
 
   const startConversation = async () => {
     try {
@@ -40,17 +37,85 @@ const VoiceAssistant = () => {
       // Request microphone access
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Get signed URL from edge function
-      const { data, error } = await supabase.functions.invoke('elevenlabs-session');
-      
-      if (error) throw error;
-      
-      if (!data?.signed_url) {
-        throw new Error("Failed to get signed URL");
-      }
+      // Initialize audio context and queue
+      audioContextRef.current = new AudioContext({ sampleRate: 24000 });
+      audioQueueRef.current = new AudioQueue(audioContextRef.current);
 
-      // Start conversation with signed URL
-      await conversation.startSession({ url: data.signed_url });
+      // Connect to WebSocket edge function
+      const wsUrl = `wss://qzjobikvftpfwhyazlsx.supabase.co/functions/v1/realtime-voice`;
+      console.log("Connecting to:", wsUrl);
+      
+      wsRef.current = new WebSocket(wsUrl);
+
+      wsRef.current.onopen = () => {
+        console.log("WebSocket connected");
+        setIsConnected(true);
+        setIsLoading(false);
+        
+        toast({
+          title: "Connected",
+          description: "Voice assistant is ready",
+        });
+
+        // Start recording
+        recorderRef.current = new AudioRecorder((audioData) => {
+          if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const encoded = encodeAudioForAPI(audioData);
+            wsRef.current.send(JSON.stringify({
+              type: 'input_audio_buffer.append',
+              audio: encoded
+            }));
+          }
+        });
+        
+        recorderRef.current.start().catch((error) => {
+          console.error("Failed to start recorder:", error);
+          toast({
+            title: "Microphone Error",
+            description: "Failed to access microphone",
+            variant: "destructive",
+          });
+        });
+      };
+
+      wsRef.current.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        console.log("Received:", data.type);
+
+        if (data.type === 'response.audio.delta' && data.delta) {
+          setIsSpeaking(true);
+          const binaryString = atob(data.delta);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          await audioQueueRef.current?.addToQueue(bytes);
+        } else if (data.type === 'response.audio.done') {
+          setIsSpeaking(false);
+        } else if (data.type === 'error') {
+          console.error("Server error:", data.error);
+          toast({
+            title: "Error",
+            description: data.error,
+            variant: "destructive",
+          });
+        }
+      };
+
+      wsRef.current.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        toast({
+          title: "Connection Error",
+          description: "Failed to connect to voice service",
+          variant: "destructive",
+        });
+        cleanup();
+      };
+
+      wsRef.current.onclose = () => {
+        console.log("WebSocket closed");
+        cleanup();
+      };
       
     } catch (error) {
       console.error("Error starting conversation:", error);
@@ -59,17 +124,17 @@ const VoiceAssistant = () => {
         description: error instanceof Error ? error.message : "Failed to start conversation",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
 
-  const endConversation = async () => {
-    await conversation.endSession();
+  const endConversation = () => {
+    cleanup();
+    toast({
+      title: "Disconnected",
+      description: "Voice conversation ended",
+    });
   };
-
-  const isConnected = conversation.status === "connected";
-  const isSpeaking = conversation.isSpeaking;
 
   return (
     <div className="flex flex-col items-center gap-4 p-6 bg-card rounded-lg border">
