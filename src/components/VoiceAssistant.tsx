@@ -1,145 +1,59 @@
-import { useState, useRef, useEffect } from "react";
+import { useConversation } from "@11labs/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const ELEVEN_AGENT_ID = "agent_5701k32zrnt1fym841gajcnfsc8r"; // Provided by user
+
 const VoiceAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const { toast } = useToast();
-  
-  const wsRef = useRef<WebSocket | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
 
-  useEffect(() => {
-    return () => {
-      cleanup();
-    };
-  }, []);
-
-  const cleanup = () => {
-    wsRef.current?.close();
-    mediaStreamRef.current?.getTracks().forEach(track => track.stop());
-    audioContextRef.current?.close();
-    setIsConnected(false);
-    setIsSpeaking(false);
-  };
+  const conversation = useConversation({
+    onConnect: () => {
+      console.log("ElevenLabs voice connected");
+      toast({ title: "Connected", description: "Voice assistant is ready" });
+    },
+    onDisconnect: () => {
+      console.log("ElevenLabs voice disconnected");
+    },
+    onMessage: (message) => {
+      console.log("ElevenLabs message:", message);
+    },
+    onError: (error) => {
+      console.error("ElevenLabs error:", error);
+      toast({ title: "Voice error", description: "Failed to connect", variant: "destructive" });
+    },
+  });
 
   const startConversation = async () => {
     try {
       setIsLoading(true);
-      
-      // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          sampleRate: 16000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-        } 
-      });
-      mediaStreamRef.current = stream;
+      // Ask for mic upfront (recommended by ElevenLabs)
+      await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Initialize audio context for playback
-      audioContextRef.current = new AudioContext({ sampleRate: 16000 });
-
-      // Connect to ElevenLabs through our edge function
-      const wsUrl = `wss://qzjobikvftpfwhyazlsx.supabase.co/functions/v1/elevenlabs-voice`;
-      console.log("Connecting to ElevenLabs via:", wsUrl);
-      
-      wsRef.current = new WebSocket(wsUrl);
-
-      wsRef.current.onopen = () => {
-        console.log("WebSocket connected to ElevenLabs");
-        setIsConnected(true);
-        setIsLoading(false);
-        
-        toast({
-          title: "Connected",
-          description: "Voice assistant is ready to talk",
-        });
-
-        // Set up audio streaming from microphone
-        const audioContext = new AudioContext({ sampleRate: 16000 });
-        const source = audioContext.createMediaStreamSource(stream);
-        const processor = audioContext.createScriptProcessor(4096, 1, 1);
-
-        processor.onaudioprocess = (e) => {
-          if (wsRef.current?.readyState === WebSocket.OPEN) {
-            const inputData = e.inputBuffer.getChannelData(0);
-            // Send audio to ElevenLabs
-            wsRef.current.send(JSON.stringify({
-              type: "audio",
-              audio: Array.from(inputData)
-            }));
-          }
-        };
-
-        source.connect(processor);
-        processor.connect(audioContext.destination);
-      };
-
-      wsRef.current.onmessage = async (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log("Received from ElevenLabs:", data.type);
-
-          if (data.type === "connected") {
-            console.log("ElevenLabs connection confirmed");
-          } else if (data.type === "audio") {
-            // Play audio from ElevenLabs
-            setIsSpeaking(true);
-            // Handle audio playback here
-          } else if (data.type === "audio_end") {
-            setIsSpeaking(false);
-          } else if (data.type === "error") {
-            console.error("ElevenLabs error:", data.error);
-            toast({
-              title: "Error",
-              description: data.error,
-              variant: "destructive",
-            });
-          }
-        } catch (error) {
-          console.error("Error processing message:", error);
-        }
-      };
-
-      wsRef.current.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        toast({
-          title: "Connection Error",
-          description: "Failed to connect to voice service",
-          variant: "destructive",
-        });
-        cleanup();
-      };
-
-      wsRef.current.onclose = () => {
-        console.log("WebSocket closed");
-        cleanup();
-      };
-      
+      // Start session using your Agent ID (no signed URL needed for public agents)
+      // Types may lag behind; cast to avoid type friction across versions
+      await (conversation.startSession as any)({ agentId: ELEVEN_AGENT_ID });
     } catch (error) {
-      console.error("Error starting conversation:", error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to start conversation",
-        variant: "destructive",
-      });
+      console.error("Error starting ElevenLabs session:", error);
+      toast({ title: "Microphone/Connection error", description: error instanceof Error ? error.message : "Failed to start", variant: "destructive" });
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const endConversation = () => {
-    cleanup();
-    toast({
-      title: "Disconnected",
-      description: "Voice conversation ended",
-    });
+  const endConversation = async () => {
+    try {
+      await conversation.endSession();
+    } catch (e) {
+      console.warn("endSession warning:", e);
+    }
   };
+
+  const isConnected = conversation.status === "connected";
+  const isSpeaking = conversation.isSpeaking;
 
   return (
     <div className="flex flex-col items-center gap-4 p-6 bg-card rounded-lg border">
@@ -152,12 +66,7 @@ const VoiceAssistant = () => {
 
       <div className="flex items-center gap-4">
         {!isConnected ? (
-          <Button
-            onClick={startConversation}
-            disabled={isLoading}
-            size="lg"
-            className="gap-2"
-          >
+          <Button onClick={startConversation} disabled={isLoading} size="lg" className="gap-2">
             {isLoading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -171,12 +80,7 @@ const VoiceAssistant = () => {
             )}
           </Button>
         ) : (
-          <Button
-            onClick={endConversation}
-            variant="destructive"
-            size="lg"
-            className="gap-2"
-          >
+          <Button onClick={endConversation} variant="destructive" size="lg" className="gap-2">
             <MicOff className="h-5 w-5" />
             End Conversation
           </Button>
