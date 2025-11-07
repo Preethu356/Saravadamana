@@ -11,6 +11,13 @@ interface CrisisHelpProps {
 const CrisisHelp = ({ isOpen, onClose }: CrisisHelpProps) => {
   const helplines = [
     {
+      name: "TELEMANAS (Tele Mental Health Assistance)",
+      number: "14416",
+      description: "National tele-mental health program",
+      hours: "Available 24/7",
+      featured: true
+    },
+    {
       name: "KIRAN Mental Health Helpline",
       number: "1800-599-0019",
       description: "24/7 toll-free helpline",
@@ -76,15 +83,29 @@ const CrisisHelp = ({ isOpen, onClose }: CrisisHelpProps) => {
             </h3>
             <div className="grid gap-4">
               {helplines.map((helpline, idx) => (
-                <Card key={idx} className="p-4 hover:border-primary/50 transition-colors">
+                <Card 
+                  key={idx} 
+                  className={`p-4 transition-colors ${
+                    helpline.featured 
+                      ? 'border-primary bg-primary/5' 
+                      : 'hover:border-primary/50'
+                  }`}
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h4 className="font-semibold mb-1">{helpline.name}</h4>
+                      <h4 className="font-semibold mb-1">
+                        {helpline.name}
+                        {helpline.featured && (
+                          <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                            Recommended
+                          </span>
+                        )}
+                      </h4>
                       <p className="text-sm text-muted-foreground mb-2">{helpline.description}</p>
                       <p className="text-xs text-muted-foreground">{helpline.hours}</p>
                     </div>
                     <Button 
-                      variant="outline"
+                      variant={helpline.featured ? "default" : "outline"}
                       size="sm"
                       asChild
                     >
