@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Sparkles, MessageCircle, Shield, Heart } from "lucide-react";
 import meditationImg from "@/assets/meditation.png";
 import ChatInterface from "./ChatInterface";
+import VoiceAssistant from "./VoiceAssistant";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -63,16 +64,28 @@ const AIChat = () => {
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="text-center space-y-2">
               <h2 className="text-3xl md:text-4xl font-bold">
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  AI Support Chat
+                  AI Support
                 </span>
               </h2>
-              <p className="text-muted-foreground">Your safe space to share and receive support</p>
+              <p className="text-muted-foreground">Choose how you'd like to connect</p>
             </div>
-            <ChatInterface />
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-center">Voice Conversation</h3>
+                <VoiceAssistant />
+              </div>
+              
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-center">Text Chat</h3>
+                <ChatInterface />
+              </div>
+            </div>
+            
             <div className="text-center">
               <Button 
                 onClick={() => setShowChat(false)}
