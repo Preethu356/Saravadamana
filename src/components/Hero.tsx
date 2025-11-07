@@ -1,8 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, MessageCircle, Brain } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroBackground from "@/assets/hero-background.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const scrollToMoodTracker = () => {
+    const moodSection = document.getElementById("mood-tracker");
+    moodSection?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
@@ -34,11 +42,16 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button variant="hero" size="lg" className="group">
+            <Button variant="hero" size="lg" className="group" onClick={scrollToMoodTracker}>
               Start Your Journey
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline" size="lg" className="bg-card/80 backdrop-blur-sm border-2">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="bg-card/80 backdrop-blur-sm border-2"
+              onClick={() => navigate("/resources")}
+            >
               Learn More
             </Button>
           </div>

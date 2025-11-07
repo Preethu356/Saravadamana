@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Smile, Meh, Frown, Angry, Heart } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const moods = [
   { icon: Heart, label: "Great", color: "text-secondary hover:bg-secondary/20" },
@@ -13,9 +14,15 @@ const moods = [
 
 const MoodTracker = () => {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const scrollToAIChat = () => {
+    const aiSection = document.getElementById("ai-chat");
+    aiSection?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-background to-muted/30">
+    <section id="mood-tracker" className="py-20 px-4 bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-4xl md:text-5xl font-bold">
@@ -50,9 +57,15 @@ const MoodTracker = () => {
                 Thank you for sharing. Would you like to:
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="default">Journal Your Thoughts</Button>
-                <Button variant="secondary">Talk to AI Support</Button>
-                <Button variant="outline">View Resources</Button>
+                <Button variant="default" onClick={() => navigate("/journal")}>
+                  Journal Your Thoughts
+                </Button>
+                <Button variant="secondary" onClick={scrollToAIChat}>
+                  Talk to AI Support
+                </Button>
+                <Button variant="outline" onClick={() => navigate("/resources")}>
+                  View Resources
+                </Button>
               </div>
             </div>
           )}

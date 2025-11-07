@@ -9,7 +9,7 @@ const AIChat = () => {
   const [showChat, setShowChat] = useState(false);
 
   return (
-    <section className="py-20 px-4 bg-background">
+    <section id="ai-chat" className="py-20 px-4 bg-background">
       <div className="container mx-auto max-w-6xl">
         {!showChat ? (
           <div className="grid md:grid-cols-2 gap-12 items-center">

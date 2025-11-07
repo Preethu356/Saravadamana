@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Users, Phone, Calendar, Shield, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const resources = [
   {
@@ -42,6 +43,8 @@ const resources = [
 ];
 
 const Resources = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-muted/30 to-background">
       <div className="container mx-auto max-w-6xl">
@@ -68,7 +71,11 @@ const Resources = () => {
               </div>
               <h3 className="text-xl font-semibold mb-2">{title}</h3>
               <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{description}</p>
-              <Button variant="ghost" className="w-full justify-start px-0 group-hover:text-primary">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start px-0 group-hover:text-primary"
+                onClick={() => navigate("/resources")}
+              >
                 Learn More →
               </Button>
             </Card>
@@ -82,11 +89,20 @@ const Resources = () => {
               If you're in crisis or having thoughts of suicide, please reach out immediately. You are not alone.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button variant="destructive" size="lg">
+              <Button 
+                variant="destructive" 
+                size="lg"
+                onClick={() => window.open("tel:988", "_self")}
+              >
                 <Phone className="w-4 h-4" />
                 Call 988 Now
               </Button>
-              <Button variant="outline" size="lg" className="border-2">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-2"
+                onClick={() => window.open("sms:741741?body=HOME", "_self")}
+              >
                 Text Crisis Line
               </Button>
             </div>
