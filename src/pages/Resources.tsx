@@ -1,20 +1,170 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Users, Phone, Calendar, Shield, Heart, ArrowLeft, Play } from "lucide-react";
-import Footer from "@/components/Footer";
+import { BookOpen, Users, Phone, Calendar, Shield, Heart, ArrowLeft, Play, Check } from "lucide-react";
 import PracticeModal from "@/components/PracticeModal";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { User } from "@supabase/supabase-js";
+
+interface Community {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
 
 const ResourcesPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeCategory, setActiveCategory] = useState("self-care");
   const [activePractice, setActivePractice] = useState<{
     title: string;
     icon: string;
     type: "breathing" | "meditation" | "muscle-relaxation" | "grounding";
   } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [joinedCommunities, setJoinedCommunities] = useState<Set<string>>(new Set());
+  const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    // Get user session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    fetchCommunities();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserMemberships();
+    }
+  }, [user]);
+
+  const fetchCommunities = async () => {
+    const { data, error } = await supabase
+      .from('communities')
+      .select('*')
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching communities:', error);
+    } else if (data) {
+      setCommunities(data);
+      // Fetch member counts for each community
+      data.forEach(community => fetchMemberCount(community.id));
+    }
+  };
+
+  const fetchMemberCount = async (communityId: string) => {
+    const { count, error } = await supabase
+      .from('community_members')
+      .select('*', { count: 'exact', head: true })
+      .eq('community_id', communityId);
+
+    if (!error && count !== null) {
+      setMemberCounts(prev => ({ ...prev, [communityId]: count }));
+    }
+  };
+
+  const fetchUserMemberships = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('community_members')
+      .select('community_id')
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error fetching memberships:', error);
+    } else if (data) {
+      setJoinedCommunities(new Set(data.map(m => m.community_id)));
+    }
+  };
+
+  const handleJoinCommunity = async (communityId: string, communityName: string) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to join communities.",
+        variant: "destructive"
+      });
+      navigate("/login");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('community_members')
+      .insert({
+        community_id: communityId,
+        user_id: user.id
+      });
+
+    if (error) {
+      if (error.code === '23505') { // Unique violation
+        toast({
+          title: "Already joined",
+          description: "You're already a member of this community.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to join community. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } else {
+      setJoinedCommunities(prev => new Set([...prev, communityId]));
+      fetchMemberCount(communityId);
+      toast({
+        title: "Welcome!",
+        description: `You've joined ${communityName}`,
+      });
+    }
+  };
+
+  const handleLeaveCommunity = async (communityId: string, communityName: string) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('community_members')
+      .delete()
+      .eq('community_id', communityId)
+      .eq('user_id', user.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to leave community. Please try again.",
+        variant: "destructive"
+      });
+    } else {
+      setJoinedCommunities(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(communityId);
+        return newSet;
+      });
+      fetchMemberCount(communityId);
+      toast({
+        title: "Left community",
+        description: `You've left ${communityName}`,
+      });
+    }
+  };
 
   const selfCareContent = [
     {
@@ -44,33 +194,6 @@ const ResourcesPage = () => {
       content: "Identify 5 things you see, 4 you can touch, 3 you hear, 2 you smell, and 1 you taste.",
       icon: "🌿",
       type: "grounding" as const
-    }
-  ];
-
-  const supportGroupsContent = [
-    {
-      title: "Anxiety Support Community",
-      description: "Connect with others managing anxiety disorders",
-      members: "12,450+ members",
-      icon: "💙"
-    },
-    {
-      title: "Depression Recovery Circle",
-      description: "Peer support for depression and mood disorders",
-      members: "8,920+ members",
-      icon: "🌈"
-    },
-    {
-      title: "Stress Management Group",
-      description: "Share coping strategies for daily stress",
-      members: "15,600+ members",
-      icon: "🧠"
-    },
-    {
-      title: "Mindfulness Community",
-      description: "Practice mindfulness together",
-      members: "20,100+ members",
-      icon: "🕉️"
     }
   ];
 
@@ -178,20 +301,60 @@ const ResourcesPage = () => {
           </TabsContent>
 
           <TabsContent value="support" className="space-y-4">
+            {!user && (
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="pt-6">
+                  <p className="text-center text-sm">
+                    <Button variant="link" onClick={() => navigate("/login")} className="px-1">
+                      Sign in
+                    </Button>
+                    to join communities and connect with others
+                  </p>
+                </CardContent>
+              </Card>
+            )}
             <div className="grid md:grid-cols-2 gap-6">
-              {supportGroupsContent.map((group, index) => (
-                <Card key={index} className="border-2 hover:border-primary/50 transition-all">
-                  <CardHeader>
-                    <div className="text-4xl mb-2">{group.icon}</div>
-                    <CardTitle>{group.title}</CardTitle>
-                    <CardDescription>{group.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">{group.members}</p>
-                    <Button className="w-full">Join Community</Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {communities.map((community) => {
+                const isJoined = joinedCommunities.has(community.id);
+                const memberCount = memberCounts[community.id] || 0;
+                
+                return (
+                  <Card key={community.id} className="border-2 hover:border-primary/50 transition-all">
+                    <CardHeader>
+                      <div className="text-4xl mb-2">{community.icon}</div>
+                      <CardTitle>{community.name}</CardTitle>
+                      <CardDescription>{community.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {memberCount.toLocaleString()}+ members
+                      </p>
+                      {isJoined ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 mb-2">
+                            <Check className="w-4 h-4" />
+                            You're a member
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            className="w-full"
+                            onClick={() => handleLeaveCommunity(community.id, community.name)}
+                          >
+                            Leave Community
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          className="w-full"
+                          onClick={() => handleJoinCommunity(community.id, community.name)}
+                        >
+                          Join Community
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
 
