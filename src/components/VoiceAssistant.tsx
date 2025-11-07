@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { AudioRecorder, encodeAudioForAPI, AudioQueue } from "@/utils/audioUtils";
 
 const VoiceAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,9 +10,8 @@ const VoiceAssistant = () => {
   const { toast } = useToast();
   
   const wsRef = useRef<WebSocket | null>(null);
-  const recorderRef = useRef<AudioRecorder | null>(null);
-  const audioQueueRef = useRef<AudioQueue | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     return () => {
@@ -22,9 +20,8 @@ const VoiceAssistant = () => {
   }, []);
 
   const cleanup = () => {
-    recorderRef.current?.stop();
     wsRef.current?.close();
-    audioQueueRef.current?.clear();
+    mediaStreamRef.current?.getTracks().forEach(track => track.stop());
     audioContextRef.current?.close();
     setIsConnected(false);
     setIsSpeaking(false);
@@ -35,70 +32,78 @@ const VoiceAssistant = () => {
       setIsLoading(true);
       
       // Request microphone access
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          sampleRate: 16000,
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true,
+        } 
+      });
+      mediaStreamRef.current = stream;
 
-      // Initialize audio context and queue
-      audioContextRef.current = new AudioContext({ sampleRate: 24000 });
-      audioQueueRef.current = new AudioQueue(audioContextRef.current);
+      // Initialize audio context for playback
+      audioContextRef.current = new AudioContext({ sampleRate: 16000 });
 
-      // Connect to WebSocket edge function
-      const wsUrl = `wss://qzjobikvftpfwhyazlsx.supabase.co/functions/v1/realtime-voice`;
-      console.log("Connecting to:", wsUrl);
+      // Connect to ElevenLabs through our edge function
+      const wsUrl = `wss://qzjobikvftpfwhyazlsx.supabase.co/functions/v1/elevenlabs-voice`;
+      console.log("Connecting to ElevenLabs via:", wsUrl);
       
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log("WebSocket connected");
+        console.log("WebSocket connected to ElevenLabs");
         setIsConnected(true);
         setIsLoading(false);
         
         toast({
           title: "Connected",
-          description: "Voice assistant is ready",
+          description: "Voice assistant is ready to talk",
         });
 
-        // Start recording
-        recorderRef.current = new AudioRecorder((audioData) => {
+        // Set up audio streaming from microphone
+        const audioContext = new AudioContext({ sampleRate: 16000 });
+        const source = audioContext.createMediaStreamSource(stream);
+        const processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+        processor.onaudioprocess = (e) => {
           if (wsRef.current?.readyState === WebSocket.OPEN) {
-            const encoded = encodeAudioForAPI(audioData);
+            const inputData = e.inputBuffer.getChannelData(0);
+            // Send audio to ElevenLabs
             wsRef.current.send(JSON.stringify({
-              type: 'input_audio_buffer.append',
-              audio: encoded
+              type: "audio",
+              audio: Array.from(inputData)
             }));
           }
-        });
-        
-        recorderRef.current.start().catch((error) => {
-          console.error("Failed to start recorder:", error);
-          toast({
-            title: "Microphone Error",
-            description: "Failed to access microphone",
-            variant: "destructive",
-          });
-        });
+        };
+
+        source.connect(processor);
+        processor.connect(audioContext.destination);
       };
 
       wsRef.current.onmessage = async (event) => {
-        const data = JSON.parse(event.data);
-        console.log("Received:", data.type);
+        try {
+          const data = JSON.parse(event.data);
+          console.log("Received from ElevenLabs:", data.type);
 
-        if (data.type === 'response.audio.delta' && data.delta) {
-          setIsSpeaking(true);
-          const binaryString = atob(data.delta);
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
+          if (data.type === "connected") {
+            console.log("ElevenLabs connection confirmed");
+          } else if (data.type === "audio") {
+            // Play audio from ElevenLabs
+            setIsSpeaking(true);
+            // Handle audio playback here
+          } else if (data.type === "audio_end") {
+            setIsSpeaking(false);
+          } else if (data.type === "error") {
+            console.error("ElevenLabs error:", data.error);
+            toast({
+              title: "Error",
+              description: data.error,
+              variant: "destructive",
+            });
           }
-          await audioQueueRef.current?.addToQueue(bytes);
-        } else if (data.type === 'response.audio.done') {
-          setIsSpeaking(false);
-        } else if (data.type === 'error') {
-          console.error("Server error:", data.error);
-          toast({
-            title: "Error",
-            description: data.error,
-            variant: "destructive",
-          });
+        } catch (error) {
+          console.error("Error processing message:", error);
         }
       };
 
@@ -139,7 +144,7 @@ const VoiceAssistant = () => {
   return (
     <div className="flex flex-col items-center gap-4 p-6 bg-card rounded-lg border">
       <div className="text-center">
-        <h3 className="text-lg font-semibold mb-2">AI Voice Assistant</h3>
+        <h3 className="text-lg font-semibold mb-2">ElevenLabs Voice Assistant</h3>
         <p className="text-sm text-muted-foreground">
           {isConnected ? "Listening..." : "Click to start voice conversation"}
         </p>

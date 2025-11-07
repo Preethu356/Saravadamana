@@ -3,5 +3,5 @@ project_id = "qzjobikvftpfwhyazlsx"
 [functions.mental-health-chat]
 verify_jwt = false
 
-[functions.realtime-voice]
+[functions.elevenlabs-voice]
 verify_jwt = false
