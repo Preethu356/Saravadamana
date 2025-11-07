@@ -160,7 +160,6 @@ const Journal = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

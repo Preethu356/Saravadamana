@@ -2,7 +2,6 @@ import Hero from "@/components/Hero";
 import MoodTracker from "@/components/MoodTracker";
 import AIChat from "@/components/AIChat";
 import Resources from "@/components/Resources";
-import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -11,7 +10,6 @@ const Index = () => {
       <MoodTracker />
       <AIChat />
       <Resources />
-      <Footer />
     </div>
   );
 };

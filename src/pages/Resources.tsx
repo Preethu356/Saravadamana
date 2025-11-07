@@ -302,7 +302,6 @@ const ResourcesPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-      <Footer />
       
       {activePractice && (
         <PracticeModal

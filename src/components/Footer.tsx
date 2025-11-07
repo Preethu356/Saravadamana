@@ -76,6 +76,9 @@ const Footer = () => {
           <p className="text-sm font-medium">
             © 2025 Saravadamana. All rights reserved.
           </p>
+          <p className="text-xs text-muted-foreground">
+            Created by Dr Preetham K S Gowda
+          </p>
         </div>
       </div>
     </footer>
