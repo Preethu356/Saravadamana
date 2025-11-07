@@ -1,18 +1,26 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 serve(async (req) => {
-  const { headers } = req;
-  const upgradeHeader = headers.get("upgrade") || "";
-
-  if (upgradeHeader.toLowerCase() !== "websocket") {
-    return new Response("Expected WebSocket connection", { status: 400 });
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
     const agentId = "agent_5701k32zrnt1fym841gajcnfsc8r";
-    console.log("Using Agent ID:", agentId);
+    
+    if (!ELEVENLABS_API_KEY) {
+      console.error("ELEVENLABS_API_KEY not set");
+      throw new Error("ELEVENLABS_API_KEY is not configured");
+    }
+
+    console.log("Requesting signed URL for agent:", agentId);
     
     // Get signed URL from ElevenLabs
     const signedUrlResponse = await fetch(
@@ -20,7 +28,7 @@ serve(async (req) => {
       {
         method: "GET",
         headers: {
-          "xi-api-key": ELEVENLABS_API_KEY!,
+          "xi-api-key": ELEVENLABS_API_KEY,
         },
       }
     );
@@ -28,68 +36,34 @@ serve(async (req) => {
     if (!signedUrlResponse.ok) {
       const errorText = await signedUrlResponse.text();
       console.error("ElevenLabs API error:", signedUrlResponse.status, errorText);
-      return new Response("Failed to get signed URL", { status: 500 });
+      throw new Error(`ElevenLabs API error: ${signedUrlResponse.status}`);
     }
 
-    const { signed_url } = await signedUrlResponse.json();
-    console.log("Got signed URL from ElevenLabs");
-
-    // Upgrade to WebSocket
-    const { socket, response } = Deno.upgradeWebSocket(req);
+    const data = await signedUrlResponse.json();
+    console.log("Successfully got signed URL");
     
-    // Connect to ElevenLabs WebSocket
-    let elevenLabsSocket: WebSocket | null = null;
-
-    socket.onopen = () => {
-      console.log("Client WebSocket connected");
-      
-      // Connect to ElevenLabs using signed URL
-      elevenLabsSocket = new WebSocket(signed_url);
-
-      elevenLabsSocket.onopen = () => {
-        console.log("Connected to ElevenLabs");
-        socket.send(JSON.stringify({ type: "connected" }));
-      };
-
-      elevenLabsSocket.onmessage = (event) => {
-        // Forward all messages from ElevenLabs to client
-        socket.send(event.data);
-      };
-
-      elevenLabsSocket.onerror = (error) => {
-        console.error("ElevenLabs WebSocket error:", error);
-        socket.send(JSON.stringify({
-          type: "error",
-          error: "Connection to ElevenLabs failed"
-        }));
-      };
-
-      elevenLabsSocket.onclose = () => {
-        console.log("ElevenLabs WebSocket closed");
-        socket.close();
-      };
-    };
-
-    socket.onmessage = (event) => {
-      // Forward all messages from client to ElevenLabs
-      if (elevenLabsSocket?.readyState === WebSocket.OPEN) {
-        elevenLabsSocket.send(event.data);
+    return new Response(
+      JSON.stringify({ signed_url: data.signed_url }),
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
       }
-    };
-
-    socket.onclose = () => {
-      console.log("Client WebSocket closed");
-      elevenLabsSocket?.close();
-    };
-
-    socket.onerror = (error) => {
-      console.error("Client WebSocket error:", error);
-      elevenLabsSocket?.close();
-    };
-
-    return response;
+    );
   } catch (error) {
     console.error("Error in elevenlabs-voice:", error);
-    return new Response("Internal server error", { status: 500 });
+    return new Response(
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      }), 
+      { 
+        status: 500, 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
+    );
   }
 });
