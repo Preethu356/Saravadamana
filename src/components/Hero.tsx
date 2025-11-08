@@ -54,12 +54,6 @@ const Hero = () => {
             <br />
             <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent drop-shadow-lg">Matters</span>
           </h1>
-
-          <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-md rounded-full border-2 border-transparent bg-clip-padding shadow-glow animate-fade-in relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-xl"></div>
-            <Brain className="w-6 h-6 text-purple-500 animate-pulse relative z-10" />
-            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent relative z-10">Your Mental Wellness Companion</span>
-          </div>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Your safe space for mental wellness. Get AI-powered support, track your mood, and access professional resources anytime, anywhere.
