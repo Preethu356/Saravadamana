@@ -1,22 +1,25 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, LogOut, User as UserIcon, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import saravadamanaLogo from "@/assets/saravadamana-logo.png";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [mentalHealthOpen, setMentalHealthOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -51,6 +54,7 @@ const Header = () => {
       });
       navigate("/");
     }
+    setIsMenuOpen(false);
   };
 
   const navLinks = [
@@ -89,86 +93,13 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            
-            {/* Mental Health Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                  Mental Health
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-background z-50">
-                {mentalHealthLinks.map((link) => (
-                  <DropdownMenuItem key={link.to} asChild>
-                    <Link to={link.to} className="cursor-pointer">
-                      {link.label}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Mental Health Resources Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                  Mental Health Resources
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-background z-50">
-                {resourcesLinks.map((link) => (
-                  <DropdownMenuItem key={link.to} asChild>
-                    <Link to={link.to} className="cursor-pointer w-full">
-                      {link.label}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Mental Health Support */}
-            <Link
-              to="/ai-support"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Mental Health Support
-            </Link>
-          </nav>
-
-          {/* Auth Buttons */}
+          {/* Auth Buttons - Desktop Only */}
           <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <UserIcon className="w-4 h-4" />
-                    <span className="max-w-[150px] truncate">
-                      {user.email}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem disabled className="text-xs text-muted-foreground">
-                    {user.email}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive gap-2">
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <UserIcon className="w-4 h-4" />
+                <span className="max-w-[150px] truncate">{user.email}</span>
+              </div>
             ) : (
               <>
                 <Button variant="ghost" size="sm" asChild>
@@ -181,116 +112,124 @@ const Header = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
-            <nav className="flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
+          {/* Side Drawer Menu Button */}
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="w-5 h-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[350px] bg-background z-[100]">
+              <SheetHeader>
+                <SheetTitle className="text-left">Menu</SheetTitle>
+              </SheetHeader>
               
-              {/* Mental Health Section */}
-              <div className="border-t pt-3 mt-2">
-                <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">Mental Health</p>
-                {mentalHealthLinks.map((link) => (
+              <nav className="flex flex-col gap-2 mt-6">
+                {/* Main Navigation */}
+                {navLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 pl-4 block"
+                    className="text-sm font-medium text-foreground hover:text-primary transition-colors py-3 px-4 rounded-lg hover:bg-accent"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}
                   </Link>
                 ))}
-              </div>
 
-              {/* Mental Health Resources Section */}
-              <div className="border-t pt-3 mt-2">
-                <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">Mental Health Resources</p>
-                {resourcesLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 pl-4 block"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
+                {/* Mental Health Collapsible */}
+                <Collapsible open={mentalHealthOpen} onOpenChange={setMentalHealthOpen}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:text-primary transition-colors py-3 px-4 rounded-lg hover:bg-accent">
+                    Mental Health
+                    <ChevronDown className={`w-4 h-4 transition-transform ${mentalHealthOpen ? 'rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="ml-4 mt-1 space-y-1">
+                    {mentalHealthLinks.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        className="block text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-accent"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
 
-              {/* Mental Health Support */}
-              <div className="border-t pt-3 mt-2">
+                {/* Mental Health Resources Collapsible */}
+                <Collapsible open={resourcesOpen} onOpenChange={setResourcesOpen}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:text-primary transition-colors py-3 px-4 rounded-lg hover:bg-accent">
+                    Mental Health Resources
+                    <ChevronDown className={`w-4 h-4 transition-transform ${resourcesOpen ? 'rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="ml-4 mt-1 space-y-1">
+                    {resourcesLinks.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        className="block text-sm text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-accent"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+
+                {/* Mental Health Support */}
                 <Link
                   to="/ai-support"
-                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 block"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors py-3 px-4 rounded-lg hover:bg-accent"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Mental Health Support
                 </Link>
-              </div>
-              <div className="border-t pt-3 mt-2 space-y-2">
-                {user ? (
-                  <>
-                    <p className="text-xs text-muted-foreground px-2 truncate">
-                      {user.email}
-                    </p>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="w-full gap-2"
-                      onClick={() => {
-                        handleSignOut();
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full"
-                      asChild
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Link to="/login">Login</Link>
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="w-full"
-                      asChild
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Link to="/signup">Sign Up</Link>
-                    </Button>
-                  </>
-                )}
-              </div>
-            </nav>
-          </div>
-        )}
+
+                {/* Auth Section */}
+                <div className="border-t pt-4 mt-4 space-y-2">
+                  {user ? (
+                    <>
+                      <p className="text-xs text-muted-foreground px-4 truncate flex items-center gap-2">
+                        <UserIcon className="w-4 h-4" />
+                        {user.email}
+                      </p>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="w-full gap-2"
+                        onClick={handleSignOut}
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="md:hidden space-y-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full"
+                        asChild
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Link to="/login">Login</Link>
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        asChild
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Link to="/signup">Sign Up</Link>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );
