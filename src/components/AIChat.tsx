@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Sparkles, MessageCircle, Shield, Heart } from "lucide-react";
-import meditationImg from "@/assets/meditation.png";
+import meditationImg from "@/assets/meditation.jpg";
 import ChatInterface from "./ChatInterface";
 import VoiceAssistant from "./VoiceAssistant";
 import { useState } from "react";
