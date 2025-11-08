@@ -46,10 +46,6 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-soft">
-            <Heart className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">Your Mental Wellness Companion</span>
-          </div>
           
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
@@ -58,6 +54,11 @@ const Hero = () => {
             <br />
             <span className="text-foreground">Matters</span>
           </h1>
+
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 backdrop-blur-sm rounded-full border-2 border-primary/30 shadow-glow animate-fade-in">
+            <Brain className="w-5 h-5 text-primary animate-pulse" />
+            <span className="text-base font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">Your Mental Wellness Companion</span>
+          </div>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Your safe space for mental wellness. Get AI-powered support, track your mood, and access professional resources anytime, anywhere.
