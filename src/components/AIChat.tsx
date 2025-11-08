@@ -17,11 +17,18 @@ const AIChat = () => {
             {/* Image Side */}
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl blur-3xl" />
-              <img 
-                src={meditationImg} 
-                alt="Meditation and mindfulness illustration" 
-                className="relative rounded-3xl shadow-card w-full"
-              />
+              <div className="relative rounded-3xl overflow-hidden shadow-card">
+                <img 
+                  src={meditationImg} 
+                  alt="Meditation and mindfulness illustration" 
+                  className="w-full"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent flex items-end justify-center pb-8">
+                  <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center px-6 drop-shadow-lg">
+                    Calmness gives Clarity
+                  </h3>
+                </div>
+              </div>
             </div>
 
             {/* Content Side */}
