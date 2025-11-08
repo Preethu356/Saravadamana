@@ -55,15 +55,23 @@ const Header = () => {
 
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/ai-chat", label: "AI Support" },
-    { to: "/journal", label: "Journal" },
-    { to: "/resources", label: "Resources" }
+    { to: "/#about", label: "About Us" },
+    { to: "/#gallery", label: "Gallery" }
   ];
 
-  const preventiveCareLinks = [
+  const mentalHealthLinks = [
     { to: "/primary-care", label: "Primary Prevention" },
     { to: "/secondary-care", label: "Secondary Prevention" },
     { to: "/tertiary-care", label: "Tertiary Prevention" }
+  ];
+
+  const resourcesLinks = [
+    { to: "/#mood-tracker", label: "Mood Tracker" },
+    { to: "/#ai-chat", label: "AI Support" },
+    { to: "/#resources", label: "Support Resources" },
+    { to: "/journal", label: "Journal" },
+    { to: "/#wellness-tools", label: "Wellness Tools" },
+    { to: "/#cbt-consultation", label: "CBT Consultation" }
   ];
 
   return (
@@ -85,24 +93,24 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.to}
-                to={link.to}
+                href={link.to}
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
             
-            {/* Preventive Care Dropdown */}
+            {/* Mental Health Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-primary">
-                  Preventive Care
+                  Mental Health
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-background">
-                {preventiveCareLinks.map((link) => (
+              <DropdownMenuContent align="end" className="w-56 bg-background z-50">
+                {mentalHealthLinks.map((link) => (
                   <DropdownMenuItem key={link.to} asChild>
                     <Link to={link.to} className="cursor-pointer">
                       {link.label}
@@ -111,6 +119,32 @@ const Header = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Mental Health Resources Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-primary">
+                  Mental Health Resources
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-background z-50">
+                {resourcesLinks.map((link) => (
+                  <DropdownMenuItem key={link.to} asChild>
+                    <a href={link.to} className="cursor-pointer w-full">
+                      {link.label}
+                    </a>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Mental Health Support */}
+            <a
+              href="/#ai-chat"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Mental Health Support
+            </a>
           </nav>
 
           {/* Auth Buttons */}
@@ -164,20 +198,20 @@ const Header = () => {
           <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col gap-3">
               {navLinks.map((link) => (
-                <Link
+                <a
                   key={link.to}
-                  to={link.to}
+                  href={link.to}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
-                </Link>
+                </a>
               ))}
               
-              {/* Preventive Care Section */}
+              {/* Mental Health Section */}
               <div className="border-t pt-3 mt-2">
-                <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">Preventive Care</p>
-                {preventiveCareLinks.map((link) => (
+                <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">Mental Health</p>
+                {mentalHealthLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
@@ -187,6 +221,32 @@ const Header = () => {
                     {link.label}
                   </Link>
                 ))}
+              </div>
+
+              {/* Mental Health Resources Section */}
+              <div className="border-t pt-3 mt-2">
+                <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">Mental Health Resources</p>
+                {resourcesLinks.map((link) => (
+                  <a
+                    key={link.to}
+                    href={link.to}
+                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 pl-4 block"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+
+              {/* Mental Health Support */}
+              <div className="border-t pt-3 mt-2">
+                <a
+                  href="/#ai-chat"
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 block"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Mental Health Support
+                </a>
               </div>
               <div className="border-t pt-3 mt-2 space-y-2">
                 {user ? (
