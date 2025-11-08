@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ResourcesPage from "./pages/Resources";
@@ -32,20 +33,24 @@ const App = () => (
           <Header />
           <main className="flex-1">
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/mood-tracker" element={<MoodTracking />} />
-              <Route path="/ai-support" element={<AISupport />} />
-              <Route path="/wellness-tools" element={<WellnessPage />} />
-              <Route path="/gallery" element={<GalleryPage />} />
-              <Route path="/cbt-consultation" element={<CBTPage />} />
-              <Route path="/resources" element={<ResourcesPage />} />
-              <Route path="/journal" element={<Journal />} />
+              {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/primary-care" element={<PrimaryCare />} />
-              <Route path="/secondary-care" element={<SecondaryCare />} />
-              <Route path="/tertiary-care" element={<TertiaryCare />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              
+              {/* Protected Routes */}
+              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/mood-tracker" element={<ProtectedRoute><MoodTracking /></ProtectedRoute>} />
+              <Route path="/ai-support" element={<ProtectedRoute><AISupport /></ProtectedRoute>} />
+              <Route path="/wellness-tools" element={<ProtectedRoute><WellnessPage /></ProtectedRoute>} />
+              <Route path="/gallery" element={<ProtectedRoute><GalleryPage /></ProtectedRoute>} />
+              <Route path="/cbt-consultation" element={<ProtectedRoute><CBTPage /></ProtectedRoute>} />
+              <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
+              <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
+              <Route path="/primary-care" element={<ProtectedRoute><PrimaryCare /></ProtectedRoute>} />
+              <Route path="/secondary-care" element={<ProtectedRoute><SecondaryCare /></ProtectedRoute>} />
+              <Route path="/tertiary-care" element={<ProtectedRoute><TertiaryCare /></ProtectedRoute>} />
+              
+              {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

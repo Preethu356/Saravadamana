@@ -88,7 +88,7 @@ const Header = () => {
               alt="Saravadamana Logo" 
               className="w-10 h-10 object-contain"
             />
-            <span className="hidden sm:inline font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <span className="font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Saravadamana
             </span>
           </Link>
