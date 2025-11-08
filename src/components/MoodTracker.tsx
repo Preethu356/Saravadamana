@@ -1,15 +1,19 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Smile, Meh, Frown, Angry, Heart } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import moodGreat from "@/assets/mood-great.png";
+import moodGood from "@/assets/mood-good.png";
+import moodOkay from "@/assets/mood-okay.png";
+import moodDown from "@/assets/mood-down.png";
+import moodStruggling from "@/assets/mood-struggling.png";
 
 const moods = [
-  { icon: Heart, label: "Great", color: "text-secondary hover:bg-secondary/20" },
-  { icon: Smile, label: "Good", color: "text-primary hover:bg-primary/20" },
-  { icon: Meh, label: "Okay", color: "text-accent hover:bg-accent/20" },
-  { icon: Frown, label: "Down", color: "text-muted-foreground hover:bg-muted" },
-  { icon: Angry, label: "Struggling", color: "text-destructive hover:bg-destructive/20" },
+  { image: moodGreat, label: "Great", color: "hover:bg-secondary/20" },
+  { image: moodGood, label: "Good", color: "hover:bg-primary/20" },
+  { image: moodOkay, label: "Okay", color: "hover:bg-accent/20" },
+  { image: moodDown, label: "Down", color: "hover:bg-muted" },
+  { image: moodStruggling, label: "Struggling", color: "hover:bg-destructive/20" },
 ];
 
 const MoodTracker = () => {
@@ -35,7 +39,7 @@ const MoodTracker = () => {
 
         <Card className="p-8 shadow-card border-2 bg-card/80 backdrop-blur-sm">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {moods.map(({ icon: Icon, label, color }) => (
+            {moods.map(({ image, label, color }) => (
               <button
                 key={label}
                 onClick={() => setSelectedMood(label)}
@@ -43,9 +47,15 @@ const MoodTracker = () => {
                   selectedMood === label
                     ? "border-primary bg-primary/10 scale-105"
                     : "border-border hover:border-primary/50"
-                } ${color}`}
+                } ${color} group`}
               >
-                <Icon className="w-12 h-12" />
+                <div className="w-20 h-20 transition-transform duration-300 group-hover:scale-110 group-hover:animate-pulse">
+                  <img 
+                    src={image} 
+                    alt={`${label} mood`} 
+                    className="w-full h-full object-contain rounded-full"
+                  />
+                </div>
                 <span className="text-sm font-medium">{label}</span>
               </button>
             ))}
