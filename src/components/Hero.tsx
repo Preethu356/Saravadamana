@@ -1,10 +1,21 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, MessageCircle, Brain } from "lucide-react";
+import { ArrowRight, Heart, MessageCircle, Brain, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import heroBackground from "@/assets/hero-background.jpg";
 
 const Hero = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const scrollToMoodTracker = () => {
     const moodSection = document.getElementById("mood-tracker");
@@ -24,6 +35,18 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          
+          {/* Live Date & Time Display */}
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center gap-3 px-6 py-4 bg-card/90 backdrop-blur-sm rounded-2xl border-2 border-primary/20 shadow-glow">
+              <Clock className="w-6 h-6 text-primary animate-pulse" />
+              <div className="text-left">
+                <div className="text-lg font-bold text-foreground">{format(currentTime, 'PPPP')}</div>
+                <div className="text-2xl font-bold text-primary tabular-nums">{format(currentTime, 'p')}</div>
+              </div>
+            </div>
+          </div>
+
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-soft">
             <Heart className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium">Your Mental Wellness Companion</span>
