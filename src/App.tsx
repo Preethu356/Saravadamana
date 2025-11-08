@@ -12,6 +12,9 @@ import Journal from "./pages/Journal";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import AIChat from "./components/AIChat";
+import PrimaryCare from "./pages/PrimaryCare";
+import SecondaryCare from "./pages/SecondaryCare";
+import TertiaryCare from "./pages/TertiaryCare";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +34,9 @@ const App = () => (
               <Route path="/journal" element={<Journal />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/primary-care" element={<PrimaryCare />} />
+              <Route path="/secondary-care" element={<SecondaryCare />} />
+              <Route path="/tertiary-care" element={<TertiaryCare />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

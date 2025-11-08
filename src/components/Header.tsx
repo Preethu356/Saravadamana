@@ -60,6 +60,12 @@ const Header = () => {
     { to: "/resources", label: "Resources" }
   ];
 
+  const preventiveCareLinks = [
+    { to: "/primary-care", label: "Primary Prevention" },
+    { to: "/secondary-care", label: "Secondary Prevention" },
+    { to: "/tertiary-care", label: "Tertiary Prevention" }
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
@@ -87,6 +93,24 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+            
+            {/* Preventive Care Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-primary">
+                  Preventive Care
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-background">
+                {preventiveCareLinks.map((link) => (
+                  <DropdownMenuItem key={link.to} asChild>
+                    <Link to={link.to} className="cursor-pointer">
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
 
           {/* Auth Buttons */}
@@ -149,6 +173,21 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
+              
+              {/* Preventive Care Section */}
+              <div className="border-t pt-3 mt-2">
+                <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">Preventive Care</p>
+                {preventiveCareLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 pl-4 block"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
               <div className="border-t pt-3 mt-2 space-y-2">
                 {user ? (
                   <>
