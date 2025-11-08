@@ -47,17 +47,18 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
           
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-            <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+            <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg">
               Mental Health
             </span>
             <br />
-            <span className="text-foreground">Matters</span>
+            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent drop-shadow-lg">Matters</span>
           </h1>
 
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 backdrop-blur-sm rounded-full border-2 border-primary/30 shadow-glow animate-fade-in">
-            <Brain className="w-5 h-5 text-primary animate-pulse" />
-            <span className="text-base font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">Your Mental Wellness Companion</span>
+          <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-md rounded-full border-2 border-transparent bg-clip-padding shadow-glow animate-fade-in relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-xl"></div>
+            <Brain className="w-6 h-6 text-purple-500 animate-pulse relative z-10" />
+            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent relative z-10">Your Mental Wellness Companion</span>
           </div>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
