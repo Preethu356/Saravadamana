@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, MessageCircle, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroBackground from "@/assets/hero-background.jpg";
-import mindQuote from "@/assets/mind-quote.jpg";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -41,15 +40,6 @@ const Hero = () => {
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Your safe space for mental wellness. Get AI-powered support, track your mood, and access professional resources anytime, anywhere.
           </p>
-
-          {/* Inspirational Quote Image */}
-          <div className="max-w-3xl mx-auto pt-4">
-            <img 
-              src={mindQuote} 
-              alt="Your mind speaks more than your mouth; So open your mind more than you mouth." 
-              className="w-full rounded-2xl shadow-glow border border-border/20"
-            />
-          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button variant="hero" size="lg" className="group" onClick={scrollToMoodTracker}>

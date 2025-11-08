@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Users, Phone, Calendar, Shield, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import mindQuote from "@/assets/mind-quote.jpg";
 
 const resources = [
   {
@@ -58,6 +59,17 @@ const Resources = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Everything you need for your mental wellness journey, all in one place.
           </p>
+          
+          {/* Inspirational Quote Image with Animation */}
+          <div className="max-w-3xl mx-auto pt-8 group">
+            <div className="relative overflow-hidden rounded-2xl shadow-glow border border-border/20">
+              <img 
+                src={mindQuote} 
+                alt="Your mind speaks more than your mouth; So open your mind more than you mouth." 
+                className="w-full transition-all duration-700 group-hover:scale-110 animate-fade-in"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
