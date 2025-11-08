@@ -103,8 +103,8 @@ const Header = () => {
 
 
           {/* Live Date & Time */}
-          <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full border border-primary/10">
-            <Clock className="w-4 h-4 text-primary" />
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full border border-primary/10">
+            <Clock className="w-4 h-4 text-primary animate-pulse" />
             <div className="text-sm font-medium">
               <span className="text-foreground">{format(currentTime, 'PPP')}</span>
               <span className="mx-2 text-muted-foreground">•</span>
@@ -229,6 +229,15 @@ const Header = () => {
                   {link.label}
                 </a>
               ))}
+              
+              {/* Mobile Date & Time */}
+              <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 rounded-xl border border-primary/10 my-2">
+                <Clock className="w-4 h-4 text-primary animate-pulse" />
+                <div className="text-sm font-medium">
+                  <div className="text-foreground">{format(currentTime, 'PPP')}</div>
+                  <div className="text-primary tabular-nums mt-1">{format(currentTime, 'p')}</div>
+                </div>
+              </div>
               
               {/* Mental Health Section */}
               <div className="border-t pt-3 mt-2">
