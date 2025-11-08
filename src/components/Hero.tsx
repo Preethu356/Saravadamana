@@ -24,6 +24,17 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Live Date & Time - Top Right */}
+      <div className="absolute top-6 right-6 z-20 animate-fade-in">
+        <div className="flex items-center gap-2 px-3 py-2 bg-card/90 backdrop-blur-sm rounded-lg border border-primary/20 shadow-soft">
+          <Clock className="w-3 h-3 text-primary animate-pulse" />
+          <div className="text-xs font-medium">
+            <div className="text-foreground">{format(currentTime, 'MMM d, yyyy')}</div>
+            <div className="text-primary tabular-nums">{format(currentTime, 'p')}</div>
+          </div>
+        </div>
+      </div>
+
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
@@ -35,18 +46,6 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          
-          {/* Live Date & Time Display */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex items-center gap-3 px-6 py-4 bg-card/90 backdrop-blur-sm rounded-2xl border-2 border-primary/20 shadow-glow">
-              <Clock className="w-6 h-6 text-primary animate-pulse" />
-              <div className="text-left">
-                <div className="text-lg font-bold text-foreground">{format(currentTime, 'PPPP')}</div>
-                <div className="text-2xl font-bold text-primary tabular-nums">{format(currentTime, 'p')}</div>
-              </div>
-            </div>
-          </div>
-
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-soft">
             <Heart className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium">Your Mental Wellness Companion</span>
