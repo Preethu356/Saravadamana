@@ -15,7 +15,7 @@ const AIChat = () => {
         {!showChat ? (
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Image Side */}
-            <div className="relative">
+            <div className="relative space-y-6">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl blur-3xl" />
               <div className="relative rounded-3xl overflow-hidden shadow-card">
                 <img 
@@ -23,12 +23,10 @@ const AIChat = () => {
                   alt="Meditation and mindfulness illustration" 
                   className="w-full"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent flex items-end justify-center pb-8">
-                  <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center px-6 drop-shadow-lg animate-fade-in">
-                    Calmness gives Clarity
-                  </h3>
-                </div>
               </div>
+              <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center px-6 animate-fade-in font-bebas bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 bg-clip-text text-transparent tracking-wider">
+                Calmness gives Clarity
+              </h3>
             </div>
 
             {/* Content Side */}
