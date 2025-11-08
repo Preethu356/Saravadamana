@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, LogOut, User as UserIcon, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
+import { format } from "date-fns";
 import saravadamanaLogo from "@/assets/saravadamana-logo.png";
 import {
   DropdownMenu,
@@ -17,8 +18,18 @@ import { useToast } from "@/hooks/use-toast";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Update time every second
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     // Get initial session
@@ -89,6 +100,17 @@ const Header = () => {
               Saravadamana
             </span>
           </Link>
+
+
+          {/* Live Date & Time */}
+          <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-full border border-primary/10">
+            <Clock className="w-4 h-4 text-primary" />
+            <div className="text-sm font-medium">
+              <span className="text-foreground">{format(currentTime, 'PPP')}</span>
+              <span className="mx-2 text-muted-foreground">•</span>
+              <span className="text-primary tabular-nums">{format(currentTime, 'p')}</span>
+            </div>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
