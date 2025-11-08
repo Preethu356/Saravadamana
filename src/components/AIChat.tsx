@@ -24,7 +24,7 @@ const AIChat = () => {
                   className="w-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent flex items-end justify-center pb-8">
-                  <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center px-6 drop-shadow-lg">
+                  <h3 className="text-3xl md:text-4xl font-bold text-foreground text-center px-6 drop-shadow-lg animate-fade-in">
                     Calmness gives Clarity
                   </h3>
                 </div>
