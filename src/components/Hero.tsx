@@ -26,11 +26,11 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Live Date & Time - Top Right */}
       <div className="absolute top-6 right-6 z-20 animate-fade-in">
-        <div className="flex items-center gap-2 px-3 py-2 bg-card/90 backdrop-blur-sm rounded-lg border border-primary/20 shadow-soft">
-          <Clock className="w-3 h-3 text-primary animate-pulse" />
-          <div className="text-xs font-medium">
-            <div className="text-foreground">{format(currentTime, 'MMM d, yyyy')}</div>
-            <div className="text-primary tabular-nums">{format(currentTime, 'p')}</div>
+        <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-md rounded-xl border-2 border-purple-500/30 shadow-glow animate-bounce">
+          <Clock className="w-4 h-4 text-purple-400 animate-pulse" />
+          <div className="text-sm font-bold">
+            <div className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{format(currentTime, 'MMM d, yyyy')}</div>
+            <div className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent tabular-nums">{format(currentTime, 'p')}</div>
           </div>
         </div>
       </div>
