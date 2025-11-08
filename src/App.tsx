@@ -11,10 +11,14 @@ import ResourcesPage from "./pages/Resources";
 import Journal from "./pages/Journal";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import AIChat from "./components/AIChat";
 import PrimaryCare from "./pages/PrimaryCare";
 import SecondaryCare from "./pages/SecondaryCare";
 import TertiaryCare from "./pages/TertiaryCare";
+import MoodTracking from "./pages/MoodTracking";
+import AISupport from "./pages/AISupport";
+import WellnessPage from "./pages/WellnessPage";
+import GalleryPage from "./pages/GalleryPage";
+import CBTPage from "./pages/CBTPage";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +33,11 @@ const App = () => (
           <main className="flex-1">
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/ai-chat" element={<AIChat />} />
+              <Route path="/mood-tracker" element={<MoodTracking />} />
+              <Route path="/ai-support" element={<AISupport />} />
+              <Route path="/wellness-tools" element={<WellnessPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
+              <Route path="/cbt-consultation" element={<CBTPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/journal" element={<Journal />} />
               <Route path="/login" element={<Login />} />

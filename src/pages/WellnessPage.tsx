@@ -1,13 +1,13 @@
-import Hero from "@/components/Hero";
+import WellnessTools from "@/components/WellnessTools";
 import ComplianceFooter from "@/components/ComplianceFooter";
 
-const Index = () => {
+const WellnessPage = () => {
   return (
     <div className="min-h-screen">
-      <Hero />
+      <WellnessTools />
       <ComplianceFooter />
     </div>
   );
 };
 
-export default Index;
+export default WellnessPage;

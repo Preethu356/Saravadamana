@@ -1,13 +1,13 @@
-import Hero from "@/components/Hero";
+import MoodTracker from "@/components/MoodTracker";
 import ComplianceFooter from "@/components/ComplianceFooter";
 
-const Index = () => {
+const MoodTracking = () => {
   return (
     <div className="min-h-screen">
-      <Hero />
+      <MoodTracker />
       <ComplianceFooter />
     </div>
   );
 };
 
-export default Index;
+export default MoodTracking;

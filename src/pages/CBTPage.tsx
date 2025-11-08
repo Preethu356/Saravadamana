@@ -1,13 +1,13 @@
-import Hero from "@/components/Hero";
+import CBTConsultation from "@/components/CBTConsultation";
 import ComplianceFooter from "@/components/ComplianceFooter";
 
-const Index = () => {
+const CBTPage = () => {
   return (
     <div className="min-h-screen">
-      <Hero />
+      <CBTConsultation />
       <ComplianceFooter />
     </div>
   );
 };
 
-export default Index;
+export default CBTPage;

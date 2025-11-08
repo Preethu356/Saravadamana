@@ -1,13 +1,13 @@
-import Hero from "@/components/Hero";
+import Gallery from "@/components/Gallery";
 import ComplianceFooter from "@/components/ComplianceFooter";
 
-const Index = () => {
+const GalleryPage = () => {
   return (
     <div className="min-h-screen">
-      <Hero />
+      <Gallery />
       <ComplianceFooter />
     </div>
   );
 };
 
-export default Index;
+export default GalleryPage;

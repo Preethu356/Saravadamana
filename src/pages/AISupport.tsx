@@ -1,13 +1,13 @@
-import Hero from "@/components/Hero";
+import AIChat from "@/components/AIChat";
 import ComplianceFooter from "@/components/ComplianceFooter";
 
-const Index = () => {
+const AISupport = () => {
   return (
     <div className="min-h-screen">
-      <Hero />
+      <AIChat />
       <ComplianceFooter />
     </div>
   );
 };
 
-export default Index;
+export default AISupport;

@@ -55,8 +55,7 @@ const Header = () => {
 
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/#about", label: "About Us" },
-    { to: "/#gallery", label: "Gallery" }
+    { to: "/gallery", label: "Gallery" }
   ];
 
   const mentalHealthLinks = [
@@ -66,12 +65,12 @@ const Header = () => {
   ];
 
   const resourcesLinks = [
-    { to: "/#mood-tracker", label: "Mood Tracker" },
-    { to: "/#ai-chat", label: "AI Support" },
-    { to: "/#resources", label: "Support Resources" },
+    { to: "/mood-tracker", label: "Mood Tracker" },
+    { to: "/ai-support", label: "AI Support" },
+    { to: "/resources", label: "Support Resources" },
     { to: "/journal", label: "Journal" },
-    { to: "/#wellness-tools", label: "Wellness Tools" },
-    { to: "/#cbt-consultation", label: "CBT Consultation" }
+    { to: "/wellness-tools", label: "Wellness Tools" },
+    { to: "/cbt-consultation", label: "CBT Consultation" }
   ];
 
   return (
@@ -93,13 +92,13 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.to}
-                href={link.to}
+                to={link.to}
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             
             {/* Mental Health Dropdown */}
@@ -130,21 +129,21 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-56 bg-background z-50">
                 {resourcesLinks.map((link) => (
                   <DropdownMenuItem key={link.to} asChild>
-                    <a href={link.to} className="cursor-pointer w-full">
+                    <Link to={link.to} className="cursor-pointer w-full">
                       {link.label}
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* Mental Health Support */}
-            <a
-              href="/#ai-chat"
+            <Link
+              to="/ai-support"
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               Mental Health Support
-            </a>
+            </Link>
           </nav>
 
           {/* Auth Buttons */}
@@ -198,14 +197,14 @@ const Header = () => {
           <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col gap-3">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.to}
-                  href={link.to}
+                  to={link.to}
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
               
               {/* Mental Health Section */}
@@ -227,26 +226,26 @@ const Header = () => {
               <div className="border-t pt-3 mt-2">
                 <p className="text-xs font-semibold text-muted-foreground px-2 mb-2">Mental Health Resources</p>
                 {resourcesLinks.map((link) => (
-                  <a
+                  <Link
                     key={link.to}
-                    href={link.to}
+                    to={link.to}
                     className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 pl-4 block"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
 
               {/* Mental Health Support */}
               <div className="border-t pt-3 mt-2">
-                <a
-                  href="/#ai-chat"
+                <Link
+                  to="/ai-support"
                   className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2 block"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Mental Health Support
-                </a>
+                </Link>
               </div>
               <div className="border-t pt-3 mt-2 space-y-2">
                 {user ? (
