@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, Brain, Heart } from "lucide-react";
+import { Activity, Brain, Heart, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const wellnessTools = [
@@ -24,6 +24,13 @@ const wellnessTools = [
     description: "7-question tool to screen for generalized anxiety disorder symptoms.",
     color: "text-accent bg-accent/10",
     link: "/secondary-care?tool=gad7"
+  },
+  {
+    icon: User,
+    title: "Who Am I?",
+    description: "Discover your personality traits through screening questions with personalized PDF report.",
+    color: "text-purple-500 bg-purple-500/10",
+    link: "/personality-screening"
   }
 ];
 
@@ -43,7 +50,7 @@ const WellnessTools = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {wellnessTools.map(({ icon: Icon, title, description, color, link }) => (
             <Card 
               key={title}
