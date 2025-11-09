@@ -1,7 +1,8 @@
 import { useConversation } from "@11labs/react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Loader2 } from "lucide-react";
+import { Mic, MicOff, Loader2, Brain, Waves } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -93,17 +94,82 @@ const VoiceAssistant = () => {
   const isSpeaking = conversation.isSpeaking;
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 bg-card rounded-lg border">
-      <div className="text-center">
-        <h3 className="text-lg font-semibold mb-2">ElevenLabs Voice Assistant</h3>
-        <p className="text-sm text-muted-foreground">
-          {isConnected ? "Listening..." : "Click to start voice conversation"}
-        </p>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col items-center gap-6 p-8 bg-gradient-to-br from-card via-card/95 to-primary/5 rounded-2xl border-2 border-primary/20 shadow-xl relative overflow-hidden"
+    >
+      {/* Animated background effect */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5"
+        animate={{
+          opacity: [0.3, 0.6, 0.3],
+          scale: [1, 1.05, 1]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      <div className="text-center relative z-10">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          className="mb-4 flex justify-center"
+        >
+          <div className="relative">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            >
+              <Brain className="w-16 h-16 text-primary" />
+            </motion.div>
+            <motion.div
+              className="absolute -inset-2"
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.5, 0.8, 0.5]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Waves className="w-20 h-20 text-accent/60" />
+            </motion.div>
+          </div>
+        </motion.div>
+
+        <motion.h3 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent"
+        >
+          Talk to Your Mind
+        </motion.h3>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-sm text-muted-foreground"
+        >
+          {isConnected ? "I'm listening..." : "Click to start voice conversation"}
+        </motion.p>
       </div>
 
-      <div className="flex items-center gap-4">
+      <motion.div 
+        className="flex items-center gap-4 relative z-10"
+        whileHover={{ scale: 1.02 }}
+      >
         {!isConnected ? (
-          <Button onClick={startConversation} disabled={isLoading} size="lg" className="gap-2">
+          <Button 
+            onClick={startConversation} 
+            disabled={isLoading} 
+            size="lg" 
+            className="gap-2 shadow-lg hover:shadow-xl transition-all"
+          >
             {isLoading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -117,20 +183,33 @@ const VoiceAssistant = () => {
             )}
           </Button>
         ) : (
-          <Button onClick={endConversation} variant="destructive" size="lg" className="gap-2">
+          <Button 
+            onClick={endConversation} 
+            variant="destructive" 
+            size="lg" 
+            className="gap-2 shadow-lg hover:shadow-xl transition-all"
+          >
             <MicOff className="h-5 w-5" />
             End Conversation
           </Button>
         )}
-      </div>
+      </motion.div>
 
       {isConnected && (
-        <div className="flex items-center gap-2 text-sm">
-          <div className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-          <span>{isSpeaking ? "AI is speaking" : "Ready to listen"}</span>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex items-center gap-2 text-sm relative z-10"
+        >
+          <motion.div 
+            className={`w-3 h-3 rounded-full ${isSpeaking ? 'bg-green-500' : 'bg-muted'}`}
+            animate={isSpeaking ? { scale: [1, 1.3, 1] } : {}}
+            transition={{ duration: 0.6, repeat: Infinity }}
+          />
+          <span className="font-medium">{isSpeaking ? "AI is speaking" : "Ready to listen"}</span>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

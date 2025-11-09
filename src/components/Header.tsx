@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { 
   Menu, 
@@ -97,15 +98,57 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <img 
+          <Link to="/" className="flex items-center gap-3 group">
+            <motion.img 
               src={saravadamanaLogo} 
               alt="Saravadamana Logo" 
               className="w-10 h-10 object-contain"
+              animate={{ 
+                scale: [1, 1.1, 1],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={{ 
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
             />
-            <span className="font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Saravadamana
-            </span>
+            <motion.span 
+              className="font-bold text-xl relative"
+              initial={{ opacity: 1 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <span className="relative inline-block bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent animate-pulse">
+                Saravadamana
+              </span>
+              {/* Burning effect overlay */}
+              <motion.span
+                className="absolute inset-0 bg-gradient-to-t from-yellow-400/30 via-orange-500/20 to-transparent blur-sm"
+                animate={{
+                  opacity: [0.3, 0.6, 0.3],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              {/* Healing glow effect */}
+              <motion.span
+                className="absolute -inset-1 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 blur-md -z-10"
+                animate={{
+                  opacity: [0.2, 0.5, 0.2],
+                  scale: [0.95, 1.1, 0.95]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1
+                }}
+              />
+            </motion.span>
           </Link>
 
           {/* Auth Buttons - Desktop Only */}
