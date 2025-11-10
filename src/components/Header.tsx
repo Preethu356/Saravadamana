@@ -30,6 +30,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Badge } from "@/components/ui/badge";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -93,6 +94,13 @@ const Header = () => {
     { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" }
   ];
 
+  // Sample wellness milestones/achievements
+  const badges = [
+    { label: "7 Day Streak", icon: "🔥", color: "default" },
+    { label: "5 Sessions", icon: "⭐", color: "secondary" },
+    { label: "Mindful", icon: "🧘", color: "outline" }
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
@@ -151,8 +159,36 @@ const Header = () => {
             </motion.span>
           </Link>
 
-          {/* Auth Buttons - Desktop Only */}
+          {/* Floating Badges - Desktop Only */}
           <div className="hidden md:flex items-center gap-3">
+            {user && (
+              <div className="flex items-center gap-2 mr-4">
+                {badges.map((badge, index) => (
+                  <motion.div
+                    key={badge.label}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: [0, -8, 0],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: index * 0.3,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <Badge variant={badge.color as any} className="shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <span className="mr-1">{badge.icon}</span>
+                      {badge.label}
+                    </Badge>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+            
+            {/* Auth Buttons */}
             {user ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <UserIcon className="w-4 h-4" />
