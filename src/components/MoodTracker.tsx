@@ -114,14 +114,14 @@ const MoodTracker = () => {
                 Thank you for sharing. Would you like to:
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="default" onClick={() => navigate("/journal")}>
+                <Button variant="default" onClick={() => navigate("/personality-screening")}>
+                  Take Screening Assessment
+                </Button>
+                <Button variant="secondary" onClick={() => navigate("/journal")}>
                   Journal Your Thoughts
                 </Button>
-                <Button variant="secondary" onClick={scrollToAIChat}>
+                <Button variant="outline" onClick={() => navigate("/ai-support")}>
                   Talk to AI Support
-                </Button>
-                <Button variant="outline" onClick={() => navigate("/resources")}>
-                  View Resources
                 </Button>
               </div>
             </div>

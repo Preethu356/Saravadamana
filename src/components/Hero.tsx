@@ -17,9 +17,9 @@ const Hero = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const scrollToMoodTracker = () => {
-    const moodSection = document.getElementById("mood-tracker");
-    moodSection?.scrollIntoView({ behavior: "smooth" });
+  const handleStartJourney = () => {
+    // Navigate to mood tracker page
+    navigate("/mood-tracker");
   };
 
   return (
@@ -60,7 +60,7 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button variant="hero" size="lg" className="group" onClick={scrollToMoodTracker}>
+            <Button variant="hero" size="lg" className="group" onClick={handleStartJourney}>
               Start Your Journey
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
