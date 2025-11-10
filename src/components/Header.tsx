@@ -69,6 +69,39 @@ const Header = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Realtime subscription for wellness stats updates
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('wellness-stats-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_wellness_stats',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Wellness stats changed:', payload);
+          if (payload.new && typeof payload.new === 'object') {
+            const newData = payload.new as any;
+            setWellnessStats({
+              current_streak: newData.current_streak || 0,
+              total_sessions: newData.total_sessions || 0,
+              meditation_minutes: newData.meditation_minutes || 0
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const fetchWellnessStats = async (userId: string) => {
     const { data, error } = await supabase
       .from('user_wellness_stats')
@@ -85,7 +118,12 @@ const Header = () => {
       // Initialize stats row for existing users who signed up before the trigger was added
       const { data: inserted, error: insertError } = await supabase
         .from('user_wellness_stats')
-        .insert({ user_id: userId })
+        .insert({ 
+          user_id: userId,
+          current_streak: 1,
+          total_sessions: 1,
+          meditation_minutes: 0
+        })
         .select('current_streak, total_sessions, meditation_minutes')
         .single();
 

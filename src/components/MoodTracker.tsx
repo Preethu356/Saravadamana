@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import moodGreat from "@/assets/mood-great.png";
 import moodGood from "@/assets/mood-good.png";
 import moodOkay from "@/assets/mood-okay.png";
@@ -18,7 +20,52 @@ const moods = [
 
 const MoodTracker = () => {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserId(session?.user?.id ?? null);
+    });
+  }, []);
+
+  const handleMoodSelect = async (mood: string) => {
+    setSelectedMood(mood);
+    
+    // Update wellness stats if user is logged in
+    if (userId) {
+      const { data: stats, error: fetchError } = await supabase
+        .from('user_wellness_stats')
+        .select('mood_entries, total_sessions')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error('Error fetching stats:', fetchError);
+        return;
+      }
+
+      if (stats) {
+        const { error: updateError } = await supabase
+          .from('user_wellness_stats')
+          .update({ 
+            mood_entries: (stats.mood_entries || 0) + 1,
+            total_sessions: (stats.total_sessions || 0) + 1
+          })
+          .eq('user_id', userId);
+
+        if (updateError) {
+          console.error('Error updating stats:', updateError);
+        } else {
+          toast({
+            title: "Mood tracked!",
+            description: "Your wellness stats have been updated."
+          });
+        }
+      }
+    }
+  };
 
   const scrollToAIChat = () => {
     const aiSection = document.getElementById("ai-chat");
@@ -42,7 +89,7 @@ const MoodTracker = () => {
             {moods.map(({ image, label, color }) => (
               <button
                 key={label}
-                onClick={() => setSelectedMood(label)}
+                onClick={() => handleMoodSelect(label)}
                 className={`flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all ${
                   selectedMood === label
                     ? "border-primary bg-primary/10 scale-105"
