@@ -37,6 +37,11 @@ const Header = () => {
   const [user, setUser] = useState<User | null>(null);
   const [mentalHealthOpen, setMentalHealthOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [wellnessStats, setWellnessStats] = useState<{
+    current_streak: number;
+    total_sessions: number;
+    meditation_minutes: number;
+  } | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -44,17 +49,40 @@ const Header = () => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchWellnessStats(session.user.id);
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchWellnessStats(session.user.id);
+        } else {
+          setWellnessStats(null);
+        }
       }
     );
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const fetchWellnessStats = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('user_wellness_stats')
+      .select('current_streak, total_sessions, meditation_minutes')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching wellness stats:', error);
+      return;
+    }
+
+    setWellnessStats(data);
+  };
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -94,12 +122,41 @@ const Header = () => {
     { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" }
   ];
 
-  // Sample wellness milestones/achievements
-  const badges = [
-    { label: "7 Day Streak", icon: "🔥", color: "default" },
-    { label: "5 Sessions", icon: "⭐", color: "secondary" },
-    { label: "Mindful", icon: "🧘", color: "outline" }
-  ];
+  // Dynamic wellness badges based on real user data
+  const getBadges = () => {
+    if (!wellnessStats) return [];
+    
+    const badges = [];
+    
+    // Streak badge
+    if (wellnessStats.current_streak > 0) {
+      badges.push({
+        label: `${wellnessStats.current_streak} Day Streak`,
+        icon: "🔥",
+        color: "default" as const
+      });
+    }
+    
+    // Sessions badge
+    if (wellnessStats.total_sessions >= 5) {
+      badges.push({
+        label: `${wellnessStats.total_sessions} Sessions`,
+        icon: "⭐",
+        color: "secondary" as const
+      });
+    }
+    
+    // Meditation badge
+    if (wellnessStats.meditation_minutes >= 30) {
+      badges.push({
+        label: "Mindful",
+        icon: "🧘",
+        color: "outline" as const
+      });
+    }
+    
+    return badges;
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -161,9 +218,9 @@ const Header = () => {
 
           {/* Floating Badges - Desktop Only */}
           <div className="hidden md:flex items-center gap-3">
-            {user && (
+            {user && getBadges().length > 0 && (
               <div className="flex items-center gap-2 mr-4">
-                {badges.map((badge, index) => (
+                {getBadges().map((badge, index) => (
                   <motion.div
                     key={badge.label}
                     initial={{ opacity: 0, y: -20 }}
@@ -179,7 +236,7 @@ const Header = () => {
                       ease: "easeInOut"
                     }}
                   >
-                    <Badge variant={badge.color as any} className="shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <Badge variant={badge.color} className="shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                       <span className="mr-1">{badge.icon}</span>
                       {badge.label}
                     </Badge>

@@ -94,6 +94,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_wellness_stats: {
+        Row: {
+          created_at: string
+          current_streak: number
+          id: string
+          journal_entries: number
+          last_activity_date: string | null
+          longest_streak: number
+          meditation_minutes: number
+          mood_entries: number
+          total_sessions: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          journal_entries?: number
+          last_activity_date?: string | null
+          longest_streak?: number
+          meditation_minutes?: number
+          mood_entries?: number
+          total_sessions?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          journal_entries?: number
+          last_activity_date?: string | null
+          longest_streak?: number
+          meditation_minutes?: number
+          mood_entries?: number
+          total_sessions?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
