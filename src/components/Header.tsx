@@ -81,6 +81,23 @@ const Header = () => {
       return;
     }
 
+    if (!data) {
+      // Initialize stats row for existing users who signed up before the trigger was added
+      const { data: inserted, error: insertError } = await supabase
+        .from('user_wellness_stats')
+        .insert({ user_id: userId })
+        .select('current_streak, total_sessions, meditation_minutes')
+        .single();
+
+      if (insertError) {
+        console.error('Error initializing wellness stats:', insertError);
+        return;
+      }
+
+      setWellnessStats(inserted);
+      return;
+    }
+
     setWellnessStats(data);
   };
 
@@ -126,14 +143,14 @@ const Header = () => {
   const getBadges = () => {
     if (!wellnessStats) return [];
     
-    const badges = [];
+    const badges: { label: string; icon: string; color: "default" | "secondary" | "destructive" | "outline" }[] = [];
     
     // Streak badge
     if (wellnessStats.current_streak > 0) {
       badges.push({
         label: `${wellnessStats.current_streak} Day Streak`,
         icon: "🔥",
-        color: "default" as const
+        color: "default"
       });
     }
     
@@ -142,7 +159,7 @@ const Header = () => {
       badges.push({
         label: `${wellnessStats.total_sessions} Sessions`,
         icon: "⭐",
-        color: "secondary" as const
+        color: "secondary"
       });
     }
     
@@ -151,8 +168,13 @@ const Header = () => {
       badges.push({
         label: "Mindful",
         icon: "🧘",
-        color: "outline" as const
+        color: "outline"
       });
+    }
+
+    // Always show a gentle starter badge so something is visible
+    if (badges.length === 0) {
+      badges.push({ label: "Getting Started", icon: "🌱", color: "outline" });
     }
     
     return badges;
