@@ -239,41 +239,12 @@ const Header = () => {
             <img 
               src={saravadamanaLogo} 
               alt="Sarvadamana Logo" 
-              className="w-12 h-12 object-contain rounded-full"
+              className="w-12 h-12 object-contain rounded-full border-2 border-blue-400"
             />
             <div className="flex flex-col">
-              <motion.span 
-                className="text-lg font-bold tracking-[0.1em] uppercase relative"
-                style={{
-                  background: 'linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  filter: 'drop-shadow(0 0 8px rgba(220, 38, 38, 0.3)) drop-shadow(0 0 12px rgba(22, 163, 74, 0.3))',
-                }}
-                animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
+              <span className="text-lg font-bold tracking-[0.1em] uppercase text-primary">
                 Sarvadamana
-                <motion.span
-                  className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-green-500/20 to-red-500/20 blur-lg -z-10"
-                  animate={{
-                    opacity: [0.3, 0.6, 0.3],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-              </motion.span>
+              </span>
               <motion.span 
                 className="text-[10px] tracking-[0.15em] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 bg-clip-text text-transparent"
                 animate={{
