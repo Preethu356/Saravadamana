@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import saravadamanaLogo from "@/assets/sarvadamana-symbol.png";
+import saravadamanaLogo from "@/assets/sarvadamana-circle-logo.png";
 import { useToast } from "@/hooks/use-toast";
 import {
   Sheet,
@@ -236,19 +236,10 @@ const Header = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <motion.img 
+            <img 
               src={saravadamanaLogo} 
               alt="Sarvadamana Logo" 
-              className="w-10 h-10 object-contain"
-              animate={{ 
-                scale: [1, 1.1, 1],
-                rotate: [0, 5, -5, 0]
-              }}
-              transition={{ 
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
+              className="w-10 h-10 object-contain rounded-full"
             />
             <div className="flex flex-col">
               <motion.span 
@@ -287,9 +278,38 @@ const Header = () => {
                   }}
                 />
               </motion.span>
-              <span className="text-xs text-muted-foreground tracking-wide bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
-                "Promote Protect Prevent"
-              </span>
+              <div className="flex items-center gap-1">
+                <motion.span
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 180, 360]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Sparkles className="w-3 h-3 text-yellow-400" />
+                </motion.span>
+                <span className="text-xs text-muted-foreground tracking-wide bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
+                  "Promote Protect Prevent"
+                </span>
+                <motion.span
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, -180, -360]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.5
+                  }}
+                >
+                  <Sparkles className="w-3 h-3 text-pink-400" />
+                </motion.span>
+              </div>
             </div>
           </Link>
 
