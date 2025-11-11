@@ -8,16 +8,8 @@ import heroBackground from "@/assets/hero-background.jpg";
 import meditationImage from "@/assets/meditation.png";
 
 const Hero = () => {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const currentTime = new Date();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   const handleStartJourney = () => {
     // Navigate to mood tracker page
@@ -26,13 +18,13 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Live Date & Time - Top Right */}
+      {/* Static Date & Time - Top Right */}
       <div className="absolute top-6 right-6 z-20 animate-fade-in">
-        <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-md rounded-xl border-2 border-purple-400/50 shadow-glow animate-bounce">
-          <Clock className="w-4 h-4 text-purple-300 animate-pulse" />
-          <div className="text-sm font-bold">
+        <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-md rounded-xl border-2 border-purple-400/50 shadow-glow">
+          <Clock className="w-5 h-5 text-purple-400" />
+          <div className="text-sm font-semibold">
             <div className="text-blue-300">{format(currentTime, 'MMM d, yyyy')}</div>
-            <div className="text-cyan-300 tabular-nums">{format(currentTime, 'p')}</div>
+            <div className="text-cyan-300 tabular-nums">{format(currentTime, 'hh:mm a')}</div>
           </div>
         </div>
       </div>
