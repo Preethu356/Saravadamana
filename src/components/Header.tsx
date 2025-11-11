@@ -105,6 +105,23 @@ const Header = () => {
     };
   }, [user]);
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Logged out successfully",
+        description: "See you again soon!",
+      });
+      navigate("/");
+    }
+  };
+
   const fetchWellnessStats = async (userId: string) => {
     const { data, error } = await supabase
       .from('user_wellness_stats')
@@ -242,7 +259,7 @@ const Header = () => {
               className="w-12 h-12 object-contain rounded-full border-2 border-blue-400"
             />
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-[0.1em] uppercase text-primary">
+              <span className="text-lg font-bold tracking-[0.1em] uppercase bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
                 Sarvadamana
               </span>
               <motion.span 
@@ -296,9 +313,13 @@ const Header = () => {
             
             {/* Auth Buttons */}
             {user ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <UserIcon className="w-4 h-4" />
-                <span className="max-w-[150px] truncate">{user.email}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Hello, <span className="bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent font-semibold">{user.email?.split('@')[0]}</span>
+                </span>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  Logout
+                </Button>
               </div>
             ) : (
               <>
