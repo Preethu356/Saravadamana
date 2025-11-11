@@ -136,80 +136,77 @@ const SecondaryCare = () => {
           <TabsContent value="overview" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ClipboardList className="h-6 w-6 text-primary" />
-                  WHO-Recommended Screening Tools
-                </CardTitle>
+                <CardTitle>Secondary Prevention Overview</CardTitle>
                 <CardDescription>
-                  Evidence-based tools for early detection of mental health conditions. Click on a tab above to start an assessment.
+                  Early detection and intervention for mental health conditions
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <Card className="border-2 hover:border-primary/50 transition-all cursor-pointer" onClick={() => setActiveTab("phq9")}>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  Secondary prevention focuses on early identification of mental health issues through 
+                  validated screening tools. Early detection allows for timely intervention and better outcomes.
+                </p>
+                
+                <div className="grid gap-4 mt-6">
+                  <Card className="border-2 border-primary/20">
                     <CardHeader>
-                      <CardTitle className="text-lg">PHQ-9</CardTitle>
-                      <CardDescription>Depression Screening</CardDescription>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-primary" />
+                        Depression Screening (PHQ-9)
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span>9 questions • 5 minutes</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Assess severity of depressive symptoms</p>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Comprehensive depression assessment with detailed interpretation, clinical guidelines, 
+                        and personalized recommendations. Downloadable PDF report included.
+                      </p>
+                      <Link to="/depression-screening">
+                        <Button className="w-full">
+                          Start PHQ-9 Depression Screening
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-2 hover:border-primary/50 transition-all cursor-pointer" onClick={() => setActiveTab("who5")}>
+                  <Card className="border-2 border-accent/20">
                     <CardHeader>
-                      <CardTitle className="text-lg">WHO-5</CardTitle>
-                      <CardDescription>Well-Being Index</CardDescription>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-accent" />
+                        Anxiety Screening (GAD-7)
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span>5 questions • 2 minutes</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Measure current mental wellbeing</p>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Evidence-based anxiety assessment with severity classification, treatment recommendations, 
+                        and next steps for care. Full PDF report available.
+                      </p>
+                      <Link to="/anxiety-screening">
+                        <Button className="w-full" variant="secondary">
+                          Start GAD-7 Anxiety Screening
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-2 hover:border-primary/50 transition-all cursor-pointer" onClick={() => setActiveTab("gad7")}>
+                  <Card className="border-2 border-secondary/20">
                     <CardHeader>
-                      <CardTitle className="text-lg">GAD-7</CardTitle>
-                      <CardDescription>Anxiety Screening</CardDescription>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-secondary" />
+                        Personality Assessment
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span>7 questions • 3 minutes</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Screen for generalized anxiety disorder</p>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Understand your personality traits and behavioral patterns with personalized insights 
+                        and growth recommendations.
+                      </p>
+                      <Link to="/personality-screening">
+                        <Button className="w-full" variant="outline">
+                          Start Personality Screening
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-6 w-6 text-primary" />
-                  Important Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 text-sm text-muted-foreground">
-                  <p>
-                    <strong>Disclaimer:</strong> These screening tools provide informal assessments based on WHO and clinical guidelines. 
-                    They are NOT diagnostic instruments and cannot replace a professional mental health evaluation.
-                  </p>
-                  <p>
-                    Results are intended to help you understand your current mental health status and determine if you should seek professional support.
-                  </p>
-                  <p>
-                    If you score in a concerning range, we strongly recommend consulting with a qualified mental health professional for proper diagnosis and treatment.
-                  </p>
                 </div>
               </CardContent>
             </Card>

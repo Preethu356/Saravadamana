@@ -35,6 +35,8 @@ const MentalHealthPrevention = lazy(() => import("./pages/MentalHealthPrevention
 const WellnessPlanGenerator = lazy(() => import("./pages/WellnessPlanGenerator"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const About = lazy(() => import("./pages/About"));
+const DepressionScreening = lazy(() => import("./pages/DepressionScreening"));
+const AnxietyScreening = lazy(() => import("./pages/AnxietyScreening"));
 
 const queryClient = new QueryClient();
 
@@ -75,6 +77,8 @@ const App = () => {
                   <Route path="/ai-support" element={<ProtectedRoute><AISupport /></ProtectedRoute>} />
                   <Route path="/wellness-tools" element={<ProtectedRoute><WellnessPage /></ProtectedRoute>} />
                   <Route path="/personality-screening" element={<ProtectedRoute><PersonalityScreening /></ProtectedRoute>} />
+                  <Route path="/depression-screening" element={<ProtectedRoute><DepressionScreening /></ProtectedRoute>} />
+                  <Route path="/anxiety-screening" element={<ProtectedRoute><AnxietyScreening /></ProtectedRoute>} />
                   <Route path="/gallery" element={<ProtectedRoute><GalleryPage /></ProtectedRoute>} />
                   <Route path="/cbt-consultation" element={<ProtectedRoute><CBTPage /></ProtectedRoute>} />
                   <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
