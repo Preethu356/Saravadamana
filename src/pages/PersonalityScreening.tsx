@@ -107,6 +107,80 @@ const PersonalityScreening = () => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
   };
 
+  const analyzePersonality = () => {
+    const traits = {
+      analytical: 0,
+      intuitive: 0,
+      social: 0,
+      action: 0
+    };
+
+    // Analyze responses
+    questions.forEach(q => {
+      const answer = answers[q.id];
+      if (!answer) return;
+
+      if (answer.includes("logically") || answer.includes("Planning") || answer.includes("Logic")) traits.analytical++;
+      if (answer.includes("intuition") || answer.includes("feelings") || answer.includes("emotions") || answer.includes("creative")) traits.intuitive++;
+      if (answer.includes("others") || answer.includes("Socializing") || answer.includes("large group") || answer.includes("Helping")) traits.social++;
+      if (answer.includes("action") || answer.includes("activities") || answer.includes("physical") || answer.includes("efficiency")) traits.action++;
+    });
+
+    const maxTrait = Math.max(traits.analytical, traits.intuitive, traits.social, traits.action);
+    
+    if (traits.analytical === maxTrait) return "analytical";
+    if (traits.intuitive === maxTrait) return "intuitive";
+    if (traits.social === maxTrait) return "social";
+    return "action";
+  };
+
+  const getPersonalityInterpretation = (type: string) => {
+    const interpretations = {
+      analytical: {
+        title: "Analytical Thinker",
+        description: "You have a strong preference for logical reasoning and systematic problem-solving. You value facts, data, and structured approaches to challenges.",
+        remedies: [
+          "Practice mindfulness to balance logic with emotional awareness",
+          "Engage in creative activities to develop your intuitive side",
+          "Set aside time for spontaneous, unplanned activities",
+          "Journal about your feelings to strengthen emotional intelligence"
+        ]
+      },
+      intuitive: {
+        title: "Intuitive Feeler",
+        description: "You trust your instincts and value emotional connections. You're guided by your feelings and have a strong sense of empathy and creativity.",
+        remedies: [
+          "Ground yourself with structured routines and planning",
+          "Practice fact-checking your intuitions with research",
+          "Develop problem-solving skills through logic puzzles",
+          "Balance emotion with rational decision-making techniques"
+        ]
+      },
+      social: {
+        title: "Social Connector",
+        description: "You thrive in social environments and value relationships. You're naturally collaborative and find energy in connecting with others.",
+        remedies: [
+          "Schedule regular alone time for self-reflection",
+          "Practice setting healthy boundaries in relationships",
+          "Develop independent hobbies and interests",
+          "Learn to be comfortable with solitude through meditation"
+        ]
+      },
+      action: {
+        title: "Action-Oriented Doer",
+        description: "You're energized by taking action and achieving results. You prefer hands-on experiences and value efficiency and productivity.",
+        remedies: [
+          "Practice patience through mindful breathing exercises",
+          "Allocate time for reflection before making decisions",
+          "Engage in activities that require sitting still (reading, meditation)",
+          "Balance activity with rest and recovery periods"
+        ]
+      }
+    };
+
+    return interpretations[type as keyof typeof interpretations];
+  };
+
   const generatePDF = () => {
     if (!userName.trim()) {
       toast({
@@ -125,6 +199,9 @@ const PersonalityScreening = () => {
       });
       return;
     }
+
+    const personalityType = analyzePersonality();
+    const interpretation = getPersonalityInterpretation(personalityType);
 
     const doc = new jsPDF();
     
@@ -145,50 +222,110 @@ const PersonalityScreening = () => {
     doc.text(`Name: ${userName}`, 20, 55);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 65);
     
-    // Responses
-    doc.setFontSize(14);
-    doc.text("Your Responses:", 20, 80);
+    // Disclaimer Section
+    doc.setFillColor(255, 243, 224);
+    doc.rect(20, 75, 170, 25, "F");
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    doc.setTextColor(200, 100, 0);
+    doc.text("IMPORTANT DISCLAIMER", 105, 82, { align: "center" });
+    doc.setFont(undefined, "normal");
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.text("This is a self-assessment tool for personal insight and is NOT a diagnostic tool.", 105, 89, { align: "center" });
+    doc.text("It should not replace professional psychological evaluation or clinical diagnosis.", 105, 95, { align: "center" });
     
-    let yPosition = 95;
+    // Personality Type Interpretation Section
+    doc.setFillColor(236, 240, 255);
+    doc.rect(20, 107, 170, 60, "F");
+    doc.setFontSize(14);
+    doc.setTextColor(139, 92, 246);
+    doc.setFont(undefined, "bold");
+    doc.text("Your Personality Type", 105, 117, { align: "center" });
+    
+    doc.setFontSize(16);
+    doc.text(interpretation.title, 105, 127, { align: "center" });
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont(undefined, "normal");
+    const descLines = doc.splitTextToSize(interpretation.description, 160);
+    doc.text(descLines, 25, 137);
+    
+    // Brief Remedies Section
+    let yPos = 175;
+    doc.setFontSize(12);
+    doc.setTextColor(139, 92, 246);
+    doc.setFont(undefined, "bold");
+    doc.text("Recommended Practices for Balance:", 20, yPos);
+    
+    yPos += 8;
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont(undefined, "normal");
+    
+    interpretation.remedies.forEach((remedy, index) => {
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+      doc.text(`${index + 1}. ${remedy}`, 25, yPos, { maxWidth: 165 });
+      yPos += 10;
+    });
+    
+    // Responses
+    yPos += 10;
+    if (yPos > 240) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setTextColor(139, 92, 246);
+    doc.setFont(undefined, "bold");
+    doc.text("Your Responses:", 20, yPos);
+    
+    yPos += 10;
+    doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
     
     questions.forEach((q, index) => {
-      if (yPosition > 260) {
+      if (yPos > 260) {
         doc.addPage();
-        yPosition = 20;
+        yPos = 20;
       }
       
       doc.setFont(undefined, "bold");
-      doc.text(`${index + 1}. ${q.question}`, 20, yPosition, { maxWidth: 170 });
-      yPosition += 7;
+      doc.text(`${index + 1}. ${q.question}`, 20, yPos, { maxWidth: 170 });
+      yPos += 7;
       
       doc.setFont(undefined, "normal");
       const answer = answers[q.id] || "Not answered";
-      doc.text(`   ${answer}`, 20, yPosition, { maxWidth: 170 });
-      yPosition += 12;
+      doc.text(`   ${answer}`, 20, yPos, { maxWidth: 170 });
+      yPos += 12;
     });
     
     // Signature section
-    if (yPosition > 230) {
+    if (yPos > 230) {
       doc.addPage();
-      yPosition = 20;
+      yPos = 20;
     } else {
-      yPosition += 20;
+      yPos += 20;
     }
     
     doc.setDrawColor(139, 92, 246);
-    doc.line(20, yPosition, 190, yPosition);
-    yPosition += 10;
+    doc.line(20, yPos, 190, yPos);
+    yPos += 10;
     
     doc.setFontSize(12);
     doc.setFont(undefined, "italic");
-    doc.text("Dr. Preetham", 140, yPosition);
-    yPosition += 7;
+    doc.text("Dr. Preetham", 140, yPos);
+    yPos += 7;
     doc.setFont(undefined, "normal");
     doc.setFontSize(10);
-    doc.text("Clinical Psychologist", 140, yPosition);
-    yPosition += 5;
-    doc.text("Digital Signature", 140, yPosition);
+    doc.text("Clinical Psychologist", 140, yPos);
+    yPos += 5;
+    doc.text("Digital Signature", 140, yPos);
     
     // Footer
     doc.setFontSize(8);
