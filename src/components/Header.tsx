@@ -259,7 +259,7 @@ const Header = () => {
               className="w-12 h-12 object-contain rounded-full border-2 border-blue-400"
             />
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-[0.1em] uppercase bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
+              <span className="text-lg font-bold tracking-[0.1em] bg-gradient-to-r from-blue-500 via-teal-400 to-purple-500 bg-clip-text text-transparent">
                 Sarvadamana
               </span>
               <motion.span 
