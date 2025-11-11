@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Heart, Brain, Baby, Users, Sparkles, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import PageNavigation from "@/components/PageNavigation";
 
 const WomenMentalHealth = () => {
   const navigate = useNavigate();
@@ -169,6 +170,7 @@ const WomenMentalHealth = () => {
           </p>
         </div>
       </div>
+      <PageNavigation />
     </div>
   );
 };

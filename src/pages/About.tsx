@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, Target, Shield } from "lucide-react";
+import PageNavigation from "@/components/PageNavigation";
 
 const About = () => {
   return (
@@ -118,6 +119,7 @@ const About = () => {
           </Card>
         </div>
       </div>
+      <PageNavigation />
     </div>
   );
 };

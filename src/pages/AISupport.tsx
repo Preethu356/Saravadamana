@@ -1,5 +1,6 @@
 import AIChat from "@/components/AIChat";
 import ComplianceFooter from "@/components/ComplianceFooter";
+import PageNavigation from "@/components/PageNavigation";
 
 const AISupport = () => {
   return (
@@ -18,6 +19,7 @@ const AISupport = () => {
       </div>
       <AIChat />
       <ComplianceFooter />
+      <PageNavigation />
     </div>
   );
 };

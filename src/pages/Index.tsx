@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import Gallery from "@/components/Gallery";
+import PageNavigation from "@/components/PageNavigation";
 
 const Index = () => {
   return (
@@ -8,6 +9,7 @@ const Index = () => {
       <Hero />
       <Gallery />
       <ComplianceFooter />
+      <PageNavigation />
     </div>
   );
 };

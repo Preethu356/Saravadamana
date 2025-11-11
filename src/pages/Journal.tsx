@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
+import PageNavigation from "@/components/PageNavigation";
 
 const Journal = () => {
   const navigate = useNavigate();
@@ -160,6 +161,7 @@ const Journal = () => {
           </div>
         </div>
       </div>
+      <PageNavigation />
     </div>
   );
 };

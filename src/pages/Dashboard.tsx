@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award } from "lucide-react";
 import { motion } from "framer-motion";
 import ComplianceFooter from "@/components/ComplianceFooter";
+import PageNavigation from "@/components/PageNavigation";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -243,6 +244,7 @@ const Dashboard = () => {
         </div>
       </div>
       <ComplianceFooter />
+      <PageNavigation />
     </div>
   );
 };

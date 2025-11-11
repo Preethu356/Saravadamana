@@ -8,6 +8,7 @@ import PracticeModal from "@/components/PracticeModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
+import PageNavigation from "@/components/PageNavigation";
 
 interface Community {
   id: string;
@@ -473,6 +474,7 @@ const ResourcesPage = () => {
           practice={activePractice}
         />
       )}
+      <PageNavigation />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardList, FileText, AlertCircle, CheckCircle } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import PageNavigation from "@/components/PageNavigation";
 import { useState, useEffect } from "react";
 
 const SecondaryCare = () => {
@@ -411,6 +412,7 @@ const SecondaryCare = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <PageNavigation />
     </div>
   );
 };

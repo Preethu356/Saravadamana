@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, Shield, Brain, Users, Activity, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
+import PageNavigation from "@/components/PageNavigation";
 
 const PrimaryCare = () => {
   const promotionStrategies = [
@@ -213,6 +214,7 @@ const PrimaryCare = () => {
           </TabsContent>
         </Tabs>
       </div>
+      <PageNavigation />
     </div>
   );
 };

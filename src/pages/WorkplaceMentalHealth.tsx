@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Briefcase, Brain, Users, Shield, TrendingUp, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import PageNavigation from "@/components/PageNavigation";
 
 const WorkplaceMentalHealth = () => {
   const navigate = useNavigate();
@@ -168,6 +169,7 @@ const WorkplaceMentalHealth = () => {
           </p>
         </div>
       </div>
+      <PageNavigation />
     </div>
   );
 };
