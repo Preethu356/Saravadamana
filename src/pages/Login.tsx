@@ -27,7 +27,7 @@ const Login = () => {
           .single()
           .then(({ data }) => {
             if (data?.onboarding_completed) {
-              navigate("/dashboard");
+              navigate("/");
             } else {
               navigate("/onboarding");
             }
@@ -74,7 +74,7 @@ const Login = () => {
           .single();
         
         if (profileData?.onboarding_completed) {
-          navigate("/dashboard");
+          navigate("/");
         } else {
           navigate("/onboarding");
         }

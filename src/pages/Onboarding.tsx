@@ -62,7 +62,7 @@ const Onboarding = () => {
         description: "Your personalized experience is ready.",
       });
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Error saving onboarding:", error);
       toast({

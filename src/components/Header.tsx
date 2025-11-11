@@ -335,13 +335,30 @@ const Header = () => {
             )}
           </div>
 
-          {/* Side Drawer Menu Button */}
-          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-primary/10">
-                <Menu className="w-5 h-5" />
-              </Button>
-            </SheetTrigger>
+          {/* Side Drawer Menu Button with Pulsing Arrow */}
+          <div className="relative">
+            {user && (
+              <motion.div
+                className="absolute -left-12 top-1/2 -translate-y-1/2 pointer-events-none"
+                animate={{
+                  x: [0, 8, 0],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <div className="text-primary text-2xl">→</div>
+              </motion.div>
+            )}
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="hover:bg-primary/10 relative">
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[380px] bg-gradient-to-b from-background to-muted/20 z-[100] overflow-y-auto">
               <SheetHeader className="border-b pb-4">
                 <SheetTitle className="text-left flex items-center gap-2">
@@ -526,6 +543,7 @@ const Header = () => {
               </nav>
             </SheetContent>
           </Sheet>
+          </div>
         </div>
       </div>
     </header>
