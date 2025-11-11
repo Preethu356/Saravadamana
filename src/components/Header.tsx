@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import saravadamanaLogo from "@/assets/sarvadamana-circle-logo.png";
+import saravadamanaLogo from "@/assets/sarvadamana-logo-final.png";
 import { useToast } from "@/hooks/use-toast";
 import {
   Sheet,
@@ -235,24 +235,34 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-2 group">
             <img 
               src={saravadamanaLogo} 
               alt="Sarvadamana Logo" 
-              className="w-10 h-10 object-contain rounded-full"
+              className="w-12 h-12 object-contain"
             />
             <div className="flex flex-col">
               <motion.span 
-                className="font-bold text-xl relative"
-                initial={{ opacity: 1 }}
-                whileHover={{ scale: 1.05 }}
+                className="text-lg font-bold tracking-tight relative"
+                style={{
+                  background: 'linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  filter: 'drop-shadow(0 0 8px rgba(220, 38, 38, 0.3)) drop-shadow(0 0 12px rgba(22, 163, 74, 0.3))',
+                }}
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
               >
-                <span className="relative inline-block bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent animate-pulse">
-                  Sarvadamana
-                </span>
-                {/* Burning effect overlay */}
+                Sarvadamana
                 <motion.span
-                  className="absolute inset-0 bg-gradient-to-t from-yellow-400/30 via-orange-500/20 to-transparent blur-sm"
+                  className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-green-500/20 to-red-500/20 blur-lg -z-10"
                   animate={{
                     opacity: [0.3, 0.6, 0.3],
                     scale: [1, 1.05, 1]
@@ -263,53 +273,24 @@ const Header = () => {
                     ease: "easeInOut"
                   }}
                 />
-                {/* Healing glow effect */}
-                <motion.span
-                  className="absolute -inset-1 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 blur-md -z-10"
-                  animate={{
-                    opacity: [0.2, 0.5, 0.2],
-                    scale: [0.95, 1.1, 0.95]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1
-                  }}
-                />
               </motion.span>
-              <div className="flex items-center gap-1">
-                <motion.span
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 180, 360]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Sparkles className="w-3 h-3 text-yellow-400" />
-                </motion.span>
-                <span className="text-xs text-muted-foreground tracking-wide bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
-                  "Promote Protect Prevent"
-                </span>
-                <motion.span
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, -180, -360]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.5
-                  }}
-                >
-                  <Sparkles className="w-3 h-3 text-pink-400" />
-                </motion.span>
-              </div>
+              <motion.span 
+                className="text-[10px] tracking-wider bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 bg-clip-text text-transparent"
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                  filter: ['brightness(1)', 'brightness(1.3)', 'brightness(1)']
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                style={{
+                  backgroundSize: '200% 200%',
+                }}
+              >
+                "Promote Protect Prevent"
+              </motion.span>
             </div>
           </Link>
 
