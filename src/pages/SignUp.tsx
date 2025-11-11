@@ -21,7 +21,7 @@ const SignUp = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
   }, [navigate]);
@@ -50,7 +50,7 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/dashboard`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -80,9 +80,9 @@ const SignUp = () => {
       } else if (data.user) {
         toast({
           title: "Account created!",
-          description: "Welcome to Saravadamana. You can now access all features.",
+          description: "Welcome to Sarvadamana. You can now access all features.",
         });
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       toast({

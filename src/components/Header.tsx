@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import saravadamanaLogo from "@/assets/sarvadamana-logo-new.png";
+import saravadamanaLogo from "@/assets/sarvadamana-symbol.png";
 import { useToast } from "@/hooks/use-toast";
 import {
   Sheet,
@@ -162,6 +162,7 @@ const Header = () => {
 
   const navLinks = [
     { to: "/", label: "Home", icon: Home, color: "text-primary" },
+    { to: "/dashboard", label: "Dashboard", icon: Activity, color: "text-accent" },
     { to: "/gallery", label: "Gallery", icon: Image, color: "text-secondary" }
   ];
 
@@ -238,7 +239,7 @@ const Header = () => {
             <motion.img 
               src={saravadamanaLogo} 
               alt="Sarvadamana Logo" 
-              className="w-12 h-12 object-contain drop-shadow-lg"
+              className="w-10 h-10 object-contain"
               animate={{ 
                 scale: [1, 1.1, 1],
                 rotate: [0, 5, -5, 0]
@@ -255,12 +256,25 @@ const Header = () => {
                 initial={{ opacity: 1 }}
                 whileHover={{ scale: 1.05 }}
               >
-                <span className="relative inline-block bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                <span className="relative inline-block bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent animate-pulse">
                   Sarvadamana
                 </span>
+                {/* Burning effect overlay */}
+                <motion.span
+                  className="absolute inset-0 bg-gradient-to-t from-yellow-400/30 via-orange-500/20 to-transparent blur-sm"
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
                 {/* Healing glow effect */}
                 <motion.span
-                  className="absolute -inset-1 bg-gradient-to-r from-purple-400/20 via-blue-500/20 to-cyan-500/20 blur-md -z-10"
+                  className="absolute -inset-1 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 blur-md -z-10"
                   animate={{
                     opacity: [0.2, 0.5, 0.2],
                     scale: [0.95, 1.1, 0.95]
@@ -273,8 +287,8 @@ const Header = () => {
                   }}
                 />
               </motion.span>
-              <span className="text-xs italic text-muted-foreground tracking-wide">
-                Promote Protect Prevent
+              <span className="text-xs text-muted-foreground tracking-wide bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">
+                "Promote Protect Prevent"
               </span>
             </div>
           </Link>

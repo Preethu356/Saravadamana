@@ -19,7 +19,7 @@ const Login = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
   }, [navigate]);
@@ -53,7 +53,7 @@ const Login = () => {
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       toast({

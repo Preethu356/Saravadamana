@@ -17,6 +17,7 @@ const ResourcesPage = lazy(() => import("./pages/Resources"));
 const Journal = lazy(() => import("./pages/Journal"));
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const PrimaryCare = lazy(() => import("./pages/PrimaryCare"));
 const SecondaryCare = lazy(() => import("./pages/SecondaryCare"));
 const TertiaryCare = lazy(() => import("./pages/TertiaryCare"));
@@ -64,6 +65,7 @@ const App = () => {
                   
                   {/* Protected Routes */}
                   <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                   <Route path="/mood-tracker" element={<ProtectedRoute><MoodTracking /></ProtectedRoute>} />
                   <Route path="/ai-support" element={<ProtectedRoute><AISupport /></ProtectedRoute>} />
                   <Route path="/wellness-tools" element={<ProtectedRoute><WellnessPage /></ProtectedRoute>} />
