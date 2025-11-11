@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import saravadamanaLogo from "@/assets/sarvadamana-logo-final.png";
+import saravadamanaLogo from "@/assets/sarvadamana-logo-circle.png";
 import { useToast } from "@/hooks/use-toast";
 import {
   Sheet,
@@ -239,11 +239,11 @@ const Header = () => {
             <img 
               src={saravadamanaLogo} 
               alt="Sarvadamana Logo" 
-              className="w-12 h-12 object-contain"
+              className="w-12 h-12 object-contain rounded-full"
             />
             <div className="flex flex-col">
               <motion.span 
-                className="text-lg font-bold tracking-tight relative"
+                className="text-lg font-bold tracking-[0.3em] uppercase relative"
                 style={{
                   background: 'linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%)',
                   WebkitBackgroundClip: 'text',
@@ -275,7 +275,7 @@ const Header = () => {
                 />
               </motion.span>
               <motion.span 
-                className="text-[10px] tracking-wider bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 bg-clip-text text-transparent"
+                className="text-[10px] tracking-[0.15em] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 bg-clip-text text-transparent"
                 animate={{
                   backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
                   filter: ['brightness(1)', 'brightness(1.3)', 'brightness(1)']
