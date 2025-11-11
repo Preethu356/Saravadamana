@@ -26,6 +26,11 @@ const WellnessPage = lazy(() => import("./pages/WellnessPage"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage"));
 const CBTPage = lazy(() => import("./pages/CBTPage"));
 const PersonalityScreening = lazy(() => import("./pages/PersonalityScreening"));
+const SchoolMentalHealth = lazy(() => import("./pages/SchoolMentalHealth"));
+const WorkplaceMentalHealth = lazy(() => import("./pages/WorkplaceMentalHealth"));
+const WomenMentalHealth = lazy(() => import("./pages/WomenMentalHealth"));
+const OldAgeMentalHealth = lazy(() => import("./pages/OldAgeMentalHealth"));
+const MentalHealthPrevention = lazy(() => import("./pages/MentalHealthPrevention"));
 
 const queryClient = new QueryClient();
 
@@ -70,6 +75,11 @@ const App = () => {
                   <Route path="/primary-care" element={<ProtectedRoute><PrimaryCare /></ProtectedRoute>} />
                   <Route path="/secondary-care" element={<ProtectedRoute><SecondaryCare /></ProtectedRoute>} />
                   <Route path="/tertiary-care" element={<ProtectedRoute><TertiaryCare /></ProtectedRoute>} />
+                  <Route path="/school-mental-health" element={<ProtectedRoute><SchoolMentalHealth /></ProtectedRoute>} />
+                  <Route path="/workplace-mental-health" element={<ProtectedRoute><WorkplaceMentalHealth /></ProtectedRoute>} />
+                  <Route path="/women-mental-health" element={<ProtectedRoute><WomenMentalHealth /></ProtectedRoute>} />
+                  <Route path="/old-age-mental-health" element={<ProtectedRoute><OldAgeMentalHealth /></ProtectedRoute>} />
+                  <Route path="/mental-health-prevention" element={<ProtectedRoute><MentalHealthPrevention /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />

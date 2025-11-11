@@ -16,7 +16,9 @@ import {
   BookOpen,
   Calendar,
   Smile,
-  Sparkles
+  Sparkles,
+  Shield,
+  Users
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -36,6 +38,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [mentalHealthOpen, setMentalHealthOpen] = useState(false);
+  const [preventionOpen, setPreventionOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [wellnessStats, setWellnessStats] = useState<{
     current_streak: number;
@@ -163,6 +166,14 @@ const Header = () => {
   ];
 
   const mentalHealthLinks = [
+    { to: "/school-mental-health", label: "School Mental Health", icon: BookOpen, color: "text-blue-500" },
+    { to: "/workplace-mental-health", label: "Workplace Mental Health", icon: Activity, color: "text-green-500" },
+    { to: "/women-mental-health", label: "Women's Mental Health", icon: Heart, color: "text-pink-500" },
+    { to: "/old-age-mental-health", label: "Senior Mental Health", icon: Users, color: "text-purple-500" }
+  ];
+
+  const preventionLinks = [
+    { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
     { to: "/primary-care", label: "Primary Prevention", icon: Heart, color: "text-green-500" },
     { to: "/secondary-care", label: "Secondary Prevention", icon: Activity, color: "text-blue-500" },
     { to: "/tertiary-care", label: "Tertiary Prevention", icon: Brain, color: "text-purple-500" }
@@ -373,6 +384,37 @@ const Header = () => {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
                       {mentalHealthLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.to}
+                            to={link.to}
+                            className="group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
+                            <span>{link.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+
+                {/* Prevention Collapsible */}
+                <div className="mt-2">
+                  <Collapsible open={preventionOpen} onOpenChange={setPreventionOpen}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Shield className="w-4 h-4 text-white" />
+                        </div>
+                        <span>Prevention</span>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${preventionOpen ? 'rotate-180 text-cyan-500' : ''}`} />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                      {preventionLinks.map((link) => {
                         const Icon = link.icon;
                         return (
                           <Link
