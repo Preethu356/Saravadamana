@@ -18,7 +18,8 @@ import {
   Smile,
   Sparkles,
   Shield,
-  Users
+  Users,
+  Target
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -200,6 +201,7 @@ const Header = () => {
   const resourcesLinks = [
     { to: "/mood-tracker", label: "Mood Tracker", icon: Smile, color: "text-yellow-500" },
     { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-cyan-500" },
+    { to: "/wellness-plan", label: "Wellness Plan Generator", icon: Target, color: "text-purple-500" },
     { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-orange-500" },
     { to: "/journal", label: "Journal", icon: BookOpen, color: "text-pink-500" },
     { to: "/wellness-tools", label: "Wellness Tools", icon: Activity, color: "text-teal-500" },

@@ -32,6 +32,7 @@ const WorkplaceMentalHealth = lazy(() => import("./pages/WorkplaceMentalHealth")
 const WomenMentalHealth = lazy(() => import("./pages/WomenMentalHealth"));
 const OldAgeMentalHealth = lazy(() => import("./pages/OldAgeMentalHealth"));
 const MentalHealthPrevention = lazy(() => import("./pages/MentalHealthPrevention"));
+const WellnessPlanGenerator = lazy(() => import("./pages/WellnessPlanGenerator"));
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => {
                   <Route path="/women-mental-health" element={<ProtectedRoute><WomenMentalHealth /></ProtectedRoute>} />
                   <Route path="/old-age-mental-health" element={<ProtectedRoute><OldAgeMentalHealth /></ProtectedRoute>} />
                   <Route path="/mental-health-prevention" element={<ProtectedRoute><MentalHealthPrevention /></ProtectedRoute>} />
+                  <Route path="/wellness-plan" element={<ProtectedRoute><WellnessPlanGenerator /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />

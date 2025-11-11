@@ -136,6 +136,42 @@ export type Database = {
         }
         Relationships: []
       }
+      wellness_plans: {
+        Row: {
+          created_at: string
+          daily_routine: Json
+          description: string | null
+          goals: string[]
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+          weekly_schedule: Json
+        }
+        Insert: {
+          created_at?: string
+          daily_routine: Json
+          description?: string | null
+          goals?: string[]
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          weekly_schedule: Json
+        }
+        Update: {
+          created_at?: string
+          daily_routine?: Json
+          description?: string | null
+          goals?: string[]
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          weekly_schedule?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
