@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.elevenlabs-voice]
 verify_jwt = false
+
+[functions.generate-wellness-plan]
+verify_jwt = false
