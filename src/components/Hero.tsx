@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Heart, MessageCircle, Brain, Clock } from "lucide-react";
+import { ArrowRight, Heart, MessageCircle, Brain, Clock, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 import heroBackground from "@/assets/hero-background.jpg";
+import meditationImage from "@/assets/meditation.png";
 
 const Hero = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -73,6 +75,70 @@ const Hero = () => {
               Learn More
             </Button>
           </div>
+
+          {/* Talk to Your Mind Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="mt-12 max-w-4xl mx-auto"
+          >
+            <div className="relative group cursor-pointer" onClick={() => navigate("/ai-support")}>
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition duration-500 animate-pulse"></div>
+              <div className="relative bg-card/90 backdrop-blur-xl rounded-3xl p-8 border-2 border-primary/30 shadow-2xl overflow-hidden">
+                {/* Background decorative elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl"></div>
+                
+                <div className="relative flex flex-col md:flex-row items-center gap-8">
+                  {/* Image Section */}
+                  <motion.div
+                    whileHover={{ scale: 1.05, rotate: 2 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="flex-shrink-0"
+                  >
+                    <div className="relative">
+                      <div className="absolute -inset-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
+                      <img 
+                        src={meditationImage} 
+                        alt="Talk to Your Mind" 
+                        className="relative w-40 h-40 md:w-48 md:h-48 object-cover rounded-full border-4 border-primary shadow-2xl"
+                      />
+                    </div>
+                  </motion.div>
+                  
+                  {/* Content Section */}
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                      <Sparkles className="w-6 h-6 text-purple-500 animate-pulse" />
+                      <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+                        Talk to Your Mind
+                      </h2>
+                      <Sparkles className="w-6 h-6 text-pink-500 animate-pulse" />
+                    </div>
+                    
+                    <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                      Connect with <span className="font-semibold text-primary">"Mini Menti"</span> - your AI companion for instant mental health support, guided conversations, and personalized wellness insights.
+                    </p>
+                    
+                    <Button 
+                      variant="hero" 
+                      size="lg" 
+                      className="group shadow-xl"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/ai-support");
+                      }}
+                    >
+                      <MessageCircle className="w-5 h-5 mr-2" />
+                      Start Talking Now
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 md:gap-8 pt-12 max-w-3xl mx-auto">
