@@ -243,7 +243,7 @@ const Header = () => {
             />
             <div className="flex flex-col">
               <motion.span 
-                className="text-lg font-bold tracking-[0.3em] uppercase relative"
+                className="text-lg font-bold tracking-[0.1em] uppercase relative"
                 style={{
                   background: 'linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%)',
                   WebkitBackgroundClip: 'text',
