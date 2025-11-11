@@ -199,12 +199,12 @@ const Header = () => {
   ];
 
   const resourcesLinks = [
+    { to: "/journal", label: "Self Journal", icon: BookOpen, color: "text-pink-500" },
+    { to: "/wellness-plan", label: "Wellness Plan Generator", icon: Target, color: "text-purple-500" },
+    { to: "/wellness-tools", label: "Wellness Tools", icon: Activity, color: "text-teal-500" },
     { to: "/mood-tracker", label: "Mood Tracker", icon: Smile, color: "text-yellow-500" },
     { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-cyan-500" },
-    { to: "/wellness-plan", label: "Wellness Plan Generator", icon: Target, color: "text-purple-500" },
     { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-orange-500" },
-    { to: "/journal", label: "Journal", icon: BookOpen, color: "text-pink-500" },
-    { to: "/wellness-tools", label: "Wellness Tools", icon: Activity, color: "text-teal-500" },
     { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" }
   ];
 
@@ -427,7 +427,7 @@ const Header = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Shield className="w-4 h-4 text-white" />
                         </div>
-                        <span>Prevention</span>
+                        <span>Preventions in Mental Health</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${preventionOpen ? 'rotate-180 text-cyan-500' : ''}`} />
                     </CollapsibleTrigger>
@@ -458,7 +458,7 @@ const Header = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-secondary to-accent flex items-center justify-center group-hover:scale-110 transition-transform">
                           <BookOpen className="w-4 h-4 text-white" />
                         </div>
-                        <span>Resources</span>
+                        <span>Mental Health Resources</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${resourcesOpen ? 'rotate-180 text-secondary' : ''}`} />
                     </CollapsibleTrigger>
