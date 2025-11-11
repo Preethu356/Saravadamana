@@ -254,34 +254,16 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group relative">
-            {/* Glow effect */}
-            <motion.div
-              className="absolute -inset-2 bg-gradient-to-r from-blue-500/30 via-teal-400/30 to-purple-500/30 rounded-full blur-xl"
-              animate={{
-                opacity: [0.3, 0.6, 0.3],
-                scale: [0.95, 1.05, 0.95]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
+          <Link to="/" className="flex items-center gap-2 group">
             <img 
               src={saravadamanaLogo} 
               alt="Sarvadamana Logo" 
-              className="w-12 h-12 object-contain rounded-full border-2 border-blue-400 relative z-10"
+              className="w-12 h-12 object-contain rounded-full border-2 border-blue-400"
             />
-            <div className="flex flex-col relative z-10">
-              <motion.span 
-                className="text-lg font-bold tracking-[0.1em] bg-gradient-to-r from-blue-500 via-teal-400 to-purple-500 bg-clip-text text-transparent relative"
-                style={{
-                  filter: 'drop-shadow(0 0 10px rgba(96, 165, 250, 0.4)) drop-shadow(0 0 20px rgba(45, 212, 191, 0.3))'
-                }}
-              >
+            <div className="flex flex-col">
+              <span className="text-lg font-bold tracking-[0.1em] bg-gradient-to-r from-blue-500 via-teal-400 to-purple-500 bg-clip-text text-transparent">
                 Sarvadamana
-              </motion.span>
+              </span>
               <motion.span 
                 className="text-[10px] tracking-[0.15em] bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 bg-clip-text text-transparent"
                 animate={{
