@@ -180,8 +180,8 @@ const Header = () => {
 
   const navLinks = [
     { to: "/", label: "Home", icon: Home, color: "text-primary" },
-    { to: "/dashboard", label: "Dashboard", icon: Activity, color: "text-accent" },
-    { to: "/gallery", label: "Gallery", icon: Image, color: "text-secondary" }
+    { to: "/about", label: "About Sarvadamana", icon: Heart, color: "text-accent" },
+    { to: "/dashboard", label: "Dashboard", icon: Activity, color: "text-secondary" }
   ];
 
   const mentalHealthLinks = [

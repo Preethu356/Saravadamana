@@ -19,7 +19,19 @@ const Login = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/dashboard");
+        // Check if onboarding is completed
+        supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('user_id', session.user.id)
+          .single()
+          .then(({ data }) => {
+            if (data?.onboarding_completed) {
+              navigate("/dashboard");
+            } else {
+              navigate("/onboarding");
+            }
+          });
       }
     });
   }, [navigate]);
@@ -53,7 +65,19 @@ const Login = () => {
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
-        navigate("/dashboard");
+        
+        // Check if onboarding is completed
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('user_id', data.user.id)
+          .single();
+        
+        if (profileData?.onboarding_completed) {
+          navigate("/dashboard");
+        } else {
+          navigate("/onboarding");
+        }
       }
     } catch (error) {
       toast({

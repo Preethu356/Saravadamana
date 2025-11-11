@@ -73,24 +73,33 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          mental_state: string | null
+          onboarding_completed: boolean | null
           updated_at: string
           user_id: string
+          user_type: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          mental_state?: string | null
+          onboarding_completed?: boolean | null
           updated_at?: string
           user_id: string
+          user_type?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          mental_state?: string | null
+          onboarding_completed?: boolean | null
           updated_at?: string
           user_id?: string
+          user_type?: string | null
         }
         Relationships: []
       }

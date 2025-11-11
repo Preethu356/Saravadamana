@@ -33,6 +33,8 @@ const WomenMentalHealth = lazy(() => import("./pages/WomenMentalHealth"));
 const OldAgeMentalHealth = lazy(() => import("./pages/OldAgeMentalHealth"));
 const MentalHealthPrevention = lazy(() => import("./pages/MentalHealthPrevention"));
 const WellnessPlanGenerator = lazy(() => import("./pages/WellnessPlanGenerator"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const About = lazy(() => import("./pages/About"));
 
 const queryClient = new QueryClient();
 
@@ -61,8 +63,10 @@ const App = () => {
               <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/about" element={<About />} />
                   
                   {/* Protected Routes */}
                   <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
