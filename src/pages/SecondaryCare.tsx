@@ -1,23 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ClipboardList, FileText, AlertCircle, CheckCircle } from "lucide-react";
+import { CheckCircle, ChevronRight } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import PageNavigation from "@/components/PageNavigation";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const SecondaryCare = () => {
   const [searchParams] = useSearchParams();
-  const [phq9Score, setPhq9Score] = useState<number | null>(null);
   const [who5Score, setWho5Score] = useState<number | null>(null);
-  const [gad7Score, setGad7Score] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [userId, setUserId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const tool = searchParams.get('tool');
-    if (tool === 'phq9') setActiveTab('phq9');
-    else if (tool === 'who5') setActiveTab('who5');
-    else if (tool === 'gad7') setActiveTab('gad7');
+    if (tool === 'who5') setActiveTab('who5');
+    
+    // Get current user
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserId(session?.user?.id || null);
+    });
   }, [searchParams]);
 
   const who5Questions = [
@@ -28,44 +33,9 @@ const SecondaryCare = () => {
     "My daily life has been filled with things that interest me"
   ];
 
-  const gad7Questions = [
-    "Feeling nervous, anxious, or on edge",
-    "Not being able to stop or control worrying",
-    "Worrying too much about different things",
-    "Trouble relaxing",
-    "Being so restless that it's hard to sit still",
-    "Becoming easily annoyed or irritable",
-    "Feeling afraid as if something awful might happen"
-  ];
-
-  const phq9Questions = [
-    "Little interest or pleasure in doing things",
-    "Feeling down, depressed, or hopeless",
-    "Trouble falling or staying asleep, or sleeping too much",
-    "Feeling tired or having little energy",
-    "Poor appetite or overeating",
-    "Feeling bad about yourself or that you are a failure",
-    "Trouble concentrating on things",
-    "Moving or speaking slowly or being fidgety/restless",
-    "Thoughts of being better off dead or hurting yourself"
-  ];
-
-  const [phq9Responses, setPhq9Responses] = useState<number[]>(Array(9).fill(-1));
   const [who5Responses, setWho5Responses] = useState<number[]>(Array(5).fill(-1));
-  const [gad7Responses, setGad7Responses] = useState<number[]>(Array(7).fill(-1));
 
-  const handlePhq9Response = (index: number, value: number) => {
-    const newResponses = [...phq9Responses];
-    newResponses[index] = value;
-    setPhq9Responses(newResponses);
-    
-    if (newResponses.every(r => r >= 0)) {
-      const total = newResponses.reduce((sum, val) => sum + val, 0);
-      setPhq9Score(total);
-    }
-  };
-
-  const handleWho5Response = (index: number, value: number) => {
+  const handleWho5Response = async (index: number, value: number) => {
     const newResponses = [...who5Responses];
     newResponses[index] = value;
     setWho5Responses(newResponses);
@@ -73,26 +43,44 @@ const SecondaryCare = () => {
     if (newResponses.every(r => r >= 0)) {
       const total = newResponses.reduce((sum, val) => sum + val, 0);
       setWho5Score(total);
+      
+      // Save to database
+      if (userId) {
+        await saveWho5Results(total);
+      }
     }
   };
 
-  const handleGad7Response = (index: number, value: number) => {
-    const newResponses = [...gad7Responses];
-    newResponses[index] = value;
-    setGad7Responses(newResponses);
-    
-    if (newResponses.every(r => r >= 0)) {
-      const total = newResponses.reduce((sum, val) => sum + val, 0);
-      setGad7Score(total);
-    }
-  };
+  const saveWho5Results = async (score: number) => {
+    if (!userId) return;
 
-  const getPhq9Interpretation = (score: number) => {
-    if (score <= 4) return { severity: "Minimal Depression", color: "text-green-600", recommendation: "Monitor symptoms" };
-    if (score <= 9) return { severity: "Mild Depression", color: "text-yellow-600", recommendation: "Watchful waiting; repeat PHQ-9 at follow-up" };
-    if (score <= 14) return { severity: "Moderate Depression", color: "text-orange-600", recommendation: "Treatment plan, considering counseling and follow-up" };
-    if (score <= 19) return { severity: "Moderately Severe Depression", color: "text-red-600", recommendation: "Active treatment with psychotherapy and/or medication" };
-    return { severity: "Severe Depression", color: "text-red-800", recommendation: "Immediate initiation of therapy and/or medication" };
+    const percentageScore = score * 4;
+    const interpretation = getWho5Interpretation(score);
+
+    const { error } = await supabase
+      .from('screening_results')
+      .insert({
+        user_id: userId,
+        screening_type: 'WHO-5',
+        score: score,
+        max_score: 25,
+        percentage_score: percentageScore,
+        severity: interpretation.severity
+      });
+
+    if (error) {
+      console.error('Error saving WHO-5 results:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save screening results",
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "WHO-5 screening results saved to your progress",
+      });
+    }
   };
 
   const getWho5Interpretation = (score: number) => {
@@ -102,11 +90,8 @@ const SecondaryCare = () => {
     return { severity: "Poor Well-Being", color: "text-red-600", recommendation: "Further evaluation recommended; consider professional support" };
   };
 
-  const getGad7Interpretation = (score: number) => {
-    if (score <= 4) return { severity: "Minimal Anxiety", color: "text-green-600", recommendation: "Monitor symptoms" };
-    if (score <= 9) return { severity: "Mild Anxiety", color: "text-yellow-600", recommendation: "Watchful waiting; consider self-help strategies" };
-    if (score <= 14) return { severity: "Moderate Anxiety", color: "text-orange-600", recommendation: "Probable anxiety disorder; consider counseling" };
-    return { severity: "Severe Anxiety", color: "text-red-600", recommendation: "Active treatment with psychotherapy and/or medication recommended" };
+  const handleNextClick = () => {
+    setActiveTab("who5");
   };
 
   return (
@@ -126,11 +111,9 @@ const SecondaryCare = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="phq9">PHQ-9</TabsTrigger>
             <TabsTrigger value="who5">WHO-5</TabsTrigger>
-            <TabsTrigger value="gad7">GAD-7</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -208,70 +191,12 @@ const SecondaryCare = () => {
                     </CardContent>
                   </Card>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          <TabsContent value="phq9" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>PHQ-9 Depression Screening</CardTitle>
-                <CardDescription>
-                  Over the last 2 weeks, how often have you been bothered by any of the following problems?
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {phq9Questions.map((question, index) => (
-                  <div key={index} className="space-y-2">
-                    <p className="font-medium text-sm">{index + 1}. {question}</p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {["Not at all", "Several days", "More than half the days", "Nearly every day"].map((option, optIndex) => (
-                        <Button
-                          key={optIndex}
-                          variant={phq9Responses[index] === optIndex ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handlePhq9Response(index, optIndex)}
-                          className="text-xs"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                {phq9Score !== null && (
-                  <Card className="mt-6 border-2 border-primary/20">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-primary" />
-                        Your Results
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground">Total Score</p>
-                          <p className="text-3xl font-bold">{phq9Score} / 27</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Informal Assessment</p>
-                          <p className={`text-xl font-semibold ${getPhq9Interpretation(phq9Score).color}`}>
-                            {getPhq9Interpretation(phq9Score).severity}
-                          </p>
-                        </div>
-                        <div className="p-4 bg-muted rounded-lg">
-                          <p className="text-sm font-semibold mb-1">Recommendation:</p>
-                          <p className="text-sm">{getPhq9Interpretation(phq9Score).recommendation}</p>
-                        </div>
-                        <p className="text-xs text-muted-foreground border-t pt-4">
-                          <strong>Important:</strong> This is an informal screening assessment only, not a diagnostic tool. 
-                          Please consult a qualified mental health professional for proper diagnosis and treatment.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <div className="mt-6 flex justify-end">
+                  <Button onClick={handleNextClick} className="gap-2">
+                    Continue to WHO-5 <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -335,70 +260,6 @@ const SecondaryCare = () => {
                         <p className="text-xs text-muted-foreground border-t pt-4">
                           <strong>Important:</strong> This is an informal screening assessment only, not a diagnostic tool. 
                           A score below 50% may indicate poor well-being and warrants further evaluation by a mental health professional.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="gad7" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>GAD-7 Anxiety Screening</CardTitle>
-                <CardDescription>
-                  Over the last 2 weeks, how often have you been bothered by the following problems?
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {gad7Questions.map((question, index) => (
-                  <div key={index} className="space-y-2">
-                    <p className="font-medium text-sm">{index + 1}. {question}</p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {["Not at all", "Several days", "More than half the days", "Nearly every day"].map((option, optIndex) => (
-                        <Button
-                          key={optIndex}
-                          variant={gad7Responses[index] === optIndex ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleGad7Response(index, optIndex)}
-                          className="text-xs"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                {gad7Score !== null && (
-                  <Card className="mt-6 border-2 border-primary/20">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-primary" />
-                        Your Results
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground">Total Score</p>
-                          <p className="text-3xl font-bold">{gad7Score} / 21</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Informal Assessment</p>
-                          <p className={`text-xl font-semibold ${getGad7Interpretation(gad7Score).color}`}>
-                            {getGad7Interpretation(gad7Score).severity}
-                          </p>
-                        </div>
-                        <div className="p-4 bg-muted rounded-lg">
-                          <p className="text-sm font-semibold mb-1">Recommendation:</p>
-                          <p className="text-sm">{getGad7Interpretation(gad7Score).recommendation}</p>
-                        </div>
-                        <p className="text-xs text-muted-foreground border-t pt-4">
-                          <strong>Important:</strong> This is an informal screening assessment only, not a diagnostic tool. 
-                          Please consult a qualified mental health professional for proper diagnosis and treatment.
                         </p>
                       </div>
                     </CardContent>

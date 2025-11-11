@@ -103,6 +103,42 @@ export type Database = {
         }
         Relationships: []
       }
+      screening_results: {
+        Row: {
+          completed_at: string
+          created_at: string
+          id: string
+          max_score: number
+          percentage_score: number | null
+          score: number
+          screening_type: string
+          severity: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          id?: string
+          max_score: number
+          percentage_score?: number | null
+          score: number
+          screening_type: string
+          severity?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          id?: string
+          max_score?: number
+          percentage_score?: number | null
+          score?: number
+          screening_type?: string
+          severity?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_wellness_stats: {
         Row: {
           created_at: string

@@ -18,6 +18,7 @@ const Dashboard = () => {
     current_streak: 0,
     meditation_minutes: 0
   });
+  const [screeningCount, setScreeningCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +34,7 @@ const Dashboard = () => {
         setUser(session?.user ?? null);
         if (session?.user) {
           fetchWellnessStats(session.user.id);
+          fetchScreeningProgress(session.user.id);
         }
       }
     );
@@ -57,6 +59,22 @@ const Dashboard = () => {
     }
   };
 
+  const fetchScreeningProgress = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('screening_results')
+      .select('id')
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error fetching screening progress:', error);
+      return;
+    }
+
+    if (data) {
+      setScreeningCount(data.length);
+    }
+  };
+
   const progressCards = [
     {
       title: "Mood Tracking",
@@ -73,10 +91,10 @@ const Dashboard = () => {
       description: "Complete mental health assessments",
       icon: ClipboardList,
       color: "from-blue-500 to-cyan-500",
-      progress: 0, // Will be tracked later
-      count: 0,
+      progress: Math.min((screeningCount / 5) * 100, 100),
+      count: screeningCount,
       goal: 5,
-      action: () => navigate("/personality-screening")
+      action: () => navigate("/secondary-care")
     },
     {
       title: "Diagnosis Support",
