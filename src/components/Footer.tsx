@@ -74,7 +74,7 @@ const Footer = () => {
             <a 
               href="https://youtube.com/@motiweightall?si=KBupWmG4rUZUCpBo" 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener"
               className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center hover:bg-red-500/20 transition-all hover:scale-110 cursor-pointer relative z-10"
               aria-label="YouTube"
             >
@@ -83,7 +83,7 @@ const Footer = () => {
             <a 
               href="https://www.instagram.com/sarvadamana2025?igsh=cmE0enV1Z2UyNHo1&utm_source=qr" 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener"
               className="w-12 h-12 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full flex items-center justify-center hover:from-purple-500/20 hover:to-pink-500/20 transition-all hover:scale-110 cursor-pointer relative z-10"
               aria-label="Instagram"
             >
@@ -92,7 +92,7 @@ const Footer = () => {
             <a 
               href="https://wa.me/message/PP2HJ5ODB76LJ1" 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener"
               className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center hover:bg-green-500/20 transition-all hover:scale-110 cursor-pointer relative z-10"
               aria-label="WhatsApp"
             >
