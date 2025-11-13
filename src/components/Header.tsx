@@ -20,7 +20,10 @@ import {
   Shield,
   Users,
   Target,
-  Newspaper
+  Newspaper,
+  Phone,
+  Mail,
+  Megaphone
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -43,6 +46,7 @@ const Header = () => {
   const [preventionOpen, setPreventionOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [newsOpen, setNewsOpen] = useState(false);
+  const [stigmaOpen, setStigmaOpen] = useState(false);
   const [wellnessStats, setWellnessStats] = useState<{
     current_streak: number;
     total_sessions: number;
@@ -198,6 +202,16 @@ const Header = () => {
     { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-cyan-500" },
     { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-orange-500" },
     { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" }
+  ];
+
+  const stigmaLinks = [
+    { to: "/journal", label: "Self Journal", icon: BookOpen, color: "text-red-500" },
+    { to: "/wellness-plan", label: "Wellness Plan Generator", icon: Target, color: "text-red-600" },
+    { to: "/wellness-tools", label: "Wellness Tools", icon: Activity, color: "text-red-500" },
+    { to: "/mood-tracker", label: "Mood Tracker", icon: Smile, color: "text-red-600" },
+    { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-red-500" },
+    { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-red-600" },
+    { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-red-500" }
   ];
 
   // Dynamic wellness badges based on real user data
@@ -383,7 +397,7 @@ const Header = () => {
                 {/* Mental Health Collapsible */}
                 <div className="mt-2" onMouseEnter={() => setMentalHealthOpen(true)} onMouseLeave={() => setMentalHealthOpen(false)}>
                   <Collapsible open={mentalHealthOpen} onOpenChange={setMentalHealthOpen}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 border-2 border-transparent hover:border-primary/20 group">
+                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 border-2 border-transparent hover:border-primary/20 group">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Brain className="w-4 h-4 text-white" />
@@ -399,7 +413,7 @@ const Header = () => {
                           <Link
                             key={link.to}
                             to={link.to}
-                            className="group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
+                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
                             onClick={() => setIsMenuOpen(false)}
                           >
                             <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
@@ -414,7 +428,7 @@ const Header = () => {
                 {/* Prevention Collapsible */}
                 <div className="mt-2" onMouseEnter={() => setPreventionOpen(true)} onMouseLeave={() => setPreventionOpen(false)}>
                   <Collapsible open={preventionOpen} onOpenChange={setPreventionOpen}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
+                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Shield className="w-4 h-4 text-white" />
@@ -430,7 +444,7 @@ const Header = () => {
                           <Link
                             key={link.to}
                             to={link.to}
-                            className="group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
+                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
                             onClick={() => setIsMenuOpen(false)}
                           >
                             <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
@@ -445,7 +459,7 @@ const Header = () => {
                 {/* Mental Health Resources Collapsible */}
                 <div className="mt-2" onMouseEnter={() => setResourcesOpen(true)} onMouseLeave={() => setResourcesOpen(false)}>
                   <Collapsible open={resourcesOpen} onOpenChange={setResourcesOpen}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-secondary/10 hover:to-accent/10 border-2 border-transparent hover:border-secondary/20 group">
+                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-secondary/10 hover:to-accent/10 border-2 border-transparent hover:border-secondary/20 group">
                       <div className="flex items-center gap-3">
                         <BookOpen className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
                         <span>Mental Health Resources</span>
@@ -461,7 +475,7 @@ const Header = () => {
                             setResourcesOpen(false);
                             setIsMenuOpen(false);
                           }}
-                          className="block py-2 px-4 text-sm text-muted-foreground hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
+                          className="cursor-pointer block py-2 px-4 text-sm text-muted-foreground hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
                         >
                           {link.label}
                         </Link>
@@ -473,7 +487,7 @@ const Header = () => {
                 {/* Mental Health News Collapsible */}
                 <div className="mt-2" onMouseEnter={() => setNewsOpen(true)} onMouseLeave={() => setNewsOpen(false)}>
                   <Collapsible open={newsOpen} onOpenChange={setNewsOpen}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/10 hover:to-primary/10 border-2 border-transparent hover:border-accent/20 group">
+                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/10 hover:to-primary/10 border-2 border-transparent hover:border-accent/20 group">
                       <div className="flex items-center gap-3">
                         <Newspaper className="w-5 h-5 text-accent group-hover:scale-110 transition-transform" />
                         <span>Mental Health News</span>
@@ -487,7 +501,7 @@ const Header = () => {
                           setNewsOpen(false);
                           setIsMenuOpen(false);
                         }}
-                        className="block py-2 px-4 text-sm text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-lg transition-all"
+                        className="cursor-pointer block py-2 px-4 text-sm text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-lg transition-all"
                       >
                         India Updates
                       </Link>
@@ -497,7 +511,7 @@ const Header = () => {
                           setNewsOpen(false);
                           setIsMenuOpen(false);
                         }}
-                        className="block py-2 px-4 text-sm text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-lg transition-all"
+                        className="cursor-pointer block py-2 px-4 text-sm text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-lg transition-all"
                       >
                         Research & Technology
                       </Link>
@@ -509,7 +523,7 @@ const Header = () => {
                 <div className="mt-2">
                   <Link
                     to="/ai-support"
-                    className="group flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/10 hover:to-primary/10 border-2 border-transparent hover:border-accent/20 hover:translate-x-1"
+                    className="group flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/10 hover:to-primary/10 border-2 border-transparent hover:border-accent/20 hover:translate-x-1 cursor-pointer"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -517,6 +531,90 @@ const Header = () => {
                     </div>
                     <span>Mental Health Support</span>
                   </Link>
+                </div>
+
+                {/* Fight Stigma - Talk to Break */}
+                <div className="mt-2" onMouseEnter={() => setStigmaOpen(true)} onMouseLeave={() => setStigmaOpen(false)}>
+                  <Collapsible open={stigmaOpen} onOpenChange={setStigmaOpen}>
+                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-red-600 transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-red-500/10 hover:to-red-600/10 border-2 border-transparent hover:border-red-500/30 group relative overflow-hidden">
+                      <motion.div 
+                        className="absolute inset-0 bg-red-500/20 rounded-xl"
+                        animate={{
+                          scale: [1, 1.05, 1],
+                          opacity: [0.3, 0.6, 0.3]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      <div className="flex items-center gap-3 relative z-10">
+                        <motion.div 
+                          className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center"
+                          animate={{
+                            boxShadow: [
+                              "0 0 10px rgba(239, 68, 68, 0.5)",
+                              "0 0 25px rgba(239, 68, 68, 0.8)",
+                              "0 0 10px rgba(239, 68, 68, 0.5)"
+                            ],
+                            scale: [1, 1.1, 1]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Megaphone className="w-4 h-4 text-white" />
+                        </motion.div>
+                        <span className="font-bold">Fight Stigma - "Talk to Break"</span>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 relative z-10 ${stigmaOpen ? 'rotate-180 text-red-600' : ''}`} />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                      {stigmaLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.to}
+                            to={link.to}
+                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-red-600 transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-red-500/10 hover:translate-x-1"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
+                            <span>{link.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+
+                {/* Contact Us */}
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="px-4 py-3 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl border border-border/50">
+                    <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-primary" />
+                      Contact Us
+                    </h3>
+                    <div className="space-y-2">
+                      <a 
+                        href="tel:7337748629" 
+                        className="cursor-pointer flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+                      >
+                        <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <span>7337748629</span>
+                      </a>
+                      <a 
+                        href="mailto:Preethu.ksgowda356@gmail.com" 
+                        className="cursor-pointer flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group break-all"
+                      >
+                        <Mail className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
+                        <span>Preethu.ksgowda356@gmail.com</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Auth Section */}
