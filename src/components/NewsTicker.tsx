@@ -21,18 +21,16 @@ const getTimeBasedGradient = () => {
   }
 };
 
-const getLetterColor = (index: number) => {
-  const colors = [
-    "text-primary",
-    "text-accent", 
-    "text-purple-600",
-    "text-blue-600",
-    "text-pink-600",
-    "text-orange-600",
-    "text-teal-600",
-    "text-indigo-600",
-  ];
-  return colors[index % colors.length];
+const getLetterColor = (index: number, total: number) => {
+  const percentage = index / total;
+  
+  if (percentage < 0.5) {
+    // Green to yellow transition
+    return "text-green-700";
+  } else {
+    // Yellow to red transition
+    return "text-red-700";
+  }
 };
 
 const NewsTicker = () => {
@@ -77,7 +75,7 @@ const NewsTicker = () => {
   const coloredText = fullText.split('').map((char, index) => (
     <span 
       key={index} 
-      className={`${getLetterColor(index)} font-semibold transition-colors duration-300`}
+      className={`${getLetterColor(index, fullText.length)} font-medium transition-colors duration-300`}
     >
       {char}
     </span>
