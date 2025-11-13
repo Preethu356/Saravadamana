@@ -110,6 +110,8 @@ const Header = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    // Clear splash screen flag so it shows again on next login
+    localStorage.removeItem('hasSeenSplash');
     // Always clear local session and navigate, regardless of server response
     toast({
       title: "Logged out successfully",
@@ -157,6 +159,8 @@ const Header = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    // Clear splash screen flag so it shows again on next login
+    localStorage.removeItem('hasSeenSplash');
     // Always clear local session and navigate, regardless of server response
     toast({
       title: "Signed out successfully",
