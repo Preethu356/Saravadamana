@@ -7,14 +7,42 @@ interface QuoteOfDay {
   author: string;
 }
 
+const getTimeBasedGradient = () => {
+  const hour = new Date().getHours();
+  
+  if (hour >= 5 && hour < 12) {
+    // Morning: soft sunrise colors
+    return "bg-gradient-to-r from-orange-100/30 via-yellow-50/20 to-amber-100/30";
+  } else if (hour >= 12 && hour < 17) {
+    // Afternoon: bright day colors
+    return "bg-gradient-to-r from-sky-100/30 via-blue-50/20 to-cyan-100/30";
+  } else if (hour >= 17 && hour < 21) {
+    // Evening: sunset colors
+    return "bg-gradient-to-r from-purple-100/30 via-pink-50/20 to-rose-100/30";
+  } else {
+    // Night: deep calm colors
+    return "bg-gradient-to-r from-indigo-100/30 via-violet-50/20 to-purple-100/30";
+  }
+};
+
 const NewsTicker = () => {
   const [quote, setQuote] = useState<QuoteOfDay | null>(null);
+  const [gradient, setGradient] = useState(getTimeBasedGradient());
 
   useEffect(() => {
     fetchQuoteOfDay();
     // Refresh quote once per day
     const interval = setInterval(fetchQuoteOfDay, 24 * 60 * 60 * 1000);
-    return () => clearInterval(interval);
+    
+    // Update gradient every hour
+    const gradientInterval = setInterval(() => {
+      setGradient(getTimeBasedGradient());
+    }, 60 * 60 * 1000);
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(gradientInterval);
+    };
   }, []);
 
   const fetchQuoteOfDay = async () => {
@@ -33,7 +61,7 @@ const NewsTicker = () => {
   if (!quote) return null;
 
   return (
-    <div className="bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10 border-y border-primary/20 py-3 overflow-hidden backdrop-blur-sm">
+    <div className={`${gradient} border-y border-primary/20 py-3 overflow-hidden backdrop-blur-sm transition-all duration-1000`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1.5 rounded-full font-semibold text-xs shadow-lg whitespace-nowrap">
