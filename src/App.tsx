@@ -38,6 +38,8 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const About = lazy(() => import("./pages/About"));
 const DepressionScreening = lazy(() => import("./pages/DepressionScreening"));
 const AnxietyScreening = lazy(() => import("./pages/AnxietyScreening"));
+const MentalHealthNews = lazy(() => import("./pages/MentalHealthNews"));
+const ResearchUpdates = lazy(() => import("./pages/ResearchUpdates"));
 
 const queryClient = new QueryClient();
 
@@ -93,6 +95,8 @@ const App = () => {
                   <Route path="/old-age-mental-health" element={<ProtectedRoute><OldAgeMentalHealth /></ProtectedRoute>} />
                   <Route path="/mental-health-prevention" element={<ProtectedRoute><MentalHealthPrevention /></ProtectedRoute>} />
                   <Route path="/wellness-plan" element={<ProtectedRoute><WellnessPlanGenerator /></ProtectedRoute>} />
+                  <Route path="/mental-health-news" element={<ProtectedRoute><MentalHealthNews /></ProtectedRoute>} />
+                  <Route path="/research-updates" element={<ProtectedRoute><ResearchUpdates /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
