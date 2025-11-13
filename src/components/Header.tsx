@@ -389,7 +389,7 @@ const Header = () => {
                 })}
 
                 {/* Mental Health Collapsible */}
-                <div className="mt-2">
+                <div className="mt-2" onMouseEnter={() => setMentalHealthOpen(true)} onMouseLeave={() => setMentalHealthOpen(false)}>
                   <Collapsible open={mentalHealthOpen} onOpenChange={setMentalHealthOpen}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 border-2 border-transparent hover:border-primary/20 group">
                       <div className="flex items-center gap-3">
@@ -420,7 +420,7 @@ const Header = () => {
                 </div>
 
                 {/* Prevention Collapsible */}
-                <div className="mt-2">
+                <div className="mt-2" onMouseEnter={() => setPreventionOpen(true)} onMouseLeave={() => setPreventionOpen(false)}>
                   <Collapsible open={preventionOpen} onOpenChange={setPreventionOpen}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
                       <div className="flex items-center gap-3">
@@ -451,7 +451,7 @@ const Header = () => {
                 </div>
 
                 {/* Mental Health Resources Collapsible */}
-                <div className="mt-2">
+                <div className="mt-2" onMouseEnter={() => setResourcesOpen(true)} onMouseLeave={() => setResourcesOpen(false)}>
                   <Collapsible open={resourcesOpen} onOpenChange={setResourcesOpen}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-secondary/10 hover:to-accent/10 border-2 border-transparent hover:border-secondary/20 group">
                       <div className="flex items-center gap-3">
