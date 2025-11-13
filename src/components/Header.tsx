@@ -109,20 +109,13 @@ const Header = () => {
   }, [user]);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Logged out successfully",
-        description: "See you again soon!",
-      });
-      navigate("/");
-    }
+    await supabase.auth.signOut();
+    // Always clear local session and navigate, regardless of server response
+    toast({
+      title: "Logged out successfully",
+      description: "See you again soon!",
+    });
+    navigate("/login");
   };
 
   const fetchWellnessStats = async (userId: string) => {
@@ -163,21 +156,14 @@ const Header = () => {
   };
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error signing out",
-        description: error.message,
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Signed out successfully",
-        description: "You have been logged out."
-      });
-      navigate("/");
-    }
+    await supabase.auth.signOut();
+    // Always clear local session and navigate, regardless of server response
+    toast({
+      title: "Signed out successfully",
+      description: "You have been logged out."
+    });
     setIsMenuOpen(false);
+    navigate("/login");
   };
 
   const navLinks = [
