@@ -21,17 +21,6 @@ const getTimeBasedGradient = () => {
   }
 };
 
-const getLetterColor = (index: number, total: number) => {
-  const percentage = index / total;
-  
-  if (percentage < 0.5) {
-    // Green to yellow transition
-    return "text-green-700";
-  } else {
-    // Yellow to red transition
-    return "text-red-700";
-  }
-};
 
 const NewsTicker = () => {
   const [quote, setQuote] = useState<QuoteOfDay | null>(null);
@@ -72,14 +61,6 @@ const NewsTicker = () => {
   if (!quote) return null;
 
   const fullText = `"${quote.quote}" — ${quote.author}`;
-  const coloredText = fullText.split('').map((char, index) => (
-    <span 
-      key={index} 
-      className={`${getLetterColor(index, fullText.length)} font-medium transition-colors duration-300`}
-    >
-      {char}
-    </span>
-  ));
 
   return (
     <div 
@@ -94,14 +75,14 @@ const NewsTicker = () => {
         
         <div className="flex-1 pl-40 overflow-hidden">
           <div className={`flex whitespace-nowrap ${isPaused ? '' : 'animate-[scroll-continuous_40s_linear_infinite]'}`}>
-            <span className="inline-flex text-sm pr-20">
-              {coloredText}
+            <span className="inline-flex text-sm pr-20 italic bg-gradient-to-r from-green-700 via-yellow-600 to-red-700 bg-clip-text text-transparent font-medium">
+              {fullText}
             </span>
-            <span className="inline-flex text-sm pr-20">
-              {coloredText}
+            <span className="inline-flex text-sm pr-20 italic bg-gradient-to-r from-green-700 via-yellow-600 to-red-700 bg-clip-text text-transparent font-medium">
+              {fullText}
             </span>
-            <span className="inline-flex text-sm pr-20">
-              {coloredText}
+            <span className="inline-flex text-sm pr-20 italic bg-gradient-to-r from-green-700 via-yellow-600 to-red-700 bg-clip-text text-transparent font-medium">
+              {fullText}
             </span>
           </div>
         </div>
