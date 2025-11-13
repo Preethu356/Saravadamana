@@ -320,16 +320,7 @@ const Header = () => {
             )}
             
             {/* Auth Buttons */}
-            {user ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Hello, <span className="bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent font-semibold">{user.email?.split('@')[0]}</span>
-                </span>
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </div>
-            ) : (
+            {!user && (
               <>
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/login">Login</Link>
@@ -630,15 +621,6 @@ const Header = () => {
                           <p className="text-sm font-semibold text-foreground truncate">{user.email}</p>
                         </div>
                       </div>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="w-full gap-2 shadow-sm hover:shadow-md transition-all"
-                        onClick={handleSignOut}
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </Button>
                     </>
                   ) : (
                     <div className="md:hidden space-y-2">
