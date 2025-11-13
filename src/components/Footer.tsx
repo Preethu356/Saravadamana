@@ -1,4 +1,4 @@
-import { Heart, Shield, Users } from "lucide-react";
+import { Heart, Shield, Users, Youtube, Instagram, MessageCircle } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -67,8 +67,42 @@ const Footer = () => {
           </p>
         </div>
 
+        {/* Connect With Us */}
+        <div className="text-center mb-6 border-t pt-6">
+          <h4 className="text-lg font-semibold mb-4">Connect With Us</h4>
+          <div className="flex justify-center gap-6">
+            <a 
+              href="https://youtube.com/@motiweightall?si=KBupWmG4rUZUCpBo" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
+              aria-label="YouTube"
+            >
+              <Youtube className="w-6 h-6 text-primary" />
+            </a>
+            <a 
+              href="https://www.instagram.com/sarvadamana2025?igsh=cmE0enV1Z2UyNHo1&utm_source=qr" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
+              aria-label="Instagram"
+            >
+              <Instagram className="w-6 h-6 text-primary" />
+            </a>
+            <a 
+              href="https://wa.me/message/PP2HJ5ODB76LJ1" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
+              aria-label="WhatsApp"
+            >
+              <MessageCircle className="w-6 h-6 text-primary" />
+            </a>
+          </div>
+        </div>
+
         {/* Disclaimer & Copyright */}
-        <div className="text-center space-y-3 border-t pt-6">
+        <div className="text-center space-y-3">
           <p className="text-sm text-muted-foreground">
             This is a supportive tool, not a replacement for professional medical advice, 
             diagnosis, or treatment. Always seek the advice of qualified health providers.
