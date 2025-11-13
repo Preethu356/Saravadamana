@@ -75,28 +75,28 @@ const Footer = () => {
               href="https://youtube.com/@motiweightall?si=KBupWmG4rUZUCpBo" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
+              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer"
               aria-label="YouTube"
             >
-              <Youtube className="w-6 h-6 text-primary" />
+              <Youtube className="w-6 h-6 text-primary pointer-events-none" />
             </a>
             <a 
               href="https://www.instagram.com/sarvadamana2025?igsh=cmE0enV1Z2UyNHo1&utm_source=qr" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
+              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer"
               aria-label="Instagram"
             >
-              <Instagram className="w-6 h-6 text-primary" />
+              <Instagram className="w-6 h-6 text-primary pointer-events-none" />
             </a>
             <a 
               href="https://wa.me/message/PP2HJ5ODB76LJ1" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors"
+              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer"
               aria-label="WhatsApp"
             >
-              <MessageCircle className="w-6 h-6 text-primary" />
+              <MessageCircle className="w-6 h-6 text-primary pointer-events-none" />
             </a>
           </div>
         </div>
