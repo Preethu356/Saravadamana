@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
 interface QuoteOfDay {
   quote: string;
@@ -22,11 +21,24 @@ const getTimeBasedGradient = () => {
   }
 };
 
+const getLetterColor = (index: number) => {
+  const colors = [
+    "text-primary",
+    "text-accent", 
+    "text-purple-600",
+    "text-blue-600",
+    "text-pink-600",
+    "text-orange-600",
+    "text-teal-600",
+    "text-indigo-600",
+  ];
+  return colors[index % colors.length];
+};
+
 const NewsTicker = () => {
   const [quote, setQuote] = useState<QuoteOfDay | null>(null);
   const [gradient, setGradient] = useState(getTimeBasedGradient());
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const { toast } = useToast();
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     fetchQuoteOfDay();
@@ -41,7 +53,6 @@ const NewsTicker = () => {
   }, []);
 
   const fetchQuoteOfDay = async () => {
-    setIsRefreshing(true);
     try {
       const { data, error } = await supabase.functions.invoke('fetch-news', {
         body: { type: 'quote-of-the-day', limit: 1 }
@@ -50,25 +61,27 @@ const NewsTicker = () => {
       if (error) throw error;
       if (data?.quote) {
         setQuote(data.quote);
-        toast({
-          title: "New quote loaded",
-          description: "Click the ticker to refresh",
-        });
       }
     } catch (error) {
       console.error('Error fetching quote:', error);
-    } finally {
-      setIsRefreshing(false);
     }
   };
 
   const handleClick = () => {
-    if (!isRefreshing) {
-      fetchQuoteOfDay();
-    }
+    setIsPaused(!isPaused);
   };
 
   if (!quote) return null;
+
+  const fullText = `"${quote.quote}" — ${quote.author}`;
+  const coloredText = fullText.split('').map((char, index) => (
+    <span 
+      key={index} 
+      className={`${getLetterColor(index)} font-semibold transition-colors duration-300`}
+    >
+      {char}
+    </span>
+  ));
 
   return (
     <div 
@@ -77,19 +90,20 @@ const NewsTicker = () => {
     >
       <div className="relative flex items-center">
         <div className="absolute left-0 z-10 flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1 rounded-r-full font-semibold text-xs shadow-lg whitespace-nowrap">
-          <Sparkles className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          Quote of the Day
+          <Sparkles className="w-3.5 h-3.5" />
+          Quote of the Day {isPaused && "- Paused"}
         </div>
         
-        <div className="flex-1 pl-36 overflow-hidden">
-          <div className="animate-[scroll_40s_linear_infinite] whitespace-nowrap">
-            <span className="inline-flex items-center gap-2 text-sm font-medium">
-              <span className="animate-fade-in bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-semibold">
-                "{quote.quote}"
-              </span>
-              <span className="text-xs text-muted-foreground font-bold animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                — {quote.author}
-              </span>
+        <div className="flex-1 pl-40 overflow-hidden">
+          <div className={`flex whitespace-nowrap ${isPaused ? '' : 'animate-[scroll-continuous_40s_linear_infinite]'}`}>
+            <span className="inline-flex text-sm pr-20">
+              {coloredText}
+            </span>
+            <span className="inline-flex text-sm pr-20">
+              {coloredText}
+            </span>
+            <span className="inline-flex text-sm pr-20">
+              {coloredText}
             </span>
           </div>
         </div>
