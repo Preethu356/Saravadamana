@@ -30,24 +30,44 @@ const NewsTicker = () => {
   useEffect(() => {
     fetchQuoteOfDay();
     
+    // Update gradient every hour
     const gradientInterval = setInterval(() => {
       setGradient(getTimeBasedGradient());
     }, 60 * 60 * 1000);
     
+    // Auto-refresh quote daily at midnight
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+    const msUntilMidnight = tomorrow.getTime() - now.getTime();
+    
+    const midnightTimeout = setTimeout(() => {
+      fetchQuoteOfDay();
+      // Set up daily interval after first midnight
+      const dailyInterval = setInterval(fetchQuoteOfDay, 24 * 60 * 60 * 1000);
+      return () => clearInterval(dailyInterval);
+    }, msUntilMidnight);
+    
     return () => {
       clearInterval(gradientInterval);
+      clearTimeout(midnightTimeout);
     };
   }, []);
 
   const fetchQuoteOfDay = async () => {
     try {
+      console.log('Fetching quote of the day...');
       const { data, error } = await supabase.functions.invoke('fetch-news', {
         body: { type: 'quote-of-the-day', limit: 1 }
       });
       
+      console.log('Quote response:', data, 'Error:', error);
+      
       if (error) throw error;
       if (data?.quote) {
+        console.log('Setting quote:', data.quote);
         setQuote(data.quote);
+      } else {
+        console.error('No quote in response:', data);
       }
     } catch (error) {
       console.error('Error fetching quote:', error);
@@ -58,7 +78,10 @@ const NewsTicker = () => {
     setIsPaused(!isPaused);
   };
 
-  if (!quote) return null;
+  if (!quote || !quote.quote || !quote.author) {
+    console.log('Quote state:', quote);
+    return null;
+  }
 
   const fullText = `"${quote.quote}" — ${quote.author}`;
 
