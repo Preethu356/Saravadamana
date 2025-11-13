@@ -4,60 +4,45 @@ import { Newspaper } from "lucide-react";
 
 interface NewsItem {
   title: string;
+  description: string;
   source: string;
 }
 
 const NewsTicker = () => {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [news, setNews] = useState<NewsItem | null>(null);
 
   useEffect(() => {
-    fetchTopNews();
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % (news.length || 1));
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [news.length]);
+    fetchMentalHealthNews();
+  }, []);
 
-  const fetchTopNews = async () => {
+  const fetchMentalHealthNews = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('fetch-news', {
-        body: { type: 'top-headlines', limit: 5 }
+        body: { type: 'mental-health-india', limit: 1 }
       });
       
       if (error) throw error;
-      if (data?.news) setNews(data.news);
+      if (data?.news && data.news.length > 0) setNews(data.news[0]);
     } catch (error) {
       console.error('Error fetching news:', error);
     }
   };
 
-  if (news.length === 0) return null;
+  if (!news) return null;
 
   return (
-    <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-y border-primary/20 py-3 overflow-hidden">
+    <div className="bg-primary/5 border-b border-primary/10 py-1.5 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1 rounded-full font-semibold text-sm whitespace-nowrap">
-            <Newspaper className="w-4 h-4" />
-            Top News
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 bg-primary text-primary-foreground px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap">
+            <Newspaper className="w-3 h-3" />
+            Mental Health News
           </div>
           <div className="flex-1 overflow-hidden">
-            <div 
-              className="transition-all duration-1000 ease-in-out"
-              style={{ 
-                transform: `translateY(-${currentIndex * 100}%)`,
-              }}
-            >
-              {news.map((item, index) => (
-                <div 
-                  key={index}
-                  className="h-8 flex items-center text-sm font-medium text-foreground"
-                >
-                  <span className="truncate">{item.title}</span>
-                  <span className="ml-2 text-xs text-muted-foreground">- {item.source}</span>
-                </div>
-              ))}
+            <div className="animate-[scroll_30s_linear_infinite] whitespace-nowrap">
+              <span className="text-xs font-medium text-foreground">
+                {news.title} - {news.source}
+              </span>
             </div>
           </div>
         </div>
