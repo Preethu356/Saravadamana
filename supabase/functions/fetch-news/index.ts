@@ -21,7 +21,10 @@ serve(async (req) => {
     let systemPrompt = '';
     let userPrompt = '';
 
-    if (type === 'top-headlines') {
+    if (type === 'quote-of-the-day') {
+      systemPrompt = 'You are a quote curator specializing in mental health, motivation, and self-care. Return only a JSON object with a single inspiring quote.';
+      userPrompt = `Generate one powerful, inspiring quote about mental health, self-care, mindfulness, emotional wellness, resilience, or personal growth. Return as JSON with format: {"quote": "...", "author": "..."}. Use quotes from real notable figures, psychologists, philosophers, or modern wellness experts. Make it deeply meaningful and relevant to mental wellness.`;
+    } else if (type === 'top-headlines') {
       systemPrompt = 'You are a news aggregator. Return only a JSON array of news items.';
       userPrompt = `Generate ${limit} current top world news headlines. Return as JSON array with format: [{"title": "...", "source": "..."}]`;
     } else if (type === 'mental-health-india') {
@@ -77,7 +80,9 @@ serve(async (req) => {
 
     // Handle different response structures
     let result;
-    if (type === 'top-headlines') {
+    if (type === 'quote-of-the-day') {
+      result = { quote: parsedContent };
+    } else if (type === 'top-headlines') {
       result = { news: parsedContent.news || parsedContent };
     } else if (type === 'mental-health-india') {
       result = { news: parsedContent.news || parsedContent };
