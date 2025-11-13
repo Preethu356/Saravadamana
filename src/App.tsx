@@ -5,11 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SplashScreen from "./components/SplashScreen";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import { supabase } from "@/integrations/supabase/client";
 
 // Lazy load page components
 const Index = lazy(() => import("./pages/Index"));
@@ -44,15 +45,39 @@ const ResearchUpdates = lazy(() => import("./pages/ResearchUpdates"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [hasSeenSplash, setHasSeenSplash] = useLocalStorage('hasSeenSplash', false);
-  const [showSplash, setShowSplash] = useState(!hasSeenSplash);
+  const [showSplash, setShowSplash] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setIsAuthenticated(true);
+        setShowSplash(true);
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          setIsAuthenticated(true);
+          setShowSplash(true);
+        } else if (event === 'SIGNED_OUT') {
+          setIsAuthenticated(false);
+          setShowSplash(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSplashComplete = () => {
     setShowSplash(false);
-    setHasSeenSplash(true);
   };
 
-  if (showSplash) {
+  if (showSplash && isAuthenticated) {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
@@ -62,7 +87,12 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="flex flex-col min-h-screen">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col min-h-screen"
+          >
             <Header />
             <main className="flex-1">
               <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
@@ -104,7 +134,7 @@ const App = () => {
               </Suspense>
             </main>
             <Footer />
-          </div>
+          </motion.div>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
