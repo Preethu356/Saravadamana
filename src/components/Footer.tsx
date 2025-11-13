@@ -75,28 +75,28 @@ const Footer = () => {
               href="https://youtube.com/@motiweightall?si=KBupWmG4rUZUCpBo" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer"
+              className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center hover:bg-red-500/20 transition-all hover:scale-110 cursor-pointer relative z-10"
               aria-label="YouTube"
             >
-              <Youtube className="w-6 h-6 text-primary pointer-events-none" />
+              <Youtube className="w-6 h-6 text-red-600 dark:text-red-500 pointer-events-none" />
             </a>
             <a 
               href="https://www.instagram.com/sarvadamana2025?igsh=cmE0enV1Z2UyNHo1&utm_source=qr" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer"
+              className="w-12 h-12 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full flex items-center justify-center hover:from-purple-500/20 hover:to-pink-500/20 transition-all hover:scale-110 cursor-pointer relative z-10"
               aria-label="Instagram"
             >
-              <Instagram className="w-6 h-6 text-primary pointer-events-none" />
+              <Instagram className="w-6 h-6 text-pink-600 dark:text-pink-500 pointer-events-none" />
             </a>
             <a 
               href="https://wa.me/message/PP2HJ5ODB76LJ1" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer"
+              className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center hover:bg-green-500/20 transition-all hover:scale-110 cursor-pointer relative z-10"
               aria-label="WhatsApp"
             >
-              <MessageCircle className="w-6 h-6 text-primary pointer-events-none" />
+              <MessageCircle className="w-6 h-6 text-green-600 dark:text-green-500 pointer-events-none" />
             </a>
           </div>
         </div>
