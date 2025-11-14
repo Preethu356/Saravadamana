@@ -315,8 +315,14 @@ const Header = () => {
               </div>
             )}
             
-            {/* Auth Buttons */}
-            {!user && (
+            {/* Auth Section */}
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium">
+                  Welcome, <span className="bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent font-semibold">{user.email?.split('@')[0]}</span>
+                </span>
+              </div>
+            ) : (
               <>
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/login">Login</Link>
