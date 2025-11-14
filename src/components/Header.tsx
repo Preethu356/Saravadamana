@@ -205,13 +205,9 @@ const Header = () => {
   ];
 
   const stigmaLinks = [
-    { to: "/journal", label: "Self Journal", icon: BookOpen, color: "text-red-500" },
-    { to: "/wellness-plan", label: "Wellness Plan Generator", icon: Target, color: "text-red-600" },
-    { to: "/wellness-tools", label: "Wellness Tools", icon: Activity, color: "text-red-500" },
-    { to: "/mood-tracker", label: "Mood Tracker", icon: Smile, color: "text-red-600" },
-    { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-red-500" },
-    { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-red-600" },
-    { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-red-500" }
+    { to: "/stigma-strategies", label: "Strategies (Realistic)", icon: Target, color: "text-red-500" },
+    { to: "/stigma-pledge", label: "Pledge Activity", icon: Heart, color: "text-red-600" },
+    { to: "/stigma-harm", label: "How Stigma Harms You", icon: Shield, color: "text-red-500" }
   ];
 
   // Dynamic wellness badges based on real user data
