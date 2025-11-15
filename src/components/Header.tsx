@@ -623,6 +623,18 @@ const Header = () => {
                           <p className="text-sm font-semibold text-foreground truncate">{user.email}</p>
                         </div>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full border-2 hover:bg-destructive hover:text-destructive-foreground transition-all"
+                        onClick={() => {
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </Button>
                     </>
                   ) : (
                     <div className="md:hidden space-y-2">
