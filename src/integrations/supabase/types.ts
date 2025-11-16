@@ -139,6 +139,104 @@ export type Database = {
         }
         Relationships: []
       }
+      sequence_steps: {
+        Row: {
+          audio_script: string | null
+          completed: boolean
+          completed_at: string | null
+          content: string
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          intervention_key: string
+          sequence_id: string
+          step_order: number
+          title: string
+          type: string
+        }
+        Insert: {
+          audio_script?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          content: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          intervention_key: string
+          sequence_id: string
+          step_order: number
+          title: string
+          type: string
+        }
+        Update: {
+          audio_script?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          content?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          intervention_key?: string
+          sequence_id?: string
+          step_order?: number
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sequence_steps_sequence_id_fkey"
+            columns: ["sequence_id"]
+            isOneToOne: false
+            referencedRelation: "sequences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sequences: {
+        Row: {
+          completed_steps: number
+          created_at: string
+          description: string | null
+          gad7_score: number | null
+          id: string
+          phq9_score: number | null
+          status: string
+          title: string
+          total_steps: number
+          updated_at: string
+          user_id: string
+          who5_score: number | null
+        }
+        Insert: {
+          completed_steps?: number
+          created_at?: string
+          description?: string | null
+          gad7_score?: number | null
+          id?: string
+          phq9_score?: number | null
+          status?: string
+          title: string
+          total_steps?: number
+          updated_at?: string
+          user_id: string
+          who5_score?: number | null
+        }
+        Update: {
+          completed_steps?: number
+          created_at?: string
+          description?: string | null
+          gad7_score?: number | null
+          id?: string
+          phq9_score?: number | null
+          status?: string
+          title?: string
+          total_steps?: number
+          updated_at?: string
+          user_id?: string
+          who5_score?: number | null
+        }
+        Relationships: []
+      }
       user_wellness_stats: {
         Row: {
           created_at: string

@@ -5,7 +5,7 @@ import { User } from "@supabase/supabase-js";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award } from "lucide-react";
+import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award, Brain } from "lucide-react";
 import { motion } from "framer-motion";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import PageNavigation from "@/components/PageNavigation";
@@ -77,6 +77,16 @@ const Dashboard = () => {
 
   const progressCards = [
     {
+      title: "Mind Sequencing",
+      description: "Personalized mental wellness interventions",
+      icon: Brain,
+      color: "from-purple-500 to-pink-500",
+      progress: 0,
+      count: 0,
+      goal: 1,
+      action: () => navigate("/mind-sequencing")
+    },
+    {
       title: "Mood Tracking",
       description: "Track your daily emotional wellness",
       icon: Smile,
@@ -98,22 +108,22 @@ const Dashboard = () => {
     },
     {
       title: "Diagnosis Support",
-      description: "Professional consultation sessions",
+      description: "Access professional mental health care",
       icon: Stethoscope,
-      color: "from-purple-500 to-pink-500",
-      progress: 0, // Will be tracked later
+      color: "from-green-500 to-emerald-500",
+      progress: 0,
       count: 0,
-      goal: 3,
-      action: () => navigate("/cbt-consultation")
+      goal: 1,
+      action: () => navigate("/tertiary-care")
     },
     {
-      title: "Community Support",
-      description: "Engage with support resources",
+      title: "Community",
+      description: "Connect with support groups",
       icon: HeartHandshake,
-      color: "from-green-500 to-emerald-500",
-      progress: Math.min((wellnessStats.total_sessions / 20) * 100, 100),
-      count: wellnessStats.total_sessions,
-      goal: 20,
+      color: "from-pink-500 to-rose-500",
+      progress: 0,
+      count: 0,
+      goal: 1,
       action: () => navigate("/resources")
     }
   ];

@@ -42,6 +42,9 @@ const AnxietyScreening = lazy(() => import("./pages/AnxietyScreening"));
 const MentalHealthNews = lazy(() => import("./pages/MentalHealthNews"));
 const ResearchUpdates = lazy(() => import("./pages/ResearchUpdates"));
 const StigmaStrategies = lazy(() => import("./pages/StigmaStrategies"));
+const MindSequencing = lazy(() => import("./pages/MindSequencing"));
+const MindSequencingGenerate = lazy(() => import("./pages/MindSequencingGenerate"));
+const MindSequencingPlay = lazy(() => import("./pages/MindSequencingPlay"));
 
 const queryClient = new QueryClient();
 
@@ -129,6 +132,9 @@ const App = () => {
                   <Route path="/mental-health-news" element={<ProtectedRoute><MentalHealthNews /></ProtectedRoute>} />
                   <Route path="/research-updates" element={<ProtectedRoute><ResearchUpdates /></ProtectedRoute>} />
                   <Route path="/stigma-strategies" element={<ProtectedRoute><StigmaStrategies /></ProtectedRoute>} />
+                  <Route path="/mind-sequencing" element={<ProtectedRoute><MindSequencing /></ProtectedRoute>} />
+                  <Route path="/mind-sequencing/generate" element={<ProtectedRoute><MindSequencingGenerate /></ProtectedRoute>} />
+                  <Route path="/mind-sequencing/:id" element={<ProtectedRoute><MindSequencingPlay /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
