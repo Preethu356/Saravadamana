@@ -45,6 +45,9 @@ const StigmaStrategies = lazy(() => import("./pages/StigmaStrategies"));
 const MindSequencing = lazy(() => import("./pages/MindSequencing"));
 const MindSequencingGenerate = lazy(() => import("./pages/MindSequencingGenerate"));
 const MindSequencingPlay = lazy(() => import("./pages/MindSequencingPlay"));
+const MindYourDiet = lazy(() => import("./pages/MindYourDiet"));
+const MindYourGym = lazy(() => import("./pages/MindYourGym"));
+const MindYourSleep = lazy(() => import("./pages/MindYourSleep"));
 
 const queryClient = new QueryClient();
 
@@ -135,6 +138,16 @@ const App = () => {
                   <Route path="/mind-sequencing" element={<ProtectedRoute><MindSequencing /></ProtectedRoute>} />
                   <Route path="/mind-sequencing/generate" element={<ProtectedRoute><MindSequencingGenerate /></ProtectedRoute>} />
                   <Route path="/mind-sequencing/:id" element={<ProtectedRoute><MindSequencingPlay /></ProtectedRoute>} />
+                  
+                  {/* Mind Matters Routes */}
+                  <Route path="/mind-your-diet" element={<ProtectedRoute><MindYourDiet /></ProtectedRoute>} />
+                  <Route path="/mind-your-gym" element={<ProtectedRoute><MindYourGym /></ProtectedRoute>} />
+                  <Route path="/mind-your-sleep" element={<ProtectedRoute><MindYourSleep /></ProtectedRoute>} />
+                  <Route path="/personality-screening" element={<ProtectedRoute><PersonalityScreening /></ProtectedRoute>} />
+                  <Route path="/wellness-plan" element={<ProtectedRoute><WellnessPlanGenerator /></ProtectedRoute>} />
+                  <Route path="/mental-health-news" element={<ProtectedRoute><MentalHealthNews /></ProtectedRoute>} />
+                  <Route path="/research-updates" element={<ProtectedRoute><ResearchUpdates /></ProtectedRoute>} />
+                  <Route path="/stigma-strategies" element={<ProtectedRoute><StigmaStrategies /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />

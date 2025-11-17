@@ -160,6 +160,41 @@ const Header = () => {
 
     setWellnessStats(data);
   };
+              
+              {/* Mind Matters Dropdown */}
+              <Collapsible open={preventionOpen} onOpenChange={setPreventionOpen}>
+                <CollapsibleTrigger className="flex items-center gap-1 hover:text-primary transition-colors">
+                  <Heart className="h-5 w-5" />
+                  <span>Mind Matters</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${preventionOpen ? 'rotate-180' : ''}`} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="absolute mt-2 bg-background border rounded-lg shadow-lg py-2 min-w-[200px] z-50">
+                  <Link to="/mind-your-diet" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <span>🍎</span> Mind Your Diet
+                  </Link>
+                  <Link to="/mind-your-gym" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <span>💪</span> Mind Your Gym
+                  </Link>
+                  <Link to="/mind-your-sleep" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <span>😴</span> Mind Your Sleep
+                  </Link>
+                  <Link to="/personality-screening" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <Sparkles className="h-4 w-4" /> Mind Reflection
+                  </Link>
+                  <Link to="/wellness-plan" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <Calendar className="h-4 w-4" /> My Mind Plan
+                  </Link>
+                  <Link to="/mental-health-news" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <Newspaper className="h-4 w-4" /> Mental Health News
+                  </Link>
+                  <Link to="/research-updates" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <BookOpen className="h-4 w-4" /> Research Updates
+                  </Link>
+                  <Link to="/stigma-strategies" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
+                    <Megaphone className="h-4 w-4" /> Stigma Reduction
+                  </Link>
+                </CollapsibleContent>
+              </Collapsible>
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

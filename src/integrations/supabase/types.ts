@@ -67,6 +67,150 @@ export type Database = {
           },
         ]
       }
+      exercise_plans: {
+        Row: {
+          completed_sessions: number | null
+          created_at: string | null
+          exercises: Json
+          id: string
+          plan_type: string
+          reminder_enabled: boolean | null
+          scheduled_time: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_sessions?: number | null
+          created_at?: string | null
+          exercises: Json
+          id?: string
+          plan_type: string
+          reminder_enabled?: boolean | null
+          scheduled_time?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_sessions?: number | null
+          created_at?: string | null
+          exercises?: Json
+          id?: string
+          plan_type?: string
+          reminder_enabled?: boolean | null
+          scheduled_time?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mind_plans: {
+        Row: {
+          created_at: string | null
+          current_day: number | null
+          duration_days: number | null
+          id: string
+          interventions: Json
+          streak_count: number | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_day?: number | null
+          duration_days?: number | null
+          id?: string
+          interventions: Json
+          streak_count?: number | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_day?: number | null
+          duration_days?: number | null
+          id?: string
+          interventions?: Json
+          streak_count?: number | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nutrition_plans: {
+        Row: {
+          completed_days: number | null
+          created_at: string | null
+          id: string
+          meals: Json
+          plan_type: string
+          title: string
+          total_days: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_days?: number | null
+          created_at?: string | null
+          id?: string
+          meals: Json
+          plan_type: string
+          title: string
+          total_days?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_days?: number | null
+          created_at?: string | null
+          id?: string
+          meals?: Json
+          plan_type?: string
+          title?: string
+          total_days?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      personality_results: {
+        Row: {
+          archetype: string
+          created_at: string | null
+          growth_areas: string[]
+          id: string
+          position_score: number
+          reflection_notes: string | null
+          strengths: string[]
+          user_id: string
+        }
+        Insert: {
+          archetype: string
+          created_at?: string | null
+          growth_areas: string[]
+          id?: string
+          position_score: number
+          reflection_notes?: string | null
+          strengths: string[]
+          user_id: string
+        }
+        Update: {
+          archetype?: string
+          created_at?: string | null
+          growth_areas?: string[]
+          id?: string
+          position_score?: number
+          reflection_notes?: string | null
+          strengths?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -234,6 +378,39 @@ export type Database = {
           updated_at?: string
           user_id?: string
           who5_score?: number | null
+        }
+        Relationships: []
+      }
+      sleep_routines: {
+        Row: {
+          bedtime_routine: Json
+          body_image_reflection: string | null
+          created_at: string | null
+          id: string
+          psqi_score: number | null
+          sleep_quality_rating: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bedtime_routine: Json
+          body_image_reflection?: string | null
+          created_at?: string | null
+          id?: string
+          psqi_score?: number | null
+          sleep_quality_rating?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bedtime_routine?: Json
+          body_image_reflection?: string | null
+          created_at?: string | null
+          id?: string
+          psqi_score?: number | null
+          sleep_quality_rating?: number | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
