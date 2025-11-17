@@ -408,7 +408,7 @@ const Header = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Brain className="w-4 h-4 text-white" />
                         </div>
-                        <span className="text-foreground font-semibold">Mental Health Support</span>
+                        <span className="text-foreground font-semibold">Mental Health</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${mentalHealthOpen ? 'rotate-180 text-primary' : ''}`} />
                     </CollapsibleTrigger>
@@ -495,21 +495,23 @@ const Header = () => {
                   <Collapsible open={newsOpen} onOpenChange={setNewsOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/10 hover:to-primary/10 border-2 border-transparent hover:border-accent/20 group">
                       <div className="flex items-center gap-3">
-                        <Newspaper className="w-5 h-5 text-accent group-hover:scale-110 transition-transform" />
-                        <span>Mental Health News</span>
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Newspaper className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-foreground font-semibold">Mental Health News</span>
                       </div>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${newsOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${newsOpen ? 'rotate-180' : ''}`} />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 space-y-2 mt-2">
+                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
                       <Link
                         to="/mental-health-news"
                         onClick={() => {
                           setNewsOpen(false);
                           setIsMenuOpen(false);
                         }}
-                        className="cursor-pointer block py-2 px-4 text-sm text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-lg transition-all"
+                        className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
                       >
-                        India Updates
+                        <span>India Updates</span>
                       </Link>
                       <Link
                         to="/research-updates"
@@ -517,9 +519,9 @@ const Header = () => {
                           setNewsOpen(false);
                           setIsMenuOpen(false);
                         }}
-                        className="cursor-pointer block py-2 px-4 text-sm text-muted-foreground hover:text-accent hover:bg-accent/5 rounded-lg transition-all"
+                        className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
                       >
-                        Research & Technology
+                        <span>Research & Technology</span>
                       </Link>
                     </CollapsibleContent>
                   </Collapsible>
@@ -535,7 +537,7 @@ const Header = () => {
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                       <MessageCircle className="w-4 h-4 text-white" />
                     </div>
-                    <span>Mental Health Support</span>
+                    <span className="text-foreground font-semibold">Mental Health Support</span>
                   </Link>
                 </div>
 
