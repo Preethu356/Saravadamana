@@ -212,7 +212,7 @@ const Header = () => {
 
   const navLinks = [
     { to: "/", label: "Home", icon: Home, color: "text-primary" },
-    { to: "/about", label: "About Sarvadamana", icon: Heart, color: "text-accent" },
+    { to: "/about", label: "About Us", icon: Heart, color: "text-accent" },
     { to: "/dashboard", label: "Dashboard", icon: Activity, color: "text-secondary" }
   ];
 
@@ -432,7 +432,7 @@ const Header = () => {
                 })}
 
                 {/* Mental Health Collapsible */}
-                <div className="mt-2" onMouseEnter={() => setMentalHealthOpen(true)} onMouseLeave={() => setMentalHealthOpen(false)}>
+                <div className="mt-2">
                   <Collapsible open={mentalHealthOpen} onOpenChange={setMentalHealthOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 border-2 border-transparent hover:border-primary/20 group">
                       <div className="flex items-center gap-3">
@@ -463,14 +463,14 @@ const Header = () => {
                 </div>
 
                 {/* Prevention Collapsible */}
-                <div className="mt-2" onMouseEnter={() => setPreventionOpen(true)} onMouseLeave={() => setPreventionOpen(false)}>
+                <div className="mt-2">
                   <Collapsible open={preventionOpen} onOpenChange={setPreventionOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Shield className="w-4 h-4 text-white" />
                         </div>
-                        <span>Preventions in Mental Health</span>
+                        <span>Mental Health Preventions</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${preventionOpen ? 'rotate-180 text-cyan-500' : ''}`} />
                     </CollapsibleTrigger>
@@ -494,7 +494,7 @@ const Header = () => {
                 </div>
 
                 {/* Mind Matters Collapsible */}
-                <div className="mt-2" onMouseEnter={() => setMindMattersOpen(true)} onMouseLeave={() => setMindMattersOpen(false)}>
+                <div className="mt-2">
                   <Collapsible open={mindMattersOpen} onOpenChange={setMindMattersOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-green-500/10 hover:to-teal-500/10 border-2 border-transparent hover:border-green-500/20 group">
                       <div className="flex items-center gap-3">
@@ -521,13 +521,13 @@ const Header = () => {
                   </Collapsible>
                 </div>
 
-                {/* Mental Health Resources Collapsible */}
-                <div className="mt-2" onMouseEnter={() => setResourcesOpen(true)} onMouseLeave={() => setResourcesOpen(false)}>
+                {/* Mental Health Tools Collapsible */}
+                <div className="mt-2">
                   <Collapsible open={resourcesOpen} onOpenChange={setResourcesOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-secondary/10 hover:to-accent/10 border-2 border-transparent hover:border-secondary/20 group">
                       <div className="flex items-center gap-3">
                         <BookOpen className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
-                        <span>Mental Health Resources</span>
+                        <span>Mental Health Tools</span>
                       </div>
                       <ChevronDown className={`w-4 h-4 transition-transform ${resourcesOpen ? 'rotate-180' : ''}`} />
                     </CollapsibleTrigger>
@@ -550,7 +550,7 @@ const Header = () => {
                 </div>
 
                 {/* Mental Health News Collapsible */}
-                <div className="mt-2" onMouseEnter={() => setNewsOpen(true)} onMouseLeave={() => setNewsOpen(false)}>
+                <div className="mt-2">
                   <Collapsible open={newsOpen} onOpenChange={setNewsOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/10 hover:to-primary/10 border-2 border-transparent hover:border-accent/20 group">
                       <div className="flex items-center gap-3">
@@ -599,7 +599,7 @@ const Header = () => {
                 </div>
 
                 {/* Fight Stigma - Talk to Break */}
-                <div className="mt-2" onMouseEnter={() => setStigmaOpen(true)} onMouseLeave={() => setStigmaOpen(false)}>
+                <div className="mt-2">
                   <Collapsible open={stigmaOpen} onOpenChange={setStigmaOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-red-600 transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-red-500/10 hover:to-red-600/10 border-2 border-transparent hover:border-red-500/30 group relative overflow-hidden">
                       <motion.div 
@@ -615,25 +615,10 @@ const Header = () => {
                         }}
                       />
                       <div className="flex items-center gap-3 relative z-10">
-                        <motion.div 
-                          className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center"
-                          animate={{
-                            boxShadow: [
-                              "0 0 10px rgba(239, 68, 68, 0.5)",
-                              "0 0 25px rgba(239, 68, 68, 0.8)",
-                              "0 0 10px rgba(239, 68, 68, 0.5)"
-                            ],
-                            scale: [1, 1.1, 1]
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
-                        >
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Megaphone className="w-4 h-4 text-white" />
-                        </motion.div>
-                        <span className="font-bold">Fight Stigma - "Talk to Break"</span>
+                        </div>
+                        <span className="font-bold">Fight Stigma - Talk to Break</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 relative z-10 ${stigmaOpen ? 'rotate-180 text-red-600' : ''}`} />
                     </CollapsibleTrigger>
