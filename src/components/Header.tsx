@@ -43,7 +43,6 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [mentalHealthOpen, setMentalHealthOpen] = useState(false);
-  const [preventionOpen, setPreventionOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [newsOpen, setNewsOpen] = useState(false);
   const [stigmaOpen, setStigmaOpen] = useState(false);
@@ -161,41 +160,6 @@ const Header = () => {
 
     setWellnessStats(data);
   };
-              
-              {/* Mind Matters Dropdown */}
-              <Collapsible open={preventionOpen} onOpenChange={setPreventionOpen}>
-                <CollapsibleTrigger className="flex items-center gap-1 hover:text-primary transition-colors">
-                  <Heart className="h-5 w-5" />
-                  <span>Mind Matters</span>
-                  <ChevronDown className={`h-4 w-4 transition-transform ${preventionOpen ? 'rotate-180' : ''}`} />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="absolute mt-2 bg-background border rounded-lg shadow-lg py-2 min-w-[200px] z-50">
-                  <Link to="/mind-your-diet" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <span>🍎</span> Mind Your Diet
-                  </Link>
-                  <Link to="/mind-your-gym" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <span>💪</span> Mind Your Gym
-                  </Link>
-                  <Link to="/mind-your-sleep" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <span>😴</span> Mind Your Sleep
-                  </Link>
-                  <Link to="/personality-screening" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <Sparkles className="h-4 w-4" /> Mind Reflection
-                  </Link>
-                  <Link to="/wellness-plan" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <Calendar className="h-4 w-4" /> My Mind Plan
-                  </Link>
-                  <Link to="/mental-health-news" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <Newspaper className="h-4 w-4" /> Mental Health News
-                  </Link>
-                  <Link to="/research-updates" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <BookOpen className="h-4 w-4" /> Research Updates
-                  </Link>
-                  <Link to="/stigma-strategies" className="flex items-center gap-2 px-4 py-2 hover:bg-secondary">
-                    <Megaphone className="h-4 w-4" /> Stigma Reduction
-                  </Link>
-                </CollapsibleContent>
-              </Collapsible>
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -237,7 +201,12 @@ const Header = () => {
     { to: "/mood-tracker", label: "Mood Tracker", icon: Smile, color: "text-yellow-500" },
     { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-cyan-500" },
     { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-orange-500" },
-    { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" }
+    { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" },
+    // Prevention submenu moved here
+    { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
+    { to: "/primary-care", label: "Primary Prevention", icon: Heart, color: "text-green-500" },
+    { to: "/secondary-care", label: "Secondary Prevention", icon: Activity, color: "text-blue-500" },
+    { to: "/tertiary-care", label: "Tertiary Prevention", icon: Brain, color: "text-purple-500" }
   ];
 
   const stigmaLinks = [
@@ -439,43 +408,12 @@ const Header = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Brain className="w-4 h-4 text-white" />
                         </div>
-                        <span>Mental Health</span>
+                        <span className="text-foreground font-semibold">Mental Health Support</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${mentalHealthOpen ? 'rotate-180 text-primary' : ''}`} />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
                       {mentalHealthLinks.map((link) => {
-                        const Icon = link.icon;
-                        return (
-                          <Link
-                            key={link.to}
-                            to={link.to}
-                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
-                            <span>{link.label}</span>
-                          </Link>
-                        );
-                      })}
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-
-                {/* Prevention Collapsible */}
-                <div className="mt-2">
-                  <Collapsible open={preventionOpen} onOpenChange={setPreventionOpen}>
-                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Shield className="w-4 h-4 text-white" />
-                        </div>
-                        <span>Mental Health Preventions</span>
-                      </div>
-                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${preventionOpen ? 'rotate-180 text-cyan-500' : ''}`} />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
-                      {preventionLinks.map((link) => {
                         const Icon = link.icon;
                         return (
                           <Link
@@ -501,7 +439,7 @@ const Header = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Heart className="w-4 h-4 text-white" />
                         </div>
-                        <span>Mind Matters</span>
+                        <span className="text-foreground font-semibold">Mind Matters</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${mindMattersOpen ? 'rotate-180 text-green-500' : ''}`} />
                     </CollapsibleTrigger>
@@ -526,25 +464,28 @@ const Header = () => {
                   <Collapsible open={resourcesOpen} onOpenChange={setResourcesOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-secondary/10 hover:to-accent/10 border-2 border-transparent hover:border-secondary/20 group">
                       <div className="flex items-center gap-3">
-                        <BookOpen className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
-                        <span>Mental Health Tools</span>
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-secondary to-accent flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <BookOpen className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-foreground font-semibold">Mental Health Tools</span>
                       </div>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${resourcesOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${resourcesOpen ? 'rotate-180' : ''}`} />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 space-y-2 mt-2">
-                      {resourcesLinks.map((link) => (
-                        <Link
-                          key={link.to}
-                          to={link.to}
-                          onClick={() => {
-                            setResourcesOpen(false);
-                            setIsMenuOpen(false);
-                          }}
-                          className="cursor-pointer block py-2 px-4 text-sm text-muted-foreground hover:text-secondary hover:bg-secondary/5 rounded-lg transition-all"
-                        >
-                          {link.label}
-                        </Link>
-                      ))}
+                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                      {resourcesLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.to}
+                            to={link.to}
+                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
+                            <span>{link.label}</span>
+                          </Link>
+                        );
+                      })}
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
