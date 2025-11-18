@@ -12,12 +12,15 @@ const Index = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [volume, setVolume] = useState([0.3]); // Start at 30% volume for gentle intro
+  const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const volume = 0.02; // Fixed 2% volume
 
   useEffect(() => {
     // Set initial volume
     if (audioRef.current) {
-      audioRef.current.volume = volume[0];
+      audioRef.current.volume = volume;
     }
 
     // Try to autoplay with gentle volume
@@ -44,12 +47,31 @@ const Index = () => {
     };
   }, [hasInteracted]);
 
-  // Update volume when slider changes
+  // Handle dragging
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume[0];
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging) {
+        setPosition({
+          x: e.clientX - dragOffset.x,
+          y: e.clientY - dragOffset.y,
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
     }
-  }, [volume]);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
 
   const toggleMusic = async () => {
     if (audioRef.current) {
@@ -68,6 +90,14 @@ const Index = () => {
     }
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    });
+  };
+
   return (
     <div className="min-h-screen">
       {/* Background Music - Slow meditative instrumental */}
@@ -81,37 +111,29 @@ const Index = () => {
         Your browser does not support the audio element.
       </audio>
       
-      {/* Music Control Panel */}
-      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-background/95 backdrop-blur-sm border-2 border-border rounded-full shadow-lg p-2 pr-4">
+      {/* Draggable Music Button */}
+      <div
+        className="fixed z-50 cursor-move"
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+        }}
+        onMouseDown={handleMouseDown}
+      >
         <Button
           onClick={toggleMusic}
           size="icon"
           variant="ghost"
-          className="w-10 h-10 rounded-full hover:scale-110 transition-transform"
-          aria-label={isPlaying ? "Pause music" : "Play music"}
+          className="w-16 h-16 rounded-full bg-primary/90 hover:bg-primary backdrop-blur-sm border-2 border-primary-foreground/20 shadow-xl hover:scale-110 transition-all group"
+          aria-label={isPlaying ? "Pause music - Listen to me" : "Play music - Listen to me"}
+          title="Listen to me"
         >
           {isPlaying ? (
-            <Volume2 className="w-5 h-5 text-primary" />
+            <Volume2 className="w-7 h-7 text-primary-foreground animate-pulse" />
           ) : (
-            <VolumeX className="w-5 h-5 text-muted-foreground" />
+            <VolumeX className="w-7 h-7 text-primary-foreground" />
           )}
         </Button>
-        
-        {/* Volume Slider */}
-        <div className="w-24">
-          <Slider
-            value={volume}
-            onValueChange={setVolume}
-            max={1}
-            step={0.01}
-            className="cursor-pointer"
-            aria-label="Volume control"
-          />
-        </div>
-        
-        <span className="text-xs text-muted-foreground font-medium min-w-[2.5rem] text-right">
-          {Math.round(volume[0] * 100)}%
-        </span>
       </div>
       
       <NewsTicker />
