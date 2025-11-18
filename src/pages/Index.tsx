@@ -4,7 +4,6 @@ import ComplianceFooter from "@/components/ComplianceFooter";
 import Gallery from "@/components/Gallery";
 import PageNavigation from "@/components/PageNavigation";
 import NewsTicker from "@/components/NewsTicker";
-import { Music, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 
@@ -122,16 +121,14 @@ const Index = () => {
       >
         <Button
           onClick={toggleMusic}
-          size="icon"
           variant="ghost"
-          className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 backdrop-blur-sm border-2 border-white/30 shadow-2xl hover:scale-110 transition-all group relative"
+          className="px-6 py-2 h-auto rounded-full bg-gradient-to-r from-purple-600/90 to-pink-600/90 hover:from-purple-700 hover:to-pink-700 backdrop-blur-md border border-white/20 shadow-lg hover:shadow-xl transition-all hover:scale-105"
           aria-label="Listen to me"
           title="Listen to me"
         >
-          <div className="relative flex items-center justify-center">
-            <Heart className={`w-12 h-12 text-white ${isPlaying ? 'animate-pulse' : ''}`} fill="currentColor" />
-            <Music className="w-6 h-6 text-white absolute" />
-          </div>
+          <span className={`text-white font-semibold text-sm tracking-wider ${isPlaying ? 'animate-pulse' : ''}`}>
+            Listen to me
+          </span>
         </Button>
       </div>
       
