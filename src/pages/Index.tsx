@@ -4,7 +4,7 @@ import ComplianceFooter from "@/components/ComplianceFooter";
 import Gallery from "@/components/Gallery";
 import PageNavigation from "@/components/PageNavigation";
 import NewsTicker from "@/components/NewsTicker";
-import { Volume2, VolumeX } from "lucide-react";
+import { Music, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 
@@ -12,7 +12,7 @@ const Index = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [position, setPosition] = useState({ x: window.innerWidth - 100, y: window.innerHeight - 100 });
+  const [position, setPosition] = useState({ x: 20, y: 20 }); // Top left position
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const volume = 0.02; // Fixed 2% volume
@@ -111,7 +111,7 @@ const Index = () => {
         Your browser does not support the audio element.
       </audio>
       
-      {/* Draggable Music Button */}
+      {/* Draggable Music Button - Listen to me */}
       <div
         className="fixed z-50 cursor-move"
         style={{
@@ -124,15 +124,14 @@ const Index = () => {
           onClick={toggleMusic}
           size="icon"
           variant="ghost"
-          className="w-16 h-16 rounded-full bg-primary/90 hover:bg-primary backdrop-blur-sm border-2 border-primary-foreground/20 shadow-xl hover:scale-110 transition-all group"
-          aria-label={isPlaying ? "Pause music - Listen to me" : "Play music - Listen to me"}
+          className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 backdrop-blur-sm border-2 border-white/30 shadow-2xl hover:scale-110 transition-all group relative"
+          aria-label="Listen to me"
           title="Listen to me"
         >
-          {isPlaying ? (
-            <Volume2 className="w-7 h-7 text-primary-foreground animate-pulse" />
-          ) : (
-            <VolumeX className="w-7 h-7 text-primary-foreground" />
-          )}
+          <div className="relative flex items-center justify-center">
+            <Heart className={`w-12 h-12 text-white ${isPlaying ? 'animate-pulse' : ''}`} fill="currentColor" />
+            <Music className="w-6 h-6 text-white absolute" />
+          </div>
         </Button>
       </div>
       
