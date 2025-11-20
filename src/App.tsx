@@ -48,6 +48,7 @@ const MindSequencingPlay = lazy(() => import("./pages/MindSequencingPlay"));
 const MindYourDiet = lazy(() => import("./pages/MindYourDiet"));
 const MindYourGym = lazy(() => import("./pages/MindYourGym"));
 const MindYourSleep = lazy(() => import("./pages/MindYourSleep"));
+const QuotesPage = lazy(() => import("./pages/QuotesPage"));
 
 const queryClient = new QueryClient();
 
@@ -148,6 +149,7 @@ const App = () => {
                   <Route path="/mental-health-news" element={<ProtectedRoute><MentalHealthNews /></ProtectedRoute>} />
                   <Route path="/research-updates" element={<ProtectedRoute><ResearchUpdates /></ProtectedRoute>} />
                   <Route path="/stigma-strategies" element={<ProtectedRoute><StigmaStrategies /></ProtectedRoute>} />
+                  <Route path="/quotes" element={<ProtectedRoute><QuotesPage /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
