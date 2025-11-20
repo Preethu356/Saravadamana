@@ -10,7 +10,7 @@ const Index = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [position, setPosition] = useState({ x: 16, y: 16 }); // Top-left corner
+  const [position, setPosition] = useState({ x: 16, y: 100 }); // Left corner below quote ticker
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const volume = 0.02; // Fixed 2% volume
