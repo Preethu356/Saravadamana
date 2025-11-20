@@ -10,7 +10,7 @@ const Index = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [position, setPosition] = useState({ x: 20, y: 150 }); // Below quote area on left
+  const [position, setPosition] = useState({ x: 16, y: 16 }); // Top-left corner
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const volume = 0.02; // Fixed 2% volume
@@ -120,18 +120,18 @@ const Index = () => {
       >
         <div className={`relative ${isPlaying ? 'animate-pulse' : ''}`}>
           {/* Pulsating glow effect */}
-          <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-60 ${isPlaying ? 'animate-pulse' : ''}`} />
+          <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-md opacity-50 ${isPlaying ? 'animate-pulse' : ''}`} />
           
-          {/* Round button */}
+          {/* Round button - smaller size */}
           <Button
             onClick={toggleMusic}
             variant="ghost"
-            size="lg"
-            className="relative w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 backdrop-blur-md border-2 border-white/30 shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-110 p-0"
+            size="sm"
+            className="relative w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 backdrop-blur-md border-2 border-white/30 shadow-xl hover:shadow-purple-500/50 transition-all hover:scale-105 p-0"
             aria-label="Listen"
             title="Listen"
           >
-            <span className={`text-white font-bold text-base tracking-wider ${isPlaying ? 'animate-pulse' : ''}`}>
+            <span className={`text-white font-semibold text-xs tracking-wide ${isPlaying ? 'animate-pulse' : ''}`}>
               Listen
             </span>
           </Button>
