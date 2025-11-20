@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const PAGE_ORDER = [
   "/",
   "/about",
+  "/quotes",
   "/dashboard",
   "/school-mental-health",
   "/workplace-mental-health",
