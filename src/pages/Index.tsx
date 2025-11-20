@@ -10,7 +10,7 @@ const Index = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [position, setPosition] = useState({ x: 20, y: 180 }); // Below quote area
+  const [position, setPosition] = useState({ x: 20, y: 150 }); // Below quote area on left
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const volume = 0.02; // Fixed 2% volume
@@ -109,7 +109,7 @@ const Index = () => {
         Your browser does not support the audio element.
       </audio>
       
-      {/* Draggable Music Button - Listen to me */}
+      {/* Draggable Round Pulsating Listen Button */}
       <div
         className="fixed z-50 cursor-move"
         style={{
@@ -118,17 +118,24 @@ const Index = () => {
         }}
         onMouseDown={handleMouseDown}
       >
-        <Button
+        <div className={`relative ${isPlaying ? 'animate-pulse' : ''}`}>
+          {/* Pulsating glow effect */}
+          <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-60 ${isPlaying ? 'animate-pulse' : ''}`} />
+          
+          {/* Round button */}
+          <Button
             onClick={toggleMusic}
             variant="ghost"
-            className="px-5 py-2 h-auto rounded-full bg-gradient-to-r from-purple-600/90 to-pink-600/90 hover:from-purple-700 hover:to-pink-700 backdrop-blur-md border border-white/20 shadow-lg hover:shadow-xl transition-all hover:scale-105"
-            aria-label="Listen to me"
-            title="Listen to me"
+            size="lg"
+            className="relative w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 backdrop-blur-md border-2 border-white/30 shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-110 p-0"
+            aria-label="Listen"
+            title="Listen"
           >
-          <span className={`text-white font-semibold text-sm tracking-wide ${isPlaying ? 'animate-pulse' : ''}`}>
-            Listen to me
-          </span>
-        </Button>
+            <span className={`text-white font-bold text-base tracking-wider ${isPlaying ? 'animate-pulse' : ''}`}>
+              Listen
+            </span>
+          </Button>
+        </div>
       </div>
       
       <NewsTicker />
