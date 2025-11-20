@@ -8,6 +8,7 @@ import { lazy, Suspense, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SplashScreen from "./components/SplashScreen";
 import { supabase } from "@/integrations/supabase/client";
@@ -95,6 +96,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
