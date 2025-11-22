@@ -5,8 +5,11 @@ import Gallery from "@/components/Gallery";
 import PageNavigation from "@/components/PageNavigation";
 import NewsTicker from "@/components/NewsTicker";
 import { Button } from "@/components/ui/button";
+import { ConsentModal } from "@/components/ConsentModal";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Index = () => {
+  const { hasConsent, saveConsent } = useAnalytics();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -137,6 +140,11 @@ const Index = () => {
           </Button>
         </div>
       </div>
+      
+      <ConsentModal 
+        open={!hasConsent} 
+        onConsent={saveConsent}
+      />
       
       <NewsTicker />
       <Hero />
