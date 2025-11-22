@@ -14,6 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      assessments: {
+        Row: {
+          created_at: string
+          id: string
+          raw: Json
+          score: number
+          tool: string
+          user_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          raw: Json
+          score: number
+          tool: string
+          user_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          raw?: Json
+          score?: number
+          tool?: string
+          user_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessments_user_profile_id_fkey"
+            columns: ["user_profile_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audio_metadata: {
+        Row: {
+          audio_url: string
+          created_at: string
+          duration_sec: number | null
+          id: string
+          intervention_id: string
+          provider: string
+        }
+        Insert: {
+          audio_url: string
+          created_at?: string
+          duration_sec?: number | null
+          id?: string
+          intervention_id: string
+          provider: string
+        }
+        Update: {
+          audio_url?: string
+          created_at?: string
+          duration_sec?: number | null
+          id?: string
+          intervention_id?: string
+          provider?: string
+        }
+        Relationships: []
+      }
       communities: {
         Row: {
           created_at: string
@@ -67,6 +129,41 @@ export type Database = {
           },
         ]
       }
+      consent_logs: {
+        Row: {
+          analytics: boolean | null
+          consented_at: string
+          data_sharing: boolean | null
+          id: string
+          research: boolean | null
+          user_profile_id: string
+        }
+        Insert: {
+          analytics?: boolean | null
+          consented_at?: string
+          data_sharing?: boolean | null
+          id?: string
+          research?: boolean | null
+          user_profile_id: string
+        }
+        Update: {
+          analytics?: boolean | null
+          consented_at?: string
+          data_sharing?: boolean | null
+          id?: string
+          research?: boolean | null
+          user_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consent_logs_user_profile_id_fkey"
+            columns: ["user_profile_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercise_plans: {
         Row: {
           completed_sessions: number | null
@@ -105,6 +202,79 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      interactions: {
+        Row: {
+          created_at: string
+          event_props: Json | null
+          event_type: string
+          id: string
+          user_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_props?: Json | null
+          event_type: string
+          id?: string
+          user_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          event_props?: Json | null
+          event_type?: string
+          id?: string
+          user_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interactions_user_profile_id_fkey"
+            columns: ["user_profile_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lifestyle_logs: {
+        Row: {
+          created_at: string
+          diet_quality: number | null
+          exercise_minutes: number | null
+          id: string
+          log_date: string
+          sleep_hours: number | null
+          user_profile_id: string
+          water_intake_ml: number | null
+        }
+        Insert: {
+          created_at?: string
+          diet_quality?: number | null
+          exercise_minutes?: number | null
+          id?: string
+          log_date: string
+          sleep_hours?: number | null
+          user_profile_id: string
+          water_intake_ml?: number | null
+        }
+        Update: {
+          created_at?: string
+          diet_quality?: number | null
+          exercise_minutes?: number | null
+          id?: string
+          log_date?: string
+          sleep_hours?: number | null
+          user_profile_id?: string
+          water_intake_ml?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lifestyle_logs_user_profile_id_fkey"
+            columns: ["user_profile_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mind_plans: {
         Row: {
@@ -178,6 +348,41 @@ export type Database = {
         }
         Relationships: []
       }
+      personality_profiles: {
+        Row: {
+          animal_label: string | null
+          continuum_value: number | null
+          created_at: string
+          id: string
+          scores: Json
+          user_profile_id: string
+        }
+        Insert: {
+          animal_label?: string | null
+          continuum_value?: number | null
+          created_at?: string
+          id?: string
+          scores: Json
+          user_profile_id: string
+        }
+        Update: {
+          animal_label?: string | null
+          continuum_value?: number | null
+          created_at?: string
+          id?: string
+          scores?: Json
+          user_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personality_profiles_user_profile_id_fkey"
+            columns: ["user_profile_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       personality_results: {
         Row: {
           archetype: string
@@ -246,6 +451,44 @@ export type Database = {
           user_type?: string | null
         }
         Relationships: []
+      }
+      safety_flags: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          meta: Json | null
+          severity: string
+          source: string
+          user_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          meta?: Json | null
+          severity: string
+          source: string
+          user_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          meta?: Json | null
+          severity?: string
+          source?: string
+          user_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "safety_flags_user_profile_id_fkey"
+            columns: ["user_profile_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       screening_results: {
         Row: {
@@ -411,6 +654,39 @@ export type Database = {
           sleep_quality_rating?: number | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          auth_user_id: string
+          created_at: string
+          display_name: string | null
+          id: string
+          preferred_language: string | null
+          preferred_modes: Json | null
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          auth_user_id: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          preferred_language?: string | null
+          preferred_modes?: Json | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auth_user_id?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          preferred_language?: string | null
+          preferred_modes?: Json | null
+          timezone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
