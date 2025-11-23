@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "./components/Header";
+import Watermark from "./components/Watermark";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -51,6 +52,8 @@ const MindYourGym = lazy(() => import("./pages/MindYourGym"));
 const MindYourSleep = lazy(() => import("./pages/MindYourSleep"));
 const QuotesPage = lazy(() => import("./pages/QuotesPage"));
 const Analytics = lazy(() => import("./pages/Analytics"));
+const MindReflection = lazy(() => import("./pages/MindReflection"));
+const MindPlan = lazy(() => import("./pages/MindPlan"));
 
 const queryClient = new QueryClient();
 
@@ -98,11 +101,12 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <Watermark />
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col min-h-screen"
+            className="flex flex-col min-h-screen relative z-10"
           >
             <Header />
             <main className="flex-1">
@@ -154,6 +158,8 @@ const App = () => {
                   <Route path="/stigma-strategies" element={<ProtectedRoute><StigmaStrategies /></ProtectedRoute>} />
                   <Route path="/quotes" element={<ProtectedRoute><QuotesPage /></ProtectedRoute>} />
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                  <Route path="/mind-reflection" element={<ProtectedRoute><MindReflection /></ProtectedRoute>} />
+                  <Route path="/mind-plan" element={<ProtectedRoute><MindPlan /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
