@@ -4,6 +4,7 @@ import growthImage from "@/assets/gallery-growth.jpg";
 import resilienceImage from "@/assets/gallery-resilience.jpg";
 import feelingsImage from "@/assets/gallery-feelings.jpg";
 import selfcareImage from "@/assets/gallery-selfcare.jpg";
+import FeatureCarousel from "@/components/FeatureCarousel";
 
 const Gallery = () => {
   const galleryItems = [
@@ -56,6 +57,8 @@ const Gallery = () => {
             Inspiring visuals and messages to support your mental wellness journey
           </p>
         </div>
+
+        <FeatureCarousel />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {galleryItems.map((item, index) => (
