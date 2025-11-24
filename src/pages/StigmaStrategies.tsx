@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { 
   Target, 
   MessageSquare, 
@@ -19,11 +23,170 @@ import {
   Sparkles,
   MessageCircle,
   GraduationCap,
-  HandHeart
+  HandHeart,
+  Trophy,
+  Award
 } from "lucide-react";
+import { useStigmaProgress } from "@/hooks/useStigmaProgress";
+import { toast } from "sonner";
+
+interface ToolQuestion {
+  id: string;
+  question: string;
+  options?: { value: number; label: string }[];
+  type: "radio" | "text";
+}
 
 const StigmaStrategies = () => {
-  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const { saveProgress, getToolProgress, badges, loading } = useStigmaProgress();
+  const [activeToolResponses, setActiveToolResponses] = useState<Record<string, any>>({});
+
+  const toolQuestions: Record<string, ToolQuestion[]> = {
+    "myth-facts": [
+      {
+        id: "q1",
+        question: "Before this exercise, did you believe any of these myths?",
+        type: "radio",
+        options: [
+          { value: 0, label: "No, I knew they were all myths" },
+          { value: 1, label: "Yes, I believed 1-2 myths" },
+          { value: 2, label: "Yes, I believed 3 or more myths" }
+        ]
+      },
+      {
+        id: "q2",
+        question: "Which fact surprised you the most and why?",
+        type: "text"
+      }
+    ],
+    "story-simulator": [
+      {
+        id: "q1",
+        question: "Practice your response: How would you tell a friend about seeking mental health support?",
+        type: "text"
+      },
+      {
+        id: "q2",
+        question: "Rate your comfort level sharing your mental health journey",
+        type: "radio",
+        options: [
+          { value: 1, label: "Very uncomfortable" },
+          { value: 2, label: "Somewhat uncomfortable" },
+          { value: 3, label: "Neutral" },
+          { value: 4, label: "Comfortable" },
+          { value: 5, label: "Very comfortable" }
+        ]
+      }
+    ],
+    "self-talk-test": [
+      {
+        id: "q1",
+        question: "Write down a negative thought you've had about your mental health",
+        type: "text"
+      },
+      {
+        id: "q2",
+        question: "Now reframe it: What would you say to a friend experiencing the same?",
+        type: "text"
+      },
+      {
+        id: "q3",
+        question: "How often do you judge yourself harshly for mental health struggles?",
+        type: "radio",
+        options: [
+          { value: 5, label: "Always" },
+          { value: 4, label: "Often" },
+          { value: 3, label: "Sometimes" },
+          { value: 2, label: "Rarely" },
+          { value: 1, label: "Never" }
+        ]
+      }
+    ],
+    "literacy-challenge": [
+      {
+        id: "q1",
+        question: "Name 3 mental health conditions you can identify:",
+        type: "text"
+      },
+      {
+        id: "q2",
+        question: "What's the difference between a psychiatrist and a psychologist?",
+        type: "text"
+      },
+      {
+        id: "q3",
+        question: "Rate your mental health literacy",
+        type: "radio",
+        options: [
+          { value: 1, label: "Beginner" },
+          { value: 2, label: "Basic understanding" },
+          { value: 3, label: "Moderate knowledge" },
+          { value: 4, label: "Good knowledge" },
+          { value: 5, label: "Expert level" }
+        ]
+      }
+    ],
+    "compassion-builder": [
+      {
+        id: "q1",
+        question: "Choose your response: A friend says they're feeling depressed",
+        type: "radio",
+        options: [
+          { value: 5, label: "Thank you for trusting me. How can I support you?" },
+          { value: 3, label: "That's tough. Have you tried exercising?" },
+          { value: 1, label: "Everyone feels sad sometimes, you'll be fine" }
+        ]
+      },
+      {
+        id: "q2",
+        question: "Write a compassionate response to someone sharing they're seeing a therapist:",
+        type: "text"
+      },
+      {
+        id: "q3",
+        question: "How comfortable are you supporting someone with mental health challenges?",
+        type: "radio",
+        options: [
+          { value: 1, label: "Very uncomfortable" },
+          { value: 2, label: "Somewhat uncomfortable" },
+          { value: 3, label: "Neutral" },
+          { value: 4, label: "Comfortable" },
+          { value: 5, label: "Very comfortable" }
+        ]
+      }
+    ]
+  };
+
+  const handleToolResponse = (toolId: string, questionId: string, value: any) => {
+    setActiveToolResponses({
+      ...activeToolResponses,
+      [toolId]: {
+        ...activeToolResponses[toolId],
+        [questionId]: value
+      }
+    });
+  };
+
+  const handleSubmitTool = async (toolId: string, toolName: string) => {
+    const responses = activeToolResponses[toolId];
+    const questions = toolQuestions[toolId];
+    
+    if (!responses || Object.keys(responses).length < questions.length) {
+      toast.error("Please answer all questions before submitting");
+      return;
+    }
+
+    // Calculate score based on responses
+    let score = 0;
+    questions.forEach(q => {
+      if (q.type === "radio" && typeof responses[q.id] === "number") {
+        score += responses[q.id];
+      }
+    });
+
+    await saveProgress(toolId, responses, score);
+    setActiveToolResponses({ ...activeToolResponses, [toolId]: {} });
+  };
 
   const stigmaTools = [
     {
@@ -58,13 +221,7 @@ const StigmaStrategies = () => {
       icon: MessageCircle,
       color: "text-purple-500",
       bgColor: "bg-purple-50 dark:bg-purple-950/20",
-      description: "Practice sharing your mental health journey",
-      prompts: [
-        "Imagine telling a friend about your therapy appointment as casually as a dentist visit.",
-        "Practice saying: 'I'm working on my mental health with a professional, and it's helping me grow.'",
-        "How would you explain your anxiety to someone who's never experienced it?",
-        "What would you say if a colleague asked why you took a mental health day?"
-      ]
+      description: "Practice sharing your mental health journey"
     },
     {
       id: "self-talk-test",
@@ -72,13 +229,7 @@ const StigmaStrategies = () => {
       icon: Sparkles,
       color: "text-green-500",
       bgColor: "bg-green-50 dark:bg-green-950/20",
-      description: "Identify and challenge your inner stigma",
-      questions: [
-        "Would you say the same things to a friend struggling with mental health?",
-        "Are you judging yourself more harshly than you would judge others?",
-        "Do you minimize your struggles by thinking others have it worse?",
-        "Are you avoiding seeking help because you think you should be stronger?"
-      ]
+      description: "Identify and challenge your inner stigma"
     },
     {
       id: "literacy-challenge",
@@ -86,13 +237,7 @@ const StigmaStrategies = () => {
       icon: GraduationCap,
       color: "text-orange-500",
       bgColor: "bg-orange-50 dark:bg-orange-950/20",
-      description: "Test and expand your mental health knowledge",
-      challenges: [
-        "Can you name 5 different mental health conditions?",
-        "Do you know the difference between a psychiatrist and a psychologist?",
-        "Can you identify 3 early warning signs of depression?",
-        "Do you know what to say when someone confides in you about their mental health?"
-      ]
+      description: "Test and expand your mental health knowledge"
     },
     {
       id: "compassion-builder",
@@ -100,24 +245,7 @@ const StigmaStrategies = () => {
       icon: HandHeart,
       color: "text-red-500",
       bgColor: "bg-red-50 dark:bg-red-950/20",
-      description: "Develop empathy and supportive responses",
-      scenarios: [
-        {
-          situation: "A coworker shares they're struggling with anxiety",
-          goodResponse: "Thank you for trusting me. How can I support you?",
-          badResponse: "Everyone gets stressed sometimes, you'll be fine."
-        },
-        {
-          situation: "A friend mentions they're seeing a therapist",
-          goodResponse: "That's really brave. I hope it helps you feel better.",
-          badResponse: "You don't seem like someone who needs therapy."
-        },
-        {
-          situation: "Someone cancels plans due to mental health reasons",
-          goodResponse: "No worries at all. Take care of yourself. Let me know if you need anything.",
-          badResponse: "Again? You're always canceling on me."
-        }
-      ]
+      description: "Develop empathy and supportive responses"
     }
   ];
 
@@ -295,6 +423,34 @@ const StigmaStrategies = () => {
             </p>
           </motion.div>
 
+          {/* Badges Display */}
+          {badges.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-12"
+            >
+              <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="w-6 h-6 text-primary" />
+                    Your Achievements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-3">
+                    {badges.map((badge) => (
+                      <Badge key={badge.id} variant="secondary" className="px-4 py-2 text-sm flex items-center gap-2">
+                        <Award className="w-4 h-4" />
+                        {badge.badge_name}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
           {/* Key Principles */}
           <motion.div
             variants={containerVariants}
@@ -346,7 +502,7 @@ const StigmaStrategies = () => {
           >
             <h2 className="text-4xl font-bold mb-4">Interactive Stigma-Free Tools</h2>
             <p className="text-xl text-muted-foreground">
-              Explore these interactive exercises to challenge stigma and build compassion
+              Complete exercises, earn badges, and track your progress
             </p>
           </motion.div>
 
@@ -360,162 +516,164 @@ const StigmaStrategies = () => {
               ))}
             </TabsList>
 
-            {stigmaTools.map((tool) => (
-              <TabsContent key={tool.id} value={tool.id}>
-                <Card className={`border-2 ${tool.bgColor}`}>
-                  <CardHeader>
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className={`w-14 h-14 rounded-xl ${tool.bgColor} border-2 flex items-center justify-center`}>
-                        <tool.icon className={`w-7 h-7 ${tool.color}`} />
+            {stigmaTools.map((tool) => {
+              const toolProgress = getToolProgress(tool.id);
+              const completionCount = toolProgress.length;
+              
+              return (
+                <TabsContent key={tool.id} value={tool.id}>
+                  <Card className={`border-2 ${tool.bgColor}`}>
+                    <CardHeader>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-14 h-14 rounded-xl ${tool.bgColor} border-2 flex items-center justify-center`}>
+                            <tool.icon className={`w-7 h-7 ${tool.color}`} />
+                          </div>
+                          <div>
+                            <CardTitle className="text-2xl">{tool.title}</CardTitle>
+                            <CardDescription className="text-base">{tool.description}</CardDescription>
+                          </div>
+                        </div>
+                        {completionCount > 0 && (
+                          <Badge variant="secondary" className="px-3 py-1">
+                            Completed {completionCount}x
+                          </Badge>
+                        )}
                       </div>
-                      <div>
-                        <CardTitle className="text-2xl">{tool.title}</CardTitle>
-                        <CardDescription className="text-base">{tool.description}</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {tool.id === "myth-facts" && tool.content && (
-                      <div className="space-y-4">
-                        {tool.content.map((item, index) => (
-                          <div key={index} className="border-l-4 border-red-500 pl-4 py-2">
-                            <p className="font-semibold text-red-600 dark:text-red-400 mb-2">
-                              ❌ Myth: {item.myth}
-                            </p>
-                            <p className="text-green-600 dark:text-green-400 font-medium">
-                              ✓ Fact: {item.fact}
-                            </p>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Display educational content first */}
+                      {tool.id === "myth-facts" && tool.content && (
+                        <div className="space-y-4 mb-8">
+                          <h3 className="text-lg font-semibold mb-4">Common Myths Debunked:</h3>
+                          {tool.content.map((item, index) => (
+                            <div key={index} className="border-l-4 border-red-500 pl-4 py-2 bg-background/50 rounded-r-lg">
+                              <p className="font-semibold text-red-600 dark:text-red-400 mb-2">
+                                ❌ Myth: {item.myth}
+                              </p>
+                              <p className="text-green-600 dark:text-green-400 font-medium">
+                                ✓ Fact: {item.fact}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Interactive Questions */}
+                      <div className="space-y-6 pt-6 border-t">
+                        <h3 className="text-lg font-semibold mb-4">Complete the Exercise:</h3>
+                        {toolQuestions[tool.id]?.map((question, qIndex) => (
+                          <div key={question.id} className="space-y-3">
+                            <Label className="text-base font-medium">
+                              {qIndex + 1}. {question.question}
+                            </Label>
+                            
+                            {question.type === "radio" && question.options && (
+                              <RadioGroup
+                                value={activeToolResponses[tool.id]?.[question.id]?.toString()}
+                                onValueChange={(value) => handleToolResponse(tool.id, question.id, parseInt(value))}
+                              >
+                                <div className="space-y-2">
+                                  {question.options.map((option) => (
+                                    <div key={option.value} className="flex items-center space-x-3 border rounded-lg p-3 hover:bg-accent cursor-pointer">
+                                      <RadioGroupItem value={option.value.toString()} id={`${tool.id}-${question.id}-${option.value}`} />
+                                      <Label htmlFor={`${tool.id}-${question.id}-${option.value}`} className="flex-1 cursor-pointer">
+                                        {option.label}
+                                      </Label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </RadioGroup>
+                            )}
+                            
+                            {question.type === "text" && (
+                              <Textarea
+                                placeholder="Type your response here..."
+                                value={activeToolResponses[tool.id]?.[question.id] || ""}
+                                onChange={(e) => handleToolResponse(tool.id, question.id, e.target.value)}
+                                className="min-h-[100px]"
+                              />
+                            )}
                           </div>
                         ))}
+                        
+                        <Button
+                          onClick={() => handleSubmitTool(tool.id, tool.title)}
+                          className="w-full md:w-auto"
+                          size="lg"
+                        >
+                          Submit & Save Progress
+                        </Button>
                       </div>
-                    )}
-
-                    {tool.id === "story-simulator" && tool.prompts && (
-                      <div className="grid md:grid-cols-2 gap-4">
-                        {tool.prompts.map((prompt, index) => (
-                          <Card key={index} className="border-2">
-                            <CardContent className="pt-6">
-                              <p className="text-muted-foreground italic">"{prompt}"</p>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-
-                    {tool.id === "self-talk-test" && tool.questions && (
-                      <div className="space-y-3">
-                        {tool.questions.map((question, index) => (
-                          <div key={index} className="flex items-start gap-3 p-4 bg-background rounded-lg border">
-                            <CheckCircle2 className={`w-5 h-5 ${tool.color} mt-0.5 flex-shrink-0`} />
-                            <p className="font-medium">{question}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {tool.id === "literacy-challenge" && tool.challenges && (
-                      <div className="grid md:grid-cols-2 gap-4">
-                        {tool.challenges.map((challenge, index) => (
-                          <Card key={index} className="border-2 border-orange-200 dark:border-orange-800">
-                            <CardContent className="pt-6">
-                              <div className="flex items-start gap-3">
-                                <Badge variant="secondary" className="mt-1">
-                                  {index + 1}
-                                </Badge>
-                                <p className="font-medium">{challenge}</p>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-
-                    {tool.id === "compassion-builder" && tool.scenarios && (
-                      <div className="space-y-6">
-                        {tool.scenarios.map((scenario, index) => (
-                          <Card key={index} className="border-2">
-                            <CardHeader>
-                              <CardTitle className="text-lg">Scenario {index + 1}</CardTitle>
-                              <CardDescription className="text-base italic">
-                                "{scenario.situation}"
-                              </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                              <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border-2 border-green-200 dark:border-green-800">
-                                <p className="font-medium text-green-700 dark:text-green-400 mb-1">
-                                  ✓ Supportive Response:
-                                </p>
-                                <p className="text-sm">"{scenario.goodResponse}"</p>
-                              </div>
-                              <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border-2 border-red-200 dark:border-red-800">
-                                <p className="font-medium text-red-700 dark:text-red-400 mb-1">
-                                  ❌ Stigmatizing Response:
-                                </p>
-                                <p className="text-sm">"{scenario.badResponse}"</p>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            ))}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              );
+            })}
           </Tabs>
         </div>
       </section>
 
-      {/* Strategies by Level */}
+      {/* Strategies Section */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-bold mb-4">Stigma-Reduction Strategies</h2>
+            <p className="text-xl text-muted-foreground">
+              Evidence-based approaches organized by impact level
+            </p>
+          </motion.div>
+
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="space-y-12"
+            className="space-y-8"
           >
-            {strategies.map((category, catIndex) => (
-              <motion.div key={catIndex} variants={itemVariants}>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={`w-12 h-12 rounded-xl ${category.bgColor} flex items-center justify-center border-2 ${category.borderColor}`}>
-                    <category.icon className={`w-6 h-6 ${category.color}`} />
-                  </div>
-                  <h2 className="text-3xl font-bold">{category.category}</h2>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  {category.items.map((item, itemIndex) => (
-                    <Card 
-                      key={itemIndex} 
-                      className={`border-2 ${category.borderColor} hover:shadow-lg transition-all duration-300`}
-                    >
-                      <CardHeader>
-                        <CardTitle className="flex items-start gap-2">
-                          <CheckCircle2 className={`w-5 h-5 mt-1 ${category.color} flex-shrink-0`} />
-                          <span>{item.title}</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <p className="text-muted-foreground">{item.description}</p>
-                        <div className={`p-3 rounded-lg ${category.bgColor} border ${category.borderColor}`}>
-                          <p className={`text-sm font-medium ${category.color}`}>
-                            <strong>Action:</strong> {item.action}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+            {strategies.map((strategy, index) => (
+              <motion.div key={index} variants={itemVariants}>
+                <Card className={`border-2 ${strategy.borderColor} ${strategy.bgColor}`}>
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={`w-12 h-12 rounded-full ${strategy.bgColor} border-2 ${strategy.borderColor} flex items-center justify-center`}>
+                        <strategy.icon className={`w-6 h-6 ${strategy.color}`} />
+                      </div>
+                      <CardTitle className="text-2xl">{strategy.category}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {strategy.items.map((item, itemIndex) => (
+                        <Card key={itemIndex} className="border bg-background/50">
+                          <CardHeader>
+                            <CardTitle className="text-lg">{item.title}</CardTitle>
+                            <CardDescription>{item.description}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex items-start gap-2 bg-primary/5 p-3 rounded-lg">
+                              <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                              <p className="text-sm font-medium">{item.action}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Quick Action Plan */}
-      <section className="py-16 px-4 bg-muted/50">
+      {/* Quick Actions */}
+      <section className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -525,7 +683,7 @@ const StigmaStrategies = () => {
           >
             <h2 className="text-4xl font-bold mb-4">Your Action Plan</h2>
             <p className="text-xl text-muted-foreground">
-              Start making a difference with these time-based goals
+              Start making a difference with these actionable steps
             </p>
           </motion.div>
 
@@ -538,12 +696,12 @@ const StigmaStrategies = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="h-full border-2 border-primary/20">
+                <Card className="border-2 hover:shadow-lg transition-all duration-300 h-full">
                   <CardHeader>
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                    <div className="flex items-center gap-3 mb-2">
                       <timeframe.icon className="w-6 h-6 text-primary" />
+                      <CardTitle className="text-xl">{timeframe.title}</CardTitle>
                     </div>
-                    <CardTitle>{timeframe.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-3">
@@ -559,35 +717,6 @@ const StigmaStrategies = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="space-y-6"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold">
-              Every Action Counts
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              You don't need to be an expert or advocate to make a difference. Start with one small action today, and you'll be part of the solution.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center pt-6">
-              <Button size="lg" className="gap-2">
-                <Heart className="w-5 h-5" />
-                Take the Pledge
-              </Button>
-              <Button size="lg" variant="outline" className="gap-2">
-                <Share2 className="w-5 h-5" />
-                Share Strategies
-              </Button>
-            </div>
-          </motion.div>
         </div>
       </section>
     </div>

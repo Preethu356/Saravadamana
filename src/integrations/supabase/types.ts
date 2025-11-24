@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_badges: {
+        Row: {
+          badge_name: string
+          badge_type: string
+          earned_at: string | null
+          id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          badge_name: string
+          badge_type: string
+          earned_at?: string | null
+          id?: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          badge_name?: string
+          badge_type?: string
+          earned_at?: string | null
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       assessments: {
         Row: {
           created_at: string
@@ -309,6 +336,39 @@ export type Database = {
           title?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      neural_fingerprinting: {
+        Row: {
+          created_at: string | null
+          id: string
+          protective_factors: Json
+          recommendations: Json
+          risk_factors: Json
+          risk_level: string
+          user_id: string
+          vulnerability_score: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          protective_factors: Json
+          recommendations: Json
+          risk_factors: Json
+          risk_level: string
+          user_id: string
+          vulnerability_score: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          protective_factors?: Json
+          recommendations?: Json
+          risk_factors?: Json
+          risk_level?: string
+          user_id?: string
+          vulnerability_score?: number
         }
         Relationships: []
       }
@@ -652,6 +712,42 @@ export type Database = {
           id?: string
           psqi_score?: number | null
           sleep_quality_rating?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stigma_tool_progress: {
+        Row: {
+          completed: boolean | null
+          completion_date: string | null
+          created_at: string | null
+          id: string
+          responses: Json | null
+          score: number | null
+          tool_name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          responses?: Json | null
+          score?: number | null
+          tool_name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          completion_date?: string | null
+          created_at?: string | null
+          id?: string
+          responses?: Json | null
+          score?: number | null
+          tool_name?: string
           updated_at?: string | null
           user_id?: string
         }
