@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Target, 
   MessageSquare, 
@@ -12,10 +14,113 @@ import {
   Lightbulb,
   CheckCircle2,
   TrendingUp,
-  Shield
+  Shield,
+  Brain,
+  Sparkles,
+  MessageCircle,
+  GraduationCap,
+  HandHeart
 } from "lucide-react";
 
 const StigmaStrategies = () => {
+  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+
+  const stigmaTools = [
+    {
+      id: "myth-facts",
+      title: "Myth vs Facts",
+      icon: Brain,
+      color: "text-blue-500",
+      bgColor: "bg-blue-50 dark:bg-blue-950/20",
+      description: "Challenge common misconceptions about mental health",
+      content: [
+        {
+          myth: "Mental illness is a sign of weakness",
+          fact: "Mental illness is a medical condition, not a character flaw. It affects brain chemistry and function, just like diabetes affects the pancreas."
+        },
+        {
+          myth: "People with mental illness are violent and dangerous",
+          fact: "Most people with mental illness are not violent. They are actually more likely to be victims of violence than perpetrators."
+        },
+        {
+          myth: "Mental health problems are rare",
+          fact: "1 in 4 people will experience a mental health problem in any given year. It's incredibly common."
+        },
+        {
+          myth: "You can just snap out of depression",
+          fact: "Depression is a serious medical condition that requires treatment. You can't will yourself out of it any more than you can will away cancer."
+        }
+      ]
+    },
+    {
+      id: "story-simulator",
+      title: "Personal Story Simulator",
+      icon: MessageCircle,
+      color: "text-purple-500",
+      bgColor: "bg-purple-50 dark:bg-purple-950/20",
+      description: "Practice sharing your mental health journey",
+      prompts: [
+        "Imagine telling a friend about your therapy appointment as casually as a dentist visit.",
+        "Practice saying: 'I'm working on my mental health with a professional, and it's helping me grow.'",
+        "How would you explain your anxiety to someone who's never experienced it?",
+        "What would you say if a colleague asked why you took a mental health day?"
+      ]
+    },
+    {
+      id: "self-talk-test",
+      title: "Talking to Yourself Test",
+      icon: Sparkles,
+      color: "text-green-500",
+      bgColor: "bg-green-50 dark:bg-green-950/20",
+      description: "Identify and challenge your inner stigma",
+      questions: [
+        "Would you say the same things to a friend struggling with mental health?",
+        "Are you judging yourself more harshly than you would judge others?",
+        "Do you minimize your struggles by thinking others have it worse?",
+        "Are you avoiding seeking help because you think you should be stronger?"
+      ]
+    },
+    {
+      id: "literacy-challenge",
+      title: "Mental Health Literacy Challenges",
+      icon: GraduationCap,
+      color: "text-orange-500",
+      bgColor: "bg-orange-50 dark:bg-orange-950/20",
+      description: "Test and expand your mental health knowledge",
+      challenges: [
+        "Can you name 5 different mental health conditions?",
+        "Do you know the difference between a psychiatrist and a psychologist?",
+        "Can you identify 3 early warning signs of depression?",
+        "Do you know what to say when someone confides in you about their mental health?"
+      ]
+    },
+    {
+      id: "compassion-builder",
+      title: "Peer Compassion Builder",
+      icon: HandHeart,
+      color: "text-red-500",
+      bgColor: "bg-red-50 dark:bg-red-950/20",
+      description: "Develop empathy and supportive responses",
+      scenarios: [
+        {
+          situation: "A coworker shares they're struggling with anxiety",
+          goodResponse: "Thank you for trusting me. How can I support you?",
+          badResponse: "Everyone gets stressed sometimes, you'll be fine."
+        },
+        {
+          situation: "A friend mentions they're seeing a therapist",
+          goodResponse: "That's really brave. I hope it helps you feel better.",
+          badResponse: "You don't seem like someone who needs therapy."
+        },
+        {
+          situation: "Someone cancels plans due to mental health reasons",
+          goodResponse: "No worries at all. Take care of yourself. Let me know if you need anything.",
+          badResponse: "Again? You're always canceling on me."
+        }
+      ]
+    }
+  ];
+
   const strategies = [
     {
       category: "Personal Level",
@@ -227,6 +332,137 @@ const StigmaStrategies = () => {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Interactive Stigma-Free Tools */}
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl font-bold mb-4">Interactive Stigma-Free Tools</h2>
+            <p className="text-xl text-muted-foreground">
+              Explore these interactive exercises to challenge stigma and build compassion
+            </p>
+          </motion.div>
+
+          <Tabs defaultValue="myth-facts" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8">
+              {stigmaTools.map((tool) => (
+                <TabsTrigger key={tool.id} value={tool.id} className="gap-2">
+                  <tool.icon className="w-4 h-4" />
+                  <span className="hidden md:inline">{tool.title}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {stigmaTools.map((tool) => (
+              <TabsContent key={tool.id} value={tool.id}>
+                <Card className={`border-2 ${tool.bgColor}`}>
+                  <CardHeader>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`w-14 h-14 rounded-xl ${tool.bgColor} border-2 flex items-center justify-center`}>
+                        <tool.icon className={`w-7 h-7 ${tool.color}`} />
+                      </div>
+                      <div>
+                        <CardTitle className="text-2xl">{tool.title}</CardTitle>
+                        <CardDescription className="text-base">{tool.description}</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {tool.id === "myth-facts" && tool.content && (
+                      <div className="space-y-4">
+                        {tool.content.map((item, index) => (
+                          <div key={index} className="border-l-4 border-red-500 pl-4 py-2">
+                            <p className="font-semibold text-red-600 dark:text-red-400 mb-2">
+                              ❌ Myth: {item.myth}
+                            </p>
+                            <p className="text-green-600 dark:text-green-400 font-medium">
+                              ✓ Fact: {item.fact}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {tool.id === "story-simulator" && tool.prompts && (
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {tool.prompts.map((prompt, index) => (
+                          <Card key={index} className="border-2">
+                            <CardContent className="pt-6">
+                              <p className="text-muted-foreground italic">"{prompt}"</p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+
+                    {tool.id === "self-talk-test" && tool.questions && (
+                      <div className="space-y-3">
+                        {tool.questions.map((question, index) => (
+                          <div key={index} className="flex items-start gap-3 p-4 bg-background rounded-lg border">
+                            <CheckCircle2 className={`w-5 h-5 ${tool.color} mt-0.5 flex-shrink-0`} />
+                            <p className="font-medium">{question}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {tool.id === "literacy-challenge" && tool.challenges && (
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {tool.challenges.map((challenge, index) => (
+                          <Card key={index} className="border-2 border-orange-200 dark:border-orange-800">
+                            <CardContent className="pt-6">
+                              <div className="flex items-start gap-3">
+                                <Badge variant="secondary" className="mt-1">
+                                  {index + 1}
+                                </Badge>
+                                <p className="font-medium">{challenge}</p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+
+                    {tool.id === "compassion-builder" && tool.scenarios && (
+                      <div className="space-y-6">
+                        {tool.scenarios.map((scenario, index) => (
+                          <Card key={index} className="border-2">
+                            <CardHeader>
+                              <CardTitle className="text-lg">Scenario {index + 1}</CardTitle>
+                              <CardDescription className="text-base italic">
+                                "{scenario.situation}"
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                              <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border-2 border-green-200 dark:border-green-800">
+                                <p className="font-medium text-green-700 dark:text-green-400 mb-1">
+                                  ✓ Supportive Response:
+                                </p>
+                                <p className="text-sm">"{scenario.goodResponse}"</p>
+                              </div>
+                              <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border-2 border-red-200 dark:border-red-800">
+                                <p className="font-medium text-red-700 dark:text-red-400 mb-1">
+                                  ❌ Stigmatizing Response:
+                                </p>
+                                <p className="text-sm">"{scenario.badResponse}"</p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
       </section>
 
