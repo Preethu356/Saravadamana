@@ -22,7 +22,9 @@ const PAGE_ORDER = [
   "/resources",
   "/journal",
   "/wellness-tools",
-  "/cbt-consultation"
+  "/cbt-consultation",
+  "/neural-fingerprinting",
+  "/mind-climate"
 ];
 
 const PageNavigation = () => {
