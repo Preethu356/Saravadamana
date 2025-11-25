@@ -191,6 +191,54 @@ export type Database = {
           },
         ]
       }
+      environment_snapshots: {
+        Row: {
+          ai_insights: string | null
+          aqi: number | null
+          created_at: string | null
+          humidity: number | null
+          id: string
+          pm25: number | null
+          pressure: number | null
+          temperature: number | null
+          timestamp: string | null
+          user_id: string
+          uv_index: number | null
+          weather_condition: string | null
+          wind_speed: number | null
+        }
+        Insert: {
+          ai_insights?: string | null
+          aqi?: number | null
+          created_at?: string | null
+          humidity?: number | null
+          id?: string
+          pm25?: number | null
+          pressure?: number | null
+          temperature?: number | null
+          timestamp?: string | null
+          user_id: string
+          uv_index?: number | null
+          weather_condition?: string | null
+          wind_speed?: number | null
+        }
+        Update: {
+          ai_insights?: string | null
+          aqi?: number | null
+          created_at?: string | null
+          humidity?: number | null
+          id?: string
+          pm25?: number | null
+          pressure?: number | null
+          temperature?: number | null
+          timestamp?: string | null
+          user_id?: string
+          uv_index?: number | null
+          weather_condition?: string | null
+          wind_speed?: number | null
+        }
+        Relationships: []
+      }
       exercise_plans: {
         Row: {
           completed_sessions: number | null
