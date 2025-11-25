@@ -7,8 +7,11 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award, Brain } from "lucide-react";
 import { motion } from "framer-motion";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import PageNavigation from "@/components/PageNavigation";
+import { useNeuralTrends } from "@/hooks/useNeuralTrends";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -19,6 +22,7 @@ const Dashboard = () => {
     meditation_minutes: 0
   });
   const [screeningCount, setScreeningCount] = useState(0);
+  const { trends: neuralTrends, loading: trendsLoading } = useNeuralTrends();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -270,6 +274,67 @@ const Dashboard = () => {
             );
           })}
         </div>
+
+        {/* Neural Fingerprinting Trends */}
+        {neuralTrends.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="mt-8"
+          >
+            <Card className="border-primary/20 bg-card/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  Neural Fingerprinting Trends
+                </CardTitle>
+                <CardDescription>Your mental health vulnerability over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {trendsLoading ? (
+                  <div className="h-80 flex items-center justify-center">
+                    <p className="text-muted-foreground">Loading trends...</p>
+                  </div>
+                ) : (
+                  <ChartContainer
+                    config={{
+                      vulnerabilityScore: {
+                        label: "Vulnerability Score",
+                        color: "hsl(var(--primary))",
+                      },
+                    }}
+                    className="h-80"
+                  >
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={neuralTrends}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis
+                          dataKey="date"
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={12}
+                        />
+                        <YAxis
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={12}
+                          domain={[0, 100]}
+                        />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Line
+                          type="monotone"
+                          dataKey="vulnerabilityScore"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth={2}
+                          dot={{ fill: "hsl(var(--primary))", r: 4 }}
+                          activeDot={{ r: 6 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </div>
       <ComplianceFooter />
       <PageNavigation />
