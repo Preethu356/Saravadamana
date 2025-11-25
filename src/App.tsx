@@ -55,6 +55,7 @@ const Analytics = lazy(() => import("./pages/Analytics"));
 const MindReflection = lazy(() => import("./pages/MindReflection"));
 const MindPlan = lazy(() => import("./pages/MindPlan"));
 const NeuralFingerprinting = lazy(() => import("./pages/NeuralFingerprinting"));
+const MindClimate = lazy(() => import("./pages/MindClimate"));
 
 const queryClient = new QueryClient();
 
@@ -161,7 +162,8 @@ const App = () => {
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                   <Route path="/mind-reflection" element={<ProtectedRoute><MindReflection /></ProtectedRoute>} />
                   <Route path="/mind-plan" element={<ProtectedRoute><MindPlan /></ProtectedRoute>} />
-                  <Route path="/neural-fingerprinting" element={<ProtectedRoute><NeuralFingerprinting /></ProtectedRoute>} />
+            <Route path="/neural-fingerprinting" element={<ProtectedRoute><NeuralFingerprinting /></ProtectedRoute>} />
+            <Route path="/mind-climate" element={<ProtectedRoute><MindClimate /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
