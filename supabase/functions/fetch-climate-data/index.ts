@@ -12,12 +12,17 @@ serve(async (req) => {
 
   try {
     const { latitude, longitude } = await req.json();
+    console.log(`Fetching climate data for lat: ${latitude}, lon: ${longitude}`);
+    
     const OPENWEATHER_API_KEY = Deno.env.get("OPENWEATHER_API_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!OPENWEATHER_API_KEY) {
+      console.error("OpenWeather API key not configured");
       throw new Error("OpenWeather API key not configured");
     }
+    
+    console.log("API key found, fetching weather data...");
 
     // Fetch current weather data and air pollution from OpenWeather API
     const weatherResponse = await fetch(
@@ -33,8 +38,11 @@ serve(async (req) => {
     );
 
     if (!weatherResponse.ok || !airPollutionResponse.ok || !uvResponse.ok) {
-      throw new Error("Failed to fetch climate data");
+      console.error(`API Response errors - Weather: ${weatherResponse.status}, Air: ${airPollutionResponse.status}, UV: ${uvResponse.status}`);
+      throw new Error("Failed to fetch climate data from OpenWeather API");
     }
+    
+    console.log("Successfully fetched all weather data");
 
     const weatherData = await weatherResponse.json();
     const airData = await airPollutionResponse.json();
@@ -81,6 +89,9 @@ Focus on actionable advice for mental health, sleep, mood, or wellbeing.`;
       if (aiResponse.ok) {
         const aiData = await aiResponse.json();
         aiInsights = aiData.choices[0].message.content;
+        console.log("AI insights generated successfully");
+      } else {
+        console.error(`AI response failed with status: ${aiResponse.status}`);
       }
     }
 
