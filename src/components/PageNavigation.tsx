@@ -23,7 +23,6 @@ const PAGE_ORDER = [
   "/journal",
   "/wellness-tools",
   "/cbt-consultation",
-  "/neural-fingerprinting",
   "/mind-climate"
 ];
 
