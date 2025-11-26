@@ -27,14 +27,9 @@ const SecondaryCare = lazy(() => import("./pages/SecondaryCare"));
 const TertiaryCare = lazy(() => import("./pages/TertiaryCare"));
 const MoodTracking = lazy(() => import("./pages/MoodTracking"));
 const AISupport = lazy(() => import("./pages/AISupport"));
-const WellnessPage = lazy(() => import("./pages/WellnessPage"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage"));
 const CBTPage = lazy(() => import("./pages/CBTPage"));
 const PersonalityScreening = lazy(() => import("./pages/PersonalityScreening"));
-const SchoolMentalHealth = lazy(() => import("./pages/SchoolMentalHealth"));
-const WorkplaceMentalHealth = lazy(() => import("./pages/WorkplaceMentalHealth"));
-const WomenMentalHealth = lazy(() => import("./pages/WomenMentalHealth"));
-const OldAgeMentalHealth = lazy(() => import("./pages/OldAgeMentalHealth"));
 const MentalHealthPrevention = lazy(() => import("./pages/MentalHealthPrevention"));
 const WellnessPlanGenerator = lazy(() => import("./pages/WellnessPlanGenerator"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -125,7 +120,6 @@ const App = () => {
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                   <Route path="/mood-tracker" element={<ProtectedRoute><MoodTracking /></ProtectedRoute>} />
                   <Route path="/ai-support" element={<ProtectedRoute><AISupport /></ProtectedRoute>} />
-                  <Route path="/wellness-tools" element={<ProtectedRoute><WellnessPage /></ProtectedRoute>} />
                   <Route path="/personality-screening" element={<ProtectedRoute><PersonalityScreening /></ProtectedRoute>} />
                   <Route path="/depression-screening" element={<ProtectedRoute><DepressionScreening /></ProtectedRoute>} />
                   <Route path="/anxiety-screening" element={<ProtectedRoute><AnxietyScreening /></ProtectedRoute>} />
@@ -136,10 +130,6 @@ const App = () => {
                   <Route path="/primary-care" element={<ProtectedRoute><PrimaryCare /></ProtectedRoute>} />
                   <Route path="/secondary-care" element={<ProtectedRoute><SecondaryCare /></ProtectedRoute>} />
                   <Route path="/tertiary-care" element={<ProtectedRoute><TertiaryCare /></ProtectedRoute>} />
-                  <Route path="/school-mental-health" element={<ProtectedRoute><SchoolMentalHealth /></ProtectedRoute>} />
-                  <Route path="/workplace-mental-health" element={<ProtectedRoute><WorkplaceMentalHealth /></ProtectedRoute>} />
-                  <Route path="/women-mental-health" element={<ProtectedRoute><WomenMentalHealth /></ProtectedRoute>} />
-                  <Route path="/old-age-mental-health" element={<ProtectedRoute><OldAgeMentalHealth /></ProtectedRoute>} />
                   <Route path="/mental-health-prevention" element={<ProtectedRoute><MentalHealthPrevention /></ProtectedRoute>} />
                   <Route path="/wellness-plan" element={<ProtectedRoute><WellnessPlanGenerator /></ProtectedRoute>} />
                   <Route path="/mental-health-news" element={<ProtectedRoute><MentalHealthNews /></ProtectedRoute>} />

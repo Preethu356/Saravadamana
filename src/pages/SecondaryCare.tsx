@@ -1,29 +1,46 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, ChevronRight } from "lucide-react";
+import { CheckCircle, ChevronRight, Download, School, Baby, Briefcase, Users } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import PageNavigation from "@/components/PageNavigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
 
 const SecondaryCare = () => {
   const [searchParams] = useSearchParams();
   const [who5Score, setWho5Score] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [userId, setUserId] = useState<string | null>(null);
+  const [screeningResults, setScreeningResults] = useState<any[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     const tool = searchParams.get('tool');
     if (tool === 'who5') setActiveTab('who5');
     
-    // Get current user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserId(session?.user?.id || null);
+      if (session?.user?.id) {
+        fetchScreeningResults(session.user.id);
+      }
     });
   }, [searchParams]);
+
+  const fetchScreeningResults = async (uid: string) => {
+    const { data, error } = await supabase
+      .from('screening_results')
+      .select('*')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (!error && data) {
+      setScreeningResults(data);
+    }
+  };
 
   const who5Questions = [
     "I have felt cheerful and in good spirits",
@@ -44,9 +61,9 @@ const SecondaryCare = () => {
       const total = newResponses.reduce((sum, val) => sum + val, 0);
       setWho5Score(total);
       
-      // Save to database
       if (userId) {
         await saveWho5Results(total);
+        fetchScreeningResults(userId);
       }
     }
   };
@@ -84,15 +101,148 @@ const SecondaryCare = () => {
   };
 
   const getWho5Interpretation = (score: number) => {
-    const rawScore = score * 4; // Convert to 0-100 scale
+    const rawScore = score * 4;
     if (rawScore >= 50) return { severity: "Good Well-Being", color: "text-green-600", recommendation: "Maintain healthy lifestyle habits" };
     if (rawScore >= 28) return { severity: "Moderate Well-Being", color: "text-yellow-600", recommendation: "Consider lifestyle improvements and stress management" };
     return { severity: "Poor Well-Being", color: "text-red-600", recommendation: "Further evaluation recommended; consider professional support" };
   };
 
-  const handleNextClick = () => {
-    setActiveTab("who5");
+  const generateScreeningPDF = (category: string) => {
+    const categoryResults = screeningResults.filter(r => 
+      (category === 'school' && r.screening_type === 'PHQ-9') ||
+      (category === 'women' && r.screening_type === 'GAD-7') ||
+      (category === 'workplace' && r.screening_type === 'WHO-5') ||
+      (category === 'senior' && r.screening_type === 'PHQ-9')
+    );
+
+    const doc = new jsPDF();
+    const margin = 20;
+    let yPos = margin;
+
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(41, 128, 185);
+    doc.text("Secondary Prevention Screening Results", margin, yPos);
+    yPos += 15;
+
+    // Category
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+    doc.text(`${categoryName} Mental Health Assessment`, margin, yPos);
+    yPos += 15;
+
+    if (categoryResults.length === 0) {
+      doc.setFontSize(11);
+      doc.text("No screening results available yet.", margin, yPos);
+      yPos += 10;
+      doc.text("Please complete the recommended screenings:", margin, yPos);
+      yPos += 8;
+      doc.text("• PHQ-9 Depression Screening", margin + 5, yPos);
+      yPos += 6;
+      doc.text("• GAD-7 Anxiety Screening", margin + 5, yPos);
+      yPos += 6;
+      doc.text("• WHO-5 Well-being Index", margin + 5, yPos);
+    } else {
+      // Results
+      categoryResults.forEach((result, index) => {
+        if (index > 0) yPos += 10;
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${result.screening_type} Assessment`, margin, yPos);
+        yPos += 8;
+
+        doc.setFontSize(10);
+        doc.text(`Date: ${new Date(result.created_at).toLocaleDateString()}`, margin, yPos);
+        yPos += 6;
+        doc.text(`Score: ${result.score}/${result.max_score} (${result.percentage_score}%)`, margin, yPos);
+        yPos += 6;
+
+        if (result.severity) {
+          doc.text(`Severity: ${result.severity}`, margin, yPos);
+          yPos += 6;
+        }
+
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = margin;
+        }
+      });
+    }
+
+    // Recommendations
+    yPos += 15;
+    if (yPos > 230) {
+      doc.addPage();
+      yPos = margin;
+    }
+
+    doc.setFontSize(14);
+    doc.setTextColor(41, 128, 185);
+    doc.text("Recommended Actions", margin, yPos);
+    yPos += 10;
+
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    const recommendations = [
+      "Complete regular mental health screenings",
+      "Track your symptoms over time",
+      "Consult with a mental health professional for personalized guidance",
+      "Engage in preventive activities (exercise, mindfulness, social support)",
+      "Seek early intervention if scores indicate concern"
+    ];
+
+    recommendations.forEach((rec, idx) => {
+      const lines = doc.splitTextToSize(`${idx + 1}. ${rec}`, 165);
+      doc.text(lines, margin, yPos);
+      yPos += (lines.length * 6);
+    });
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text("Generated by Sarvadamana Mental Health Platform", margin, 285);
+    doc.text(new Date().toLocaleDateString(), 170, 285);
+
+    doc.save(`${category}-screening-report.pdf`);
+    
+    toast({
+      title: "PDF Generated!",
+      description: `Your ${categoryName} screening report has been downloaded.`,
+    });
   };
+
+  const categories = [
+    {
+      id: "school",
+      title: "School Mental Health",
+      icon: School,
+      color: "text-blue-500",
+      screenings: ["PHQ-9 Depression Screening", "GAD-7 Anxiety Screening", "Social-Emotional Screening"]
+    },
+    {
+      id: "women",
+      title: "Women's Mental Health",
+      icon: Baby,
+      color: "text-pink-500",
+      screenings: ["PHQ-9 for Perinatal Depression", "GAD-7 Anxiety", "Edinburgh Postnatal Depression Scale"]
+    },
+    {
+      id: "workplace",
+      title: "Workplace Mental Health",
+      icon: Briefcase,
+      color: "text-green-500",
+      screenings: ["Burnout Assessment Tool", "WHO-5 Well-being", "Work Stress Inventory"]
+    },
+    {
+      id: "senior",
+      title: "Senior Mental Health",
+      icon: Users,
+      color: "text-purple-500",
+      screenings: ["Geriatric Depression Scale", "Mini-Mental State Exam", "Social Isolation Assessment"]
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,8 +261,9 @@ const SecondaryCare = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Screening Overview</TabsTrigger>
+            <TabsTrigger value="categories">Population Groups</TabsTrigger>
             <TabsTrigger value="who5">WHO-5</TabsTrigger>
           </TabsList>
 
@@ -193,9 +344,56 @@ const SecondaryCare = () => {
                 </div>
 
                 <div className="mt-6 flex justify-end">
-                  <Button onClick={handleNextClick} className="gap-2">
+                  <Button onClick={() => setActiveTab("who5")} className="gap-2">
                     Continue to WHO-5 <ChevronRight className="w-4 h-4" />
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="categories" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Population-Specific Screening Programs</CardTitle>
+                <CardDescription>
+                  Generate customized screening reports based on population needs
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {categories.map((category) => (
+                    <Card key={category.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                          <category.icon className={`h-6 w-6 ${category.color}`} />
+                          {category.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-sm mb-2">Recommended Screenings:</h4>
+                          <ul className="space-y-1">
+                            {category.screenings.map((screening, idx) => (
+                              <li key={idx} className="text-sm flex items-start gap-2">
+                                <span className="text-primary mt-1">✓</span>
+                                {screening}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <Button
+                          onClick={() => generateScreeningPDF(category.id)}
+                          className="w-full gap-2"
+                          variant="outline"
+                        >
+                          <Download className="h-4 w-4" />
+                          Generate Screening Report (PDF)
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               </CardContent>
             </Card>
