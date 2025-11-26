@@ -180,12 +180,7 @@ const Header = () => {
     { to: "/dashboard", label: "Dashboard", icon: Activity, color: "text-secondary" }
   ];
 
-  const mentalHealthLinks = [
-    { to: "/school-mental-health", label: "School Mental Health", icon: BookOpen, color: "text-blue-500" },
-    { to: "/workplace-mental-health", label: "Workplace Mental Health", icon: Activity, color: "text-green-500" },
-    { to: "/women-mental-health", label: "Women's Mental Health", icon: Heart, color: "text-pink-500" },
-    { to: "/old-age-mental-health", label: "Senior Mental Health", icon: Users, color: "text-purple-500" }
-  ];
+  const mentalHealthLinks: { to: string; label: string; icon: any; color: string }[] = [];
 
   const preventionLinks = [
     { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
@@ -197,7 +192,6 @@ const Header = () => {
   const resourcesLinks = [
     { to: "/journal", label: "Self Journal", icon: BookOpen, color: "text-pink-500" },
     { to: "/wellness-plan", label: "Wellness Plan Generator", icon: Target, color: "text-purple-500" },
-    { to: "/wellness-tools", label: "Wellness Tools", icon: Activity, color: "text-teal-500" },
     { to: "/mood-tracker", label: "Mood Tracker", icon: Smile, color: "text-yellow-500" },
     { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-cyan-500" },
     { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-orange-500" },
