@@ -44,7 +44,6 @@ const Header = () => {
   const [user, setUser] = useState<User | null>(null);
   const [mentalHealthOpen, setMentalHealthOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
-  const [newsOpen, setNewsOpen] = useState(false);
   const [stigmaOpen, setStigmaOpen] = useState(false);
   const [mindMattersOpen, setMindMattersOpen] = useState(false);
   const [wellnessStats, setWellnessStats] = useState<{
@@ -184,14 +183,9 @@ const Header = () => {
     { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
     { to: "/primary-care", label: "Primary Prevention", icon: Heart, color: "text-green-500" },
     { to: "/secondary-care", label: "Secondary Prevention", icon: Activity, color: "text-blue-500" },
-    { to: "/tertiary-care", label: "Tertiary Prevention", icon: Brain, color: "text-purple-500" }
-  ];
-
-  const preventionLinks = [
-    { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
-    { to: "/primary-care", label: "Primary Prevention", icon: Heart, color: "text-green-500" },
-    { to: "/secondary-care", label: "Secondary Prevention", icon: Activity, color: "text-blue-500" },
-    { to: "/tertiary-care", label: "Tertiary Prevention", icon: Brain, color: "text-purple-500" }
+    { to: "/tertiary-care", label: "Tertiary Prevention", icon: Brain, color: "text-purple-500" },
+    { to: "/mental-health-news", label: "India Updates", icon: Newspaper, color: "text-blue-500" },
+    { to: "/research-updates", label: "Research & Technology", icon: Megaphone, color: "text-indigo-500" }
   ];
 
   const resourcesLinks = [
@@ -453,43 +447,6 @@ const Header = () => {
                           </Link>
                         );
                       })}
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-
-                {/* Mental Health News Collapsible */}
-                <div className="mt-2">
-                  <Collapsible open={newsOpen} onOpenChange={setNewsOpen}>
-                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-accent/10 hover:to-primary/10 border-2 border-transparent hover:border-accent/20 group">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Newspaper className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-foreground font-semibold">Mental Health News</span>
-                      </div>
-                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${newsOpen ? 'rotate-180' : ''}`} />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
-                      <Link
-                        to="/mental-health-news"
-                        onClick={() => {
-                          setNewsOpen(false);
-                          setIsMenuOpen(false);
-                        }}
-                        className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
-                      >
-                        <span>India Updates</span>
-                      </Link>
-                      <Link
-                        to="/research-updates"
-                        onClick={() => {
-                          setNewsOpen(false);
-                          setIsMenuOpen(false);
-                        }}
-                        className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
-                      >
-                        <span>Research & Technology</span>
-                      </Link>
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
