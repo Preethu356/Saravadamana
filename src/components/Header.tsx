@@ -180,7 +180,12 @@ const Header = () => {
     { to: "/dashboard", label: "Dashboard", icon: Activity, color: "text-secondary" }
   ];
 
-  const mentalHealthLinks: { to: string; label: string; icon: any; color: string }[] = [];
+  const mentalHealthLinks = [
+    { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
+    { to: "/primary-care", label: "Primary Prevention", icon: Heart, color: "text-green-500" },
+    { to: "/secondary-care", label: "Secondary Prevention", icon: Activity, color: "text-blue-500" },
+    { to: "/tertiary-care", label: "Tertiary Prevention", icon: Brain, color: "text-purple-500" }
+  ];
 
   const preventionLinks = [
     { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
@@ -195,12 +200,7 @@ const Header = () => {
     { to: "/mood-tracker", label: "Mood Tracker", icon: Smile, color: "text-yellow-500" },
     { to: "/ai-support", label: 'Talk to "Mini Menti"', icon: Sparkles, color: "text-cyan-500" },
     { to: "/resources", label: "Support Resources", icon: BookOpen, color: "text-orange-500" },
-    { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" },
-    // Prevention submenu moved here
-    { to: "/mental-health-prevention", label: "Prevention Overview", icon: Shield, color: "text-cyan-500" },
-    { to: "/primary-care", label: "Primary Prevention", icon: Heart, color: "text-green-500" },
-    { to: "/secondary-care", label: "Secondary Prevention", icon: Activity, color: "text-blue-500" },
-    { to: "/tertiary-care", label: "Tertiary Prevention", icon: Brain, color: "text-purple-500" }
+    { to: "/cbt-consultation", label: "CBT Consultation", icon: Calendar, color: "text-indigo-500" }
   ];
 
   const stigmaLinks = [
