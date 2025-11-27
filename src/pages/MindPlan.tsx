@@ -1,31 +1,182 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Download, Sparkles } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Download, Sparkles, Plus, Calendar, TrendingUp, Award, Target, Heart, Brain, Activity } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import Watermark from "@/components/Watermark";
+import PageNavigation from "@/components/PageNavigation";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const wellnessActivities = [
-  { id: "meditation", label: "Daily Meditation (10-15 min)", category: "Mindfulness" },
-  { id: "exercise", label: "Physical Exercise (30 min)", category: "Physical Health" },
-  { id: "journaling", label: "Reflective Journaling", category: "Self-Reflection" },
-  { id: "sleep", label: "Consistent Sleep Schedule", category: "Rest" },
-  { id: "nutrition", label: "Balanced Nutrition", category: "Physical Health" },
-  { id: "social", label: "Social Connection", category: "Relationships" },
-  { id: "breathing", label: "Breathing Exercises", category: "Mindfulness" },
-  { id: "hobby", label: "Engage in Hobbies", category: "Joy" },
-  { id: "nature", label: "Time in Nature", category: "Environment" },
-  { id: "gratitude", label: "Gratitude Practice", category: "Positive Thinking" },
+  { id: "meditation", label: "Daily Meditation (10-15 min)", category: "Mindfulness", icon: "🧘" },
+  { id: "exercise", label: "Physical Exercise (30 min)", category: "Physical Health", icon: "🏃" },
+  { id: "journaling", label: "Reflective Journaling", category: "Self-Reflection", icon: "📝" },
+  { id: "sleep", label: "Consistent Sleep Schedule", category: "Rest", icon: "😴" },
+  { id: "nutrition", label: "Balanced Nutrition", category: "Physical Health", icon: "🥗" },
+  { id: "social", label: "Social Connection", category: "Relationships", icon: "👥" },
+  { id: "breathing", label: "Breathing Exercises", category: "Mindfulness", icon: "💨" },
+  { id: "hobby", label: "Engage in Hobbies", category: "Joy", icon: "🎨" },
+  { id: "nature", label: "Time in Nature", category: "Environment", icon: "🌳" },
+  { id: "gratitude", label: "Gratitude Practice", category: "Positive Thinking", icon: "🙏" },
 ];
 
+interface MindPlanData {
+  id: string;
+  title: string;
+  interventions: any;
+  duration_days: number;
+  current_day: number;
+  streak_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface AssessmentData {
+  depression?: { score: number; severity: string; date: string };
+  anxiety?: { score: number; severity: string; date: string };
+  sleep?: { psqi_score: number; quality: number; date: string };
+  nutrition?: { plan_type: string; date: string };
+  exercise?: { plan_type: string; completed: number; date: string };
+  personality?: { archetype: string; position: number; date: string };
+}
+
 const MindPlan = () => {
-  const [userName, setUserName] = useState("");
-  const [goals, setGoals] = useState("");
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [plans, setPlans] = useState<MindPlanData[]>([]);
+  const [assessments, setAssessments] = useState<AssessmentData>({});
+  const [userId, setUserId] = useState<string>("");
+  const navigate = useNavigate();
+
+  // New plan form state
+  const [planTitle, setPlanTitle] = useState("");
+  const [planGoals, setPlanGoals] = useState("");
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  const [duration, setDuration] = useState("7");
+  const [duration, setDuration] = useState("21");
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+      setUserId(user.id);
+
+      // Fetch existing plans
+      const { data: plansData, error: plansError } = await supabase
+        .from("mind_plans")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (plansError) throw plansError;
+      setPlans(plansData || []);
+
+      // Fetch assessment data
+      await fetchAssessments(user.id);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to load your data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAssessments = async (uid: string) => {
+    try {
+      const assessmentData: AssessmentData = {};
+
+      // Fetch depression screening
+      const { data: depression } = await supabase
+        .from("screening_results")
+        .select("*")
+        .eq("user_id", uid)
+        .eq("screening_type", "depression")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (depression) {
+        assessmentData.depression = {
+          score: depression.score,
+          severity: depression.severity || "Unknown",
+          date: new Date(depression.created_at).toLocaleDateString(),
+        };
+      }
+
+      // Fetch anxiety screening
+      const { data: anxiety } = await supabase
+        .from("screening_results")
+        .select("*")
+        .eq("user_id", uid)
+        .eq("screening_type", "anxiety")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (anxiety) {
+        assessmentData.anxiety = {
+          score: anxiety.score,
+          severity: anxiety.severity || "Unknown",
+          date: new Date(anxiety.created_at).toLocaleDateString(),
+        };
+      }
+
+      // Fetch sleep data
+      const { data: sleep } = await supabase
+        .from("sleep_routines")
+        .select("*")
+        .eq("user_id", uid)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (sleep) {
+        assessmentData.sleep = {
+          psqi_score: sleep.psqi_score || 0,
+          quality: sleep.sleep_quality_rating || 0,
+          date: new Date(sleep.created_at).toLocaleDateString(),
+        };
+      }
+
+      // Fetch personality
+      const { data: personality } = await supabase
+        .from("personality_results")
+        .select("*")
+        .eq("user_id", uid)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (personality) {
+        assessmentData.personality = {
+          archetype: personality.archetype,
+          position: personality.position_score,
+          date: new Date(personality.created_at).toLocaleDateString(),
+        };
+      }
+
+      setAssessments(assessmentData);
+    } catch (error) {
+      console.error("Error fetching assessments:", error);
+    }
+  };
 
   const toggleActivity = (activityId: string) => {
     setSelectedActivities((prev) =>
@@ -35,13 +186,13 @@ const MindPlan = () => {
     );
   };
 
-  const generatePDF = () => {
-    if (!userName.trim()) {
-      toast.error("Please enter your name");
+  const savePlan = async () => {
+    if (!planTitle.trim()) {
+      toast.error("Please enter a plan title");
       return;
     }
 
-    if (!goals.trim()) {
+    if (!planGoals.trim()) {
       toast.error("Please describe your wellness goals");
       return;
     }
@@ -51,6 +202,50 @@ const MindPlan = () => {
       return;
     }
 
+    setSaving(true);
+
+    try {
+      const interventions = selectedActivities.map((activityId) => {
+        const activity = wellnessActivities.find((a) => a.id === activityId);
+        return {
+          id: activityId,
+          label: activity?.label || "",
+          category: activity?.category || "",
+          icon: activity?.icon || "",
+        };
+      });
+
+      const { error } = await supabase.from("mind_plans").insert({
+        user_id: userId,
+        title: planTitle,
+        interventions: { goals: planGoals, activities: interventions },
+        duration_days: parseInt(duration),
+        current_day: 1,
+        streak_count: 0,
+      });
+
+      if (error) throw error;
+
+      toast.success("Mind Plan saved successfully!");
+      
+      // Reset form
+      setPlanTitle("");
+      setPlanGoals("");
+      setSelectedActivities([]);
+      setDuration("21");
+      
+      // Refresh plans
+      await fetchUserData();
+      setActiveTab("dashboard");
+    } catch (error) {
+      console.error("Error saving plan:", error);
+      toast.error("Failed to save plan");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const generatePDF = (plan: MindPlanData) => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;
@@ -59,203 +254,489 @@ const MindPlan = () => {
     // Title
     doc.setFontSize(22);
     doc.setTextColor(88, 86, 214);
-    doc.text("Personal Mental Wellness Plan", pageWidth / 2, yPosition, { align: "center" });
+    doc.text(plan.title, pageWidth / 2, yPosition, { align: "center" });
     
     yPosition += 15;
     doc.setFontSize(12);
     doc.setTextColor(100, 100, 100);
-    doc.text(`Name: ${userName}`, margin, yPosition);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - margin, yPosition, { align: "right" });
+    doc.text(`Created: ${new Date(plan.created_at).toLocaleDateString()}`, margin, yPosition);
+    doc.text(`Duration: ${plan.duration_days} days`, pageWidth - margin, yPosition, { align: "right" });
     
     yPosition += 10;
-    doc.text(`Plan Duration: ${duration} days`, margin, yPosition);
+    doc.text(`Progress: Day ${plan.current_day} of ${plan.duration_days}`, margin, yPosition);
+    doc.text(`Streak: ${plan.streak_count} days`, pageWidth - margin, yPosition, { align: "right" });
     
     yPosition += 15;
 
     // Goals Section
-    doc.setFontSize(16);
-    doc.setTextColor(88, 86, 214);
-    doc.text("My Wellness Goals", margin, yPosition);
-    yPosition += 10;
-
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-    const goalLines = doc.splitTextToSize(goals, pageWidth - 2 * margin);
-    doc.text(goalLines, margin, yPosition);
-    yPosition += goalLines.length * 6 + 15;
-
-    // Selected Activities
-    doc.setFontSize(16);
-    doc.setTextColor(88, 86, 214);
-    doc.text("My Daily Wellness Activities", margin, yPosition);
-    yPosition += 10;
-
-    const selectedActivityDetails = wellnessActivities.filter((a) =>
-      selectedActivities.includes(a.id)
-    );
-
-    selectedActivityDetails.forEach((activity) => {
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`✓ ${activity.label}`, margin + 5, yPosition);
-      
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`(${activity.category})`, margin + 10, yPosition + 5);
-      
-      yPosition += 12;
-
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-    });
-
-    yPosition += 10;
-
-    // Weekly Tracker
-    doc.setFontSize(16);
-    doc.setTextColor(88, 86, 214);
-    doc.text("Weekly Progress Tracker", margin, yPosition);
-    yPosition += 10;
-
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    
-    doc.text("Activity", margin, yPosition);
-    days.forEach((day, index) => {
-      doc.text(day, margin + 60 + index * 15, yPosition);
-    });
-    yPosition += 8;
-
-    selectedActivityDetails.forEach((activity) => {
-      const activityLabel = activity.label.substring(0, 25);
-      doc.text(activityLabel, margin, yPosition);
-      
-      days.forEach((_, index) => {
-        doc.rect(margin + 60 + index * 15, yPosition - 3, 8, 8);
-      });
-      
+    if (plan.interventions.goals) {
+      doc.setFontSize(16);
+      doc.setTextColor(88, 86, 214);
+      doc.text("My Wellness Goals", margin, yPosition);
       yPosition += 10;
 
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-    });
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      const goalLines = doc.splitTextToSize(plan.interventions.goals, pageWidth - 2 * margin);
+      doc.text(goalLines, margin, yPosition);
+      yPosition += goalLines.length * 6 + 15;
+    }
+
+    // Activities
+    if (plan.interventions.activities) {
+      doc.setFontSize(16);
+      doc.setTextColor(88, 86, 214);
+      doc.text("My Daily Wellness Activities", margin, yPosition);
+      yPosition += 10;
+
+      plan.interventions.activities.forEach((activity: any) => {
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${activity.icon} ${activity.label}`, margin + 5, yPosition);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`(${activity.category})`, margin + 10, yPosition + 5);
+        
+        yPosition += 12;
+
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+      });
+    }
 
     doc.save(`mind-plan-${new Date().toISOString().split('T')[0]}.pdf`);
-    toast.success("Wellness plan downloaded successfully!");
+    toast.success("Plan downloaded as PDF!");
   };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity?.toLowerCase()) {
+      case "minimal":
+      case "none":
+        return "bg-green-500";
+      case "mild":
+        return "bg-yellow-500";
+      case "moderate":
+        return "bg-orange-500";
+      case "severe":
+      case "moderately severe":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen relative">
+        <Watermark />
+        <div className="container mx-auto px-4 py-8 relative z-10">
+          <Skeleton className="h-12 w-64 mb-4" />
+          <Skeleton className="h-32 w-full mb-4" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative">
       <Watermark />
       <div className="container mx-auto px-4 py-8 relative z-10">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              Create Your Mind Plan
+              My Mind Plan
             </h1>
             <p className="text-lg text-muted-foreground">
-              Design a personalized mental wellness plan tailored to your needs
+              Create and track personalized mental wellness plans tailored to your needs
             </p>
           </div>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Your Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="userName">Your Name</Label>
-                <input
-                  id="userName"
-                  type="text"
-                  className="w-full mt-2 px-4 py-2 border border-border rounded-lg bg-background"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Enter your name"
-                />
-              </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="dashboard" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Dashboard
+              </TabsTrigger>
+              <TabsTrigger value="assessments" className="gap-2">
+                <Brain className="h-4 w-4" />
+                Assessments
+              </TabsTrigger>
+              <TabsTrigger value="create" className="gap-2">
+                <Plus className="h-4 w-4" />
+                Create Plan
+              </TabsTrigger>
+            </TabsList>
 
-              <div>
-                <Label htmlFor="duration">Plan Duration (days)</Label>
-                <select
-                  id="duration"
-                  className="w-full mt-2 px-4 py-2 border border-border rounded-lg bg-background"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                >
-                  <option value="7">7 Days</option>
-                  <option value="14">14 Days</option>
-                  <option value="21">21 Days</option>
-                  <option value="30">30 Days</option>
-                </select>
-              </div>
-            </CardContent>
-          </Card>
+            {/* Dashboard Tab */}
+            <TabsContent value="dashboard" className="space-y-6">
+              {plans.length === 0 ? (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <Target className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-xl font-semibold mb-2">No Plans Yet</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Create your first Mind Plan to start your wellness journey
+                    </p>
+                    <Button onClick={() => setActiveTab("create")} className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Create Your First Plan
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {plans.map((plan) => (
+                    <Card key={plan.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="text-xl">{plan.title}</CardTitle>
+                            <CardDescription className="mt-2">
+                              Created {new Date(plan.created_at).toLocaleDateString()}
+                            </CardDescription>
+                          </div>
+                          <Badge variant="secondary" className="gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {plan.duration_days} days
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {/* Progress */}
+                        <div>
+                          <div className="flex justify-between text-sm mb-2">
+                            <span>Day {plan.current_day} of {plan.duration_days}</span>
+                            <span className="font-semibold">
+                              {Math.round((plan.current_day / plan.duration_days) * 100)}%
+                            </span>
+                          </div>
+                          <Progress value={(plan.current_day / plan.duration_days) * 100} />
+                        </div>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Your Wellness Goals</CardTitle>
-              <CardDescription>
-                What do you hope to achieve with this wellness plan?
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <textarea
-                className="w-full min-h-32 px-4 py-2 border border-border rounded-lg bg-background"
-                value={goals}
-                onChange={(e) => setGoals(e.target.value)}
-                placeholder="Describe your mental wellness goals..."
-              />
-            </CardContent>
-          </Card>
+                        {/* Streak */}
+                        <div className="flex items-center gap-2 text-sm">
+                          <Award className="h-4 w-4 text-yellow-500" />
+                          <span className="font-semibold">{plan.streak_count} day streak</span>
+                        </div>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Select Your Daily Activities
-              </CardTitle>
-              <CardDescription>
-                Choose activities you commit to practicing regularly
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {wellnessActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg border border-border/50 hover:border-primary/50 transition-colors">
-                    <Checkbox
-                      id={activity.id}
-                      checked={selectedActivities.includes(activity.id)}
-                      onCheckedChange={() => toggleActivity(activity.id)}
-                    />
-                    <label
-                      htmlFor={activity.id}
-                      className="flex-1 cursor-pointer"
-                    >
-                      <div className="font-medium">{activity.label}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {activity.category}
+                        {/* Activities */}
+                        <div>
+                          <p className="text-sm font-semibold mb-2">Activities:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {plan.interventions.activities?.slice(0, 3).map((activity: any, idx: number) => (
+                              <Badge key={idx} variant="outline">
+                                {activity.icon} {activity.label.split(" ")[0]}
+                              </Badge>
+                            ))}
+                            {plan.interventions.activities?.length > 3 && (
+                              <Badge variant="outline">
+                                +{plan.interventions.activities.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => generatePDF(plan)}
+                          variant="outline"
+                          className="w-full gap-2"
+                        >
+                          <Download className="h-4 w-4" />
+                          Download PDF
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Assessments Tab */}
+            <TabsContent value="assessments" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Depression Assessment */}
+                {assessments.depression && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Heart className="h-5 w-5 text-red-500" />
+                        Depression Screening
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Score:</span>
+                          <Badge className={getSeverityColor(assessments.depression.severity)}>
+                            {assessments.depression.score} - {assessments.depression.severity}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Assessed on {assessments.depression.date}
+                        </p>
                       </div>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                    </CardContent>
+                  </Card>
+                )}
 
-          <div className="flex justify-center mt-8">
-            <Button onClick={generatePDF} size="lg" className="gap-2">
-              <Download className="h-5 w-5" />
-              Download Mind Plan as PDF
-            </Button>
-          </div>
+                {/* Anxiety Assessment */}
+                {assessments.anxiety && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Brain className="h-5 w-5 text-blue-500" />
+                        Anxiety Screening
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Score:</span>
+                          <Badge className={getSeverityColor(assessments.anxiety.severity)}>
+                            {assessments.anxiety.score} - {assessments.anxiety.severity}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Assessed on {assessments.anxiety.date}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Sleep Assessment */}
+                {assessments.sleep && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        😴 Sleep Quality
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">PSQI Score:</span>
+                          <Badge variant="secondary">{assessments.sleep.psqi_score}</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Quality:</span>
+                          <span className="text-sm font-semibold">
+                            {assessments.sleep.quality}/10
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Assessed on {assessments.sleep.date}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Personality */}
+                {assessments.personality && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        🦊 Personality Profile
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Archetype:</span>
+                          <Badge variant="secondary">{assessments.personality.archetype}</Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Assessed on {assessments.personality.date}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {Object.keys(assessments).length === 0 && (
+                  <Card className="col-span-full">
+                    <CardContent className="py-12 text-center">
+                      <Activity className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-xl font-semibold mb-2">No Assessments Yet</h3>
+                      <p className="text-muted-foreground mb-6">
+                        Complete screenings to get personalized recommendations
+                      </p>
+                      <div className="flex gap-3 justify-center flex-wrap">
+                        <Button variant="outline" onClick={() => navigate("/depression-screening")}>
+                          Depression Screening
+                        </Button>
+                        <Button variant="outline" onClick={() => navigate("/anxiety-screening")}>
+                          Anxiety Screening
+                        </Button>
+                        <Button variant="outline" onClick={() => navigate("/mind-your-sleep")}>
+                          Sleep Assessment
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+
+              {Object.keys(assessments).length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      AI Recommendations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Based on your assessment results, we recommend:
+                    </p>
+                    <ul className="space-y-2 text-sm">
+                      {assessments.depression && (
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Focus on mood-enhancing activities like meditation and journaling
+                        </li>
+                      )}
+                      {assessments.anxiety && (
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Practice breathing exercises and progressive muscle relaxation
+                        </li>
+                      )}
+                      {assessments.sleep && (
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Maintain a consistent sleep schedule and bedtime routine
+                        </li>
+                      )}
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary">•</span>
+                        Incorporate 30 minutes of physical activity daily
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary">•</span>
+                        Practice gratitude and connect with supportive relationships
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Create Plan Tab */}
+            <TabsContent value="create" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Plan Details</CardTitle>
+                  <CardDescription>
+                    Give your plan a name and set your wellness goals
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="planTitle">Plan Title</Label>
+                    <Input
+                      id="planTitle"
+                      value={planTitle}
+                      onChange={(e) => setPlanTitle(e.target.value)}
+                      placeholder="e.g., My 21-Day Wellness Journey"
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="duration">Plan Duration</Label>
+                    <select
+                      id="duration"
+                      className="w-full mt-2 px-4 py-2 border border-border rounded-lg bg-background"
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                    >
+                      <option value="7">7 Days</option>
+                      <option value="14">14 Days</option>
+                      <option value="21">21 Days</option>
+                      <option value="30">30 Days</option>
+                      <option value="60">60 Days</option>
+                      <option value="90">90 Days</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="planGoals">Your Wellness Goals</Label>
+                    <Textarea
+                      id="planGoals"
+                      value={planGoals}
+                      onChange={(e) => setPlanGoals(e.target.value)}
+                      placeholder="Describe what you hope to achieve with this wellness plan..."
+                      className="mt-2 min-h-32"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    Select Your Daily Activities
+                  </CardTitle>
+                  <CardDescription>
+                    Choose activities you commit to practicing regularly
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {wellnessActivities.map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="flex items-start space-x-3 p-4 rounded-lg border border-border/50 hover:border-primary/50 transition-colors"
+                      >
+                        <Checkbox
+                          id={activity.id}
+                          checked={selectedActivities.includes(activity.id)}
+                          onCheckedChange={() => toggleActivity(activity.id)}
+                        />
+                        <label htmlFor={activity.id} className="flex-1 cursor-pointer">
+                          <div className="flex items-center gap-2 font-medium">
+                            <span>{activity.icon}</span>
+                            <span>{activity.label}</span>
+                          </div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {activity.category}
+                          </div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex justify-center gap-4">
+                <Button
+                  onClick={savePlan}
+                  size="lg"
+                  disabled={saving}
+                  className="gap-2"
+                >
+                  {saving ? (
+                    "Saving..."
+                  ) : (
+                    <>
+                      <Sparkles className="h-5 w-5" />
+                      Save Mind Plan
+                    </>
+                  )}
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
+      <PageNavigation />
     </div>
   );
 };

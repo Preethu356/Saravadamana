@@ -209,7 +209,7 @@ const Header = () => {
     { to: "/mind-your-sleep", label: "Mind Your Sleep", icon: "😴", color: "text-purple-500" },
     { to: "/mind-climate", label: "Mind Climate", icon: "🌤️", color: "text-cyan-500" },
     { to: "/personality-screening", label: "Mind Reflection", icon: "🦊", color: "text-orange-500" },
-    { to: "/wellness-plan-generator", label: "My Mind Plan", icon: "📋", color: "text-teal-500" }
+    { to: "/mind-plan", label: "My Mind Plan", icon: "📋", color: "text-teal-500" }
   ];
 
   // Dynamic wellness badges based on real user data
