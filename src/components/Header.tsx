@@ -46,6 +46,7 @@ const Header = () => {
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [stigmaOpen, setStigmaOpen] = useState(false);
   const [mindMattersOpen, setMindMattersOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [wellnessStats, setWellnessStats] = useState<{
     current_streak: number;
     total_sessions: number;
@@ -210,6 +211,10 @@ const Header = () => {
     { to: "/mind-climate", label: "Mind Climate", icon: "🌤️", color: "text-cyan-500" },
     { to: "/personality-screening", label: "Mind Reflection", icon: "🦊", color: "text-orange-500" },
     { to: "/mind-plan", label: "My Mind Plan", icon: "📋", color: "text-teal-500" }
+  ];
+
+  const aboutLinks = [
+    { to: "/pitch-deck", label: "Pitch Deck", icon: Sparkles, color: "text-cyan-500" }
   ];
 
   // Dynamic wellness badges based on real user data
@@ -525,6 +530,37 @@ const Header = () => {
                             key={link.to}
                             to={link.to}
                             className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-red-600 transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-red-500/10 hover:translate-x-1"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
+                            <span>{link.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+
+                {/* About SARVADAMANA */}
+                <div className="mt-2">
+                  <Collapsible open={aboutOpen} onOpenChange={setAboutOpen}>
+                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-purple-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-foreground font-semibold">About</span>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${aboutOpen ? 'rotate-180 text-cyan-500' : ''}`} />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                      {aboutLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.to}
+                            to={link.to}
+                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
                             onClick={() => setIsMenuOpen(false)}
                           >
                             <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
