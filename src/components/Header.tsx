@@ -176,8 +176,7 @@ const Header = () => {
 
   const navLinks = [
     { to: "/", label: "Home", icon: Home, color: "text-primary" },
-    { to: "/about", label: "About Us", icon: Heart, color: "text-accent" },
-    { to: "/dashboard", label: "Dashboard", icon: Activity, color: "text-secondary" }
+    { to: "/about", label: "About Us", icon: Heart, color: "text-accent" }
   ];
 
   const mentalHealthLinks = [
@@ -394,6 +393,47 @@ const Header = () => {
                   );
                 })}
 
+                {/* Background SARVADAMANA - Moved here */}
+                <div className="mt-2">
+                  <Collapsible open={aboutOpen} onOpenChange={setAboutOpen}>
+                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-purple-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-foreground font-semibold">Background</span>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${aboutOpen ? 'rotate-180 text-cyan-500' : ''}`} />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                      {aboutLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.to}
+                            to={link.to}
+                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
+                            <span>{link.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+
+                {/* Dashboard */}
+                <Link
+                  to="/dashboard"
+                  className="group flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-primary/10 hover:shadow-sm hover:translate-x-1"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Activity className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
+                  <span>Dashboard</span>
+                </Link>
+
                 {/* Mental Health Collapsible */}
                 <div className="mt-2">
                   <Collapsible open={mentalHealthOpen} onOpenChange={setMentalHealthOpen}>
@@ -541,36 +581,6 @@ const Header = () => {
                   </Collapsible>
                 </div>
 
-                {/* Background SARVADAMANA */}
-                <div className="mt-2">
-                  <Collapsible open={aboutOpen} onOpenChange={setAboutOpen}>
-                    <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-purple-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Sparkles className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-foreground font-semibold">Background</span>
-                      </div>
-                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${aboutOpen ? 'rotate-180 text-cyan-500' : ''}`} />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="ml-2 mt-2 space-y-1 animate-in slide-in-from-top-2 duration-300">
-                      {aboutLinks.map((link) => {
-                        const Icon = link.icon;
-                        return (
-                          <Link
-                            key={link.to}
-                            to={link.to}
-                            className="cursor-pointer group flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all py-2.5 px-4 pl-14 rounded-lg hover:bg-accent/50 hover:translate-x-1"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            <Icon className={`w-4 h-4 ${link.color} group-hover:scale-110 transition-transform`} />
-                            <span>{link.label}</span>
-                          </Link>
-                        );
-                      })}
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
 
                 {/* Contact Us */}
                 <div className="mt-4 pt-4 border-t border-border">

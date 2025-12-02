@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download, Sparkles, Plus, Calendar, TrendingUp, Award, Target, Heart, Brain, Activity } from "lucide-react";
+import { Download, Sparkles, Plus, Calendar, TrendingUp, Award, Target, Heart, Brain, Activity, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import Watermark from "@/components/Watermark";
@@ -47,7 +47,16 @@ interface AssessmentData {
   sleep?: { psqi_score: number; quality: number; date: string };
   nutrition?: { plan_type: string; date: string };
   exercise?: { plan_type: string; completed: number; date: string };
-  personality?: { archetype: string; position: number; date: string };
+  personality?: { 
+    archetype: string; 
+    position: number; 
+    date: string;
+    clusterA?: number;
+    clusterB?: number;
+    clusterC?: number;
+    growthAreas?: string[];
+    strengths?: string[];
+  };
 }
 
 const MindPlan = () => {
@@ -155,7 +164,7 @@ const MindPlan = () => {
         };
       }
 
-      // Fetch personality
+      // Fetch personality with cluster scores
       const { data: personality } = await supabase
         .from("personality_results")
         .select("*")
@@ -165,10 +174,20 @@ const MindPlan = () => {
         .single();
 
       if (personality) {
+        // Parse cluster scores from archetype or metadata if stored
+        const clusterData = personality.archetype ? {
+          clusterA: 0,
+          clusterB: 0,
+          clusterC: 0
+        } : undefined;
+
         assessmentData.personality = {
           archetype: personality.archetype,
           position: personality.position_score,
           date: new Date(personality.created_at).toLocaleDateString(),
+          growthAreas: personality.growth_areas || [],
+          strengths: personality.strengths || [],
+          ...clusterData
         };
       }
 
@@ -184,6 +203,43 @@ const MindPlan = () => {
         ? prev.filter((id) => id !== activityId)
         : [...prev, activityId]
     );
+  };
+
+  const generateAIRecommendations = () => {
+    const recommendations: string[] = [];
+
+    // Recommendations based on screening results
+    if (assessments.depression && assessments.depression.score >= 10) {
+      recommendations.push("Daily mood tracking and journaling for depression management");
+      recommendations.push("Behavioral activation: Schedule pleasant activities daily");
+    }
+
+    if (assessments.anxiety && assessments.anxiety.score >= 10) {
+      recommendations.push("Progressive muscle relaxation exercises (15 min daily)");
+      recommendations.push("Mindfulness-based stress reduction techniques");
+    }
+
+    if (assessments.sleep && assessments.sleep.psqi_score > 5) {
+      recommendations.push("Establish consistent sleep-wake schedule");
+      recommendations.push("Sleep hygiene improvements and relaxation routine");
+    }
+
+    if (assessments.personality) {
+      if (assessments.personality.growthAreas && assessments.personality.growthAreas.length > 0) {
+        recommendations.push(`Focus areas: ${assessments.personality.growthAreas.join(", ")}`);
+      }
+      if (assessments.personality.clusterA && assessments.personality.clusterA > 15) {
+        recommendations.push("Social skills training and trust-building exercises");
+      }
+      if (assessments.personality.clusterB && assessments.personality.clusterB > 15) {
+        recommendations.push("Emotion regulation strategies and DBT skills practice");
+      }
+      if (assessments.personality.clusterC && assessments.personality.clusterC > 15) {
+        recommendations.push("Exposure therapy and anxiety management techniques");
+      }
+    }
+
+    return recommendations.length > 0 ? recommendations : ["Continue with general wellness activities"];
   };
 
   const savePlan = async () => {
@@ -215,10 +271,23 @@ const MindPlan = () => {
         };
       });
 
+      // Generate AI recommendations based on all assessments
+      const aiRecommendations = generateAIRecommendations();
+
       const { error } = await supabase.from("mind_plans").insert({
         user_id: userId,
         title: planTitle,
-        interventions: { goals: planGoals, activities: interventions },
+        interventions: { 
+          goals: planGoals, 
+          activities: interventions,
+          recommendations: aiRecommendations,
+          assessmentSummary: {
+            depression: assessments.depression?.score,
+            anxiety: assessments.anxiety?.score,
+            sleep: assessments.sleep?.psqi_score,
+            personality: assessments.personality?.archetype
+          }
+        },
         duration_days: parseInt(duration),
         current_day: 1,
         streak_count: 0,
@@ -226,7 +295,7 @@ const MindPlan = () => {
 
       if (error) throw error;
 
-      toast.success("Mind Plan saved successfully!");
+      toast.success("Mind Plan saved with personalized recommendations!");
       
       // Reset form
       setPlanTitle("");
@@ -268,6 +337,45 @@ const MindPlan = () => {
     
     yPosition += 15;
 
+    // Assessment Summary
+    if (plan.interventions.assessmentSummary) {
+      doc.setFontSize(16);
+      doc.setTextColor(88, 86, 214);
+      doc.text("Assessment Summary", margin, yPosition);
+      yPosition += 10;
+
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      const summary = plan.interventions.assessmentSummary;
+      if (summary.depression) doc.text(`Depression Score: ${summary.depression}`, margin + 5, yPosition), yPosition += 6;
+      if (summary.anxiety) doc.text(`Anxiety Score: ${summary.anxiety}`, margin + 5, yPosition), yPosition += 6;
+      if (summary.sleep) doc.text(`Sleep Quality (PSQI): ${summary.sleep}`, margin + 5, yPosition), yPosition += 6;
+      if (summary.personality) doc.text(`Personality: ${summary.personality}`, margin + 5, yPosition), yPosition += 6;
+      yPosition += 10;
+    }
+
+    // AI Recommendations
+    if (plan.interventions.recommendations && plan.interventions.recommendations.length > 0) {
+      doc.setFontSize(16);
+      doc.setTextColor(88, 86, 214);
+      doc.text("Personalized Recommendations", margin, yPosition);
+      yPosition += 10;
+
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      plan.interventions.recommendations.forEach((rec: string, idx: number) => {
+        const recLines = doc.splitTextToSize(`${idx + 1}. ${rec}`, pageWidth - 2 * margin - 10);
+        doc.text(recLines, margin + 5, yPosition);
+        yPosition += recLines.length * 5 + 3;
+
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+      });
+      yPosition += 10;
+    }
+
     // Goals Section
     if (plan.interventions.goals) {
       doc.setFontSize(16);
@@ -284,6 +392,11 @@ const MindPlan = () => {
 
     // Activities
     if (plan.interventions.activities) {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      
       doc.setFontSize(16);
       doc.setTextColor(88, 86, 214);
       doc.text("My Daily Wellness Activities", margin, yPosition);
@@ -541,15 +654,48 @@ const MindPlan = () => {
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        🦊 Personality Profile
+                        <Brain className="h-5 w-5 text-purple-500" />
+                        Personality Screening
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="text-sm">Archetype:</span>
-                          <Badge variant="secondary">{assessments.personality.archetype}</Badge>
+                          <Badge variant="secondary">
+                            {assessments.personality.archetype}
+                          </Badge>
                         </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Position:</span>
+                          <Badge variant="outline">
+                            {assessments.personality.position}
+                          </Badge>
+                        </div>
+                        {assessments.personality.strengths && assessments.personality.strengths.length > 0 && (
+                          <div className="pt-2">
+                            <p className="text-sm font-semibold mb-1">Strengths:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {assessments.personality.strengths.map((strength, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs bg-green-50">
+                                  {strength}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {assessments.personality.growthAreas && assessments.personality.growthAreas.length > 0 && (
+                          <div className="pt-2">
+                            <p className="text-sm font-semibold mb-1">Growth Areas:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {assessments.personality.growthAreas.map((area, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs bg-yellow-50">
+                                  {area}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                         <p className="text-xs text-muted-foreground">
                           Assessed on {assessments.personality.date}
                         </p>
@@ -583,47 +729,93 @@ const MindPlan = () => {
               </div>
 
               {Object.keys(assessments).length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      AI Recommendations
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Based on your assessment results, we recommend:
-                    </p>
-                    <ul className="space-y-2 text-sm">
-                      {assessments.depression && (
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary">•</span>
-                          Focus on mood-enhancing activities like meditation and journaling
-                        </li>
-                      )}
-                      {assessments.anxiety && (
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary">•</span>
-                          Practice breathing exercises and progressive muscle relaxation
-                        </li>
-                      )}
-                      {assessments.sleep && (
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary">•</span>
-                          Maintain a consistent sleep schedule and bedtime routine
-                        </li>
-                      )}
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary">•</span>
-                        Incorporate 30 minutes of physical activity daily
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary">•</span>
-                        Practice gratitude and connect with supportive relationships
-                      </li>
-                    </ul>
-                  </CardContent>
-                </Card>
+                <>
+                  <Card className="bg-gradient-to-br from-accent/5 to-primary/5 border-primary/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        AI-Powered Recommendations
+                      </CardTitle>
+                      <CardDescription>
+                        Based on your comprehensive assessment results
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        {assessments.depression && assessments.depression.score >= 10 && (
+                          <div className="p-3 rounded-lg bg-background/50">
+                            <p className="text-sm font-medium mb-1 flex items-center gap-2">
+                              <Heart className="h-4 w-4 text-red-500" />
+                              Depression Support
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Daily mood tracking, behavioral activation, and social connection activities recommended
+                            </p>
+                          </div>
+                        )}
+                        
+                        {assessments.anxiety && assessments.anxiety.score >= 10 && (
+                          <div className="p-3 rounded-lg bg-background/50">
+                            <p className="text-sm font-medium mb-1 flex items-center gap-2">
+                              <Brain className="h-4 w-4 text-blue-500" />
+                              Anxiety Management
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Progressive muscle relaxation, mindfulness-based stress reduction, and breathing exercises
+                            </p>
+                          </div>
+                        )}
+
+                        {assessments.sleep && assessments.sleep.psqi_score > 5 && (
+                          <div className="p-3 rounded-lg bg-background/50">
+                            <p className="text-sm font-medium mb-1 flex items-center gap-2">
+                              <Activity className="h-4 w-4 text-purple-500" />
+                              Sleep Improvement
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Consistent sleep-wake schedule and relaxation routine needed
+                            </p>
+                          </div>
+                        )}
+
+                        {assessments.personality && assessments.personality.growthAreas && assessments.personality.growthAreas.length > 0 && (
+                          <div className="p-3 rounded-lg bg-background/50">
+                            <p className="text-sm font-medium mb-1 flex items-center gap-2">
+                              <Brain className="h-4 w-4 text-orange-500" />
+                              Personality Development
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Focus on: {assessments.personality.growthAreas.join(", ")}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Link to Mind Reflection */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <BookOpen className="h-5 w-5 text-primary" />
+                        Mind Reflection Journal
+                      </CardTitle>
+                      <CardDescription>
+                        Document your wellness journey and track personal growth
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={() => navigate("/mind-reflection")}
+                      >
+                        <BookOpen className="h-4 w-4" />
+                        Open Reflection Journal
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </>
               )}
             </TabsContent>
 
