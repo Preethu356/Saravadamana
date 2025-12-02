@@ -541,7 +541,7 @@ const Header = () => {
                   </Collapsible>
                 </div>
 
-                {/* About SARVADAMANA */}
+                {/* Background SARVADAMANA */}
                 <div className="mt-2">
                   <Collapsible open={aboutOpen} onOpenChange={setAboutOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-purple-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
@@ -549,7 +549,7 @@ const Header = () => {
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                           <Sparkles className="w-4 h-4 text-white" />
                         </div>
-                        <span className="text-foreground font-semibold">About</span>
+                        <span className="text-foreground font-semibold">Background</span>
                       </div>
                       <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${aboutOpen ? 'rotate-180 text-cyan-500' : ''}`} />
                     </CollapsibleTrigger>
