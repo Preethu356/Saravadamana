@@ -22,6 +22,8 @@ const Journal = lazy(() => import("./pages/Journal"));
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Profile = lazy(() => import("./pages/Profile"));
+const StartJourney = lazy(() => import("./pages/StartJourney"));
 const PrimaryCare = lazy(() => import("./pages/PrimaryCare"));
 const SecondaryCare = lazy(() => import("./pages/SecondaryCare"));
 const TertiaryCare = lazy(() => import("./pages/TertiaryCare"));
@@ -53,6 +55,12 @@ const NeuralFingerprinting = lazy(() => import("./pages/NeuralFingerprinting"));
 const MindClimate = lazy(() => import("./pages/MindClimate"));
 const PitchDeck = lazy(() => import("./pages/PitchDeck"));
 
+// Screening pages
+const StudentsScreening = lazy(() => import("./pages/screening/StudentsScreening"));
+const WomenScreening = lazy(() => import("./pages/screening/WomenScreening"));
+const WorkplaceScreening = lazy(() => import("./pages/screening/WorkplaceScreening"));
+const ElderlyScreening = lazy(() => import("./pages/screening/ElderlyScreening"));
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -60,7 +68,6 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setIsAuthenticated(true);
@@ -68,7 +75,6 @@ const App = () => {
       }
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
@@ -107,18 +113,28 @@ const App = () => {
             className="flex flex-col min-h-screen relative z-10"
           >
             <Header />
-            <main className="flex-1">
+            <main className="flex-1 pb-16">
               <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
                 <Routes>
                   {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/about" element={<About />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/about" element={<About />} />
                   
                   {/* Protected Routes */}
                   <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/start-journey" element={<ProtectedRoute><StartJourney /></ProtectedRoute>} />
+                  
+                  {/* Journey Screening Routes */}
+                  <Route path="/screening/students" element={<ProtectedRoute><StudentsScreening /></ProtectedRoute>} />
+                  <Route path="/screening/women" element={<ProtectedRoute><WomenScreening /></ProtectedRoute>} />
+                  <Route path="/screening/workplace" element={<ProtectedRoute><WorkplaceScreening /></ProtectedRoute>} />
+                  <Route path="/screening/elderly" element={<ProtectedRoute><ElderlyScreening /></ProtectedRoute>} />
+                  
+                  {/* Core Feature Routes */}
                   <Route path="/mood-tracker" element={<ProtectedRoute><MoodTracking /></ProtectedRoute>} />
                   <Route path="/ai-support" element={<ProtectedRoute><AISupport /></ProtectedRoute>} />
                   <Route path="/personality-screening" element={<ProtectedRoute><PersonalityScreening /></ProtectedRoute>} />
@@ -128,14 +144,13 @@ const App = () => {
                   <Route path="/cbt-consultation" element={<ProtectedRoute><CBTPage /></ProtectedRoute>} />
                   <Route path="/resources" element={<ProtectedRoute><ResourcesPage /></ProtectedRoute>} />
                   <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
+                  
+                  {/* Care Level Routes */}
                   <Route path="/primary-care" element={<ProtectedRoute><PrimaryCare /></ProtectedRoute>} />
                   <Route path="/secondary-care" element={<ProtectedRoute><SecondaryCare /></ProtectedRoute>} />
                   <Route path="/tertiary-care" element={<ProtectedRoute><TertiaryCare /></ProtectedRoute>} />
-                  <Route path="/mental-health-prevention" element={<ProtectedRoute><MentalHealthPrevention /></ProtectedRoute>} />
-                  <Route path="/wellness-plan" element={<ProtectedRoute><WellnessPlanGenerator /></ProtectedRoute>} />
-                  <Route path="/mental-health-news" element={<ProtectedRoute><MentalHealthNews /></ProtectedRoute>} />
-                  <Route path="/research-updates" element={<ProtectedRoute><ResearchUpdates /></ProtectedRoute>} />
-                  <Route path="/stigma-strategies" element={<ProtectedRoute><StigmaStrategies /></ProtectedRoute>} />
+                  
+                  {/* Mind Sequencing Routes */}
                   <Route path="/mind-sequencing" element={<ProtectedRoute><MindSequencing /></ProtectedRoute>} />
                   <Route path="/mind-sequencing/generate" element={<ProtectedRoute><MindSequencingGenerate /></ProtectedRoute>} />
                   <Route path="/mind-sequencing/:id" element={<ProtectedRoute><MindSequencingPlay /></ProtectedRoute>} />
@@ -144,17 +159,19 @@ const App = () => {
                   <Route path="/mind-your-diet" element={<ProtectedRoute><MindYourDiet /></ProtectedRoute>} />
                   <Route path="/mind-your-gym" element={<ProtectedRoute><MindYourGym /></ProtectedRoute>} />
                   <Route path="/mind-your-sleep" element={<ProtectedRoute><MindYourSleep /></ProtectedRoute>} />
-                  <Route path="/personality-screening" element={<ProtectedRoute><PersonalityScreening /></ProtectedRoute>} />
+                  <Route path="/mind-reflection" element={<ProtectedRoute><MindReflection /></ProtectedRoute>} />
+                  <Route path="/mind-plan" element={<ProtectedRoute><MindPlan /></ProtectedRoute>} />
+                  <Route path="/mind-climate" element={<ProtectedRoute><MindClimate /></ProtectedRoute>} />
+                  
+                  {/* Additional Features */}
+                  <Route path="/mental-health-prevention" element={<ProtectedRoute><MentalHealthPrevention /></ProtectedRoute>} />
                   <Route path="/wellness-plan" element={<ProtectedRoute><WellnessPlanGenerator /></ProtectedRoute>} />
                   <Route path="/mental-health-news" element={<ProtectedRoute><MentalHealthNews /></ProtectedRoute>} />
                   <Route path="/research-updates" element={<ProtectedRoute><ResearchUpdates /></ProtectedRoute>} />
                   <Route path="/stigma-strategies" element={<ProtectedRoute><StigmaStrategies /></ProtectedRoute>} />
                   <Route path="/quotes" element={<ProtectedRoute><QuotesPage /></ProtectedRoute>} />
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                  <Route path="/mind-reflection" element={<ProtectedRoute><MindReflection /></ProtectedRoute>} />
-                  <Route path="/mind-plan" element={<ProtectedRoute><MindPlan /></ProtectedRoute>} />
                   <Route path="/neural-fingerprinting" element={<ProtectedRoute><NeuralFingerprinting /></ProtectedRoute>} />
-            <Route path="/mind-climate" element={<ProtectedRoute><MindClimate /></ProtectedRoute>} />
                   <Route path="/pitch-deck" element={<ProtectedRoute><PitchDeck /></ProtectedRoute>} />
                   
                   {/* 404 Route */}

@@ -5,13 +5,13 @@ import { User } from "@supabase/supabase-js";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award, Brain } from "lucide-react";
+import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award, Brain, Rocket } from "lucide-react";
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import ComplianceFooter from "@/components/ComplianceFooter";
-import PageNavigation from "@/components/PageNavigation";
 import { useNeuralTrends } from "@/hooks/useNeuralTrends";
+import BottomNav from "@/components/BottomNav";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -140,7 +140,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-24">
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Header */}
         <motion.div
@@ -157,6 +157,32 @@ const Dashboard = () => {
           <p className="text-lg text-muted-foreground">
             Welcome to your mental wellness journey
           </p>
+        </motion.div>
+
+        {/* Quick Action - Start Journey */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6"
+        >
+          <Card 
+            className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20 cursor-pointer hover:shadow-lg transition-all"
+            onClick={() => navigate("/start-journey")}
+          >
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                  <Rocket className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Start Your Journey</h3>
+                  <p className="text-sm text-muted-foreground">Take a personalized wellness assessment</p>
+                </div>
+              </div>
+              <Button size="sm">Begin</Button>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Stats Overview */}
@@ -337,7 +363,7 @@ const Dashboard = () => {
         )}
       </div>
       <ComplianceFooter />
-      <PageNavigation />
+      <BottomNav />
     </div>
   );
 };
