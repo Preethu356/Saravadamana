@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Hero from "@/components/Hero";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import Gallery from "@/components/Gallery";
-import PageNavigation from "@/components/PageNavigation";
 import NewsTicker from "@/components/NewsTicker";
 import { Button } from "@/components/ui/button";
 import { ConsentModal } from "@/components/ConsentModal";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import BottomNav from "@/components/BottomNav";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Index = () => {
+  const navigate = useNavigate();
   const { hasConsent, saveConsent } = useAnalytics();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -148,9 +152,42 @@ const Index = () => {
       
       <NewsTicker />
       <Hero />
+      
+      {/* Start Journey CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="container mx-auto px-4 py-8"
+      >
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 p-8 backdrop-blur-sm border border-primary/20">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 animate-pulse" />
+          <div className="relative z-10 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/80 text-primary mb-4">
+              <Sparkles className="h-4 w-4" />
+              <span className="text-sm font-medium">Personalized Wellness</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+              Begin Your Mental Wellness Journey
+            </h2>
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              Take our personalized assessment to discover your unique path to mental wellness
+            </p>
+            <Button
+              size="lg"
+              onClick={() => navigate("/start-journey")}
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg"
+            >
+              Start Your Journey
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+      
       <Gallery />
       <ComplianceFooter />
-      <PageNavigation />
+      <BottomNav />
     </div>
   );
 };
