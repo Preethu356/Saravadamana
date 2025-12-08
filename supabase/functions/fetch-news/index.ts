@@ -1,9 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const requestSchema = z.object({
+  type: z.enum(['quote-of-the-day', 'top-headlines', 'mental-health-india', 'research-updates']),
+  limit: z.number().int().min(1).max(50).default(10)
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,7 +18,22 @@ serve(async (req) => {
   }
 
   try {
-    const { type, limit = 10 } = await req.json();
+    const body = await req.json();
+    
+    // Validate input
+    const parseResult = requestSchema.safeParse(body);
+    if (!parseResult.success) {
+      console.error('Validation error:', parseResult.error.errors);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid request', 
+          details: parseResult.error.errors.map(e => e.message) 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const { type, limit } = parseResult.data;
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
@@ -33,8 +55,6 @@ serve(async (req) => {
     } else if (type === 'research-updates') {
       systemPrompt = 'You are a scientific research aggregator focusing on neuroscience and psychology. Return only a JSON array of research items.';
       userPrompt = `Generate ${limit} recent breakthrough research findings in brain science, neuroscience, psychology, and mental health technology from reputable international journals. Return as JSON array with format: [{"title": "...", "abstract": "...", "journal": "...", "date": "...", "topic": "...", "url": "https://example.com", "impact": "high/medium"}]. Include diverse topics like neuroplasticity, brain imaging, AI in mental health, therapeutic interventions, etc.`;
-    } else {
-      throw new Error('Invalid news type');
     }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -56,6 +76,18 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('AI API Error:', response.status, errorText);
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "Payment required. Please add credits to your workspace." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       throw new Error(`AI API error: ${response.status}`);
     }
 

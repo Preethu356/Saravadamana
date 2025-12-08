@@ -1,9 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const requestSchema = z.object({
+  goals: z.array(z.string().trim().min(1).max(200)).min(1).max(10),
+  availableTime: z.number().int().min(5).max(480),
+  stressLevel: z.number().int().min(1).max(10),
+  preferences: z.string().trim().max(1000).default('')
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,7 +20,22 @@ serve(async (req) => {
   }
 
   try {
-    const { goals, availableTime, stressLevel, preferences } = await req.json();
+    const body = await req.json();
+    
+    // Validate input
+    const parseResult = requestSchema.safeParse(body);
+    if (!parseResult.success) {
+      console.error('Validation error:', parseResult.error.errors);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid request', 
+          details: parseResult.error.errors.map(e => e.message) 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const { goals, availableTime, stressLevel, preferences } = parseResult.data;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -139,7 +163,7 @@ Format the response as JSON with this structure:
     }
 
     const data = await response.json();
-    console.log("AI response:", JSON.stringify(data, null, 2));
+    console.log("AI response received");
     
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) {
