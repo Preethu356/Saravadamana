@@ -1,9 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Input validation schema
+const requestSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180)
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,7 +18,22 @@ serve(async (req) => {
   }
 
   try {
-    const { latitude, longitude } = await req.json();
+    const body = await req.json();
+    
+    // Validate input
+    const parseResult = requestSchema.safeParse(body);
+    if (!parseResult.success) {
+      console.error('Validation error:', parseResult.error.errors);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid coordinates', 
+          details: parseResult.error.errors.map(e => e.message) 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const { latitude, longitude } = parseResult.data;
     console.log(`Fetching climate data for lat: ${latitude}, lon: ${longitude}`);
     
     const OPENWEATHER_API_KEY = Deno.env.get("OPENWEATHER_API_KEY");
