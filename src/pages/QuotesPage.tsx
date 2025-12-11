@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, RefreshCw, Calendar, Sun, Moon, Sunrise, Sunset, Quote } from "lucide-react";
+import { Sparkles, RefreshCw, Calendar, Sun, Moon, Sunrise, Sunset, Quote, Share2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import PageNavigation from "@/components/PageNavigation";
 import { format } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface QuoteOfDay {
   quote: string;
@@ -25,6 +31,7 @@ const getTimeOfDay = () => {
 const QuotesPage = () => {
   const [quote, setQuote] = useState<QuoteOfDay | null>(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const [timeOfDay] = useState(getTimeOfDay());
   
@@ -66,6 +73,30 @@ const QuotesPage = () => {
     }
   };
 
+  const shareQuote = (platform: string) => {
+    if (!quote) return;
+    
+    const text = `"${quote.quote}" — ${quote.author}`;
+    const url = window.location.href;
+    
+    const shareUrls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}&u=${encodeURIComponent(url)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`,
+    };
+    
+    if (platform === 'copy') {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast({ title: "Copied!", description: "Quote copied to clipboard" });
+      setTimeout(() => setCopied(false), 2000);
+      return;
+    }
+    
+    window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+  };
+
   const TimeIcon = timeOfDay.icon;
 
   return (
@@ -100,8 +131,8 @@ const QuotesPage = () => {
           </div>
         </div>
 
-        {/* Refresh Button */}
-        <div className="flex justify-center mb-8">
+        {/* Action Buttons */}
+        <div className="flex justify-center gap-3 mb-8">
           <Button
             onClick={fetchQuote}
             disabled={loading}
@@ -111,6 +142,35 @@ const QuotesPage = () => {
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh Quote
           </Button>
+          
+          {quote && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="lg" className="gap-2 shadow-md hover:shadow-lg transition-all">
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-44">
+                <DropdownMenuItem onClick={() => shareQuote('twitter')} className="gap-2">
+                  <span className="font-bold">𝕏</span> Twitter
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => shareQuote('facebook')} className="gap-2">
+                  <span className="text-blue-600">f</span> Facebook
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => shareQuote('linkedin')} className="gap-2">
+                  <span className="text-blue-700 font-bold">in</span> LinkedIn
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => shareQuote('whatsapp')} className="gap-2">
+                  <span className="text-green-600">💬</span> WhatsApp
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => shareQuote('copy')} className="gap-2">
+                  {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                  {copied ? 'Copied!' : 'Copy Quote'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Quote Card */}
