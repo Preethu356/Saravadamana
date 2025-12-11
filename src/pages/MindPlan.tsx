@@ -9,13 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download, Sparkles, Plus, Calendar, TrendingUp, Award, Target, Heart, Brain, Activity, BookOpen } from "lucide-react";
+import { Download, Sparkles, Plus, Calendar, TrendingUp, Award, Target, Heart, Brain, Activity, BookOpen, Shield, AlertTriangle, CheckCircle, Loader2, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import Watermark from "@/components/Watermark";
 import PageNavigation from "@/components/PageNavigation";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const wellnessActivities = [
   { id: "meditation", label: "Daily Meditation (10-15 min)", category: "Mindfulness", icon: "🧘" },
@@ -59,12 +59,30 @@ interface AssessmentData {
   };
 }
 
+interface RiskProfile {
+  overallRisk: 'low' | 'moderate' | 'high' | 'critical';
+  riskScore: number;
+  factors: string[];
+  protectiveFactors: string[];
+}
+
+interface ScreeningResult {
+  screening_type: string;
+  score: number;
+  max_score: number;
+  severity: string | null;
+}
+
 const MindPlan = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [generatingAIPlan, setGeneratingAIPlan] = useState(false);
   const [plans, setPlans] = useState<MindPlanData[]>([]);
   const [assessments, setAssessments] = useState<AssessmentData>({});
+  const [screeningResults, setScreeningResults] = useState<ScreeningResult[]>([]);
+  const [riskProfile, setRiskProfile] = useState<RiskProfile | null>(null);
   const [userId, setUserId] = useState<string>("");
   const navigate = useNavigate();
 
@@ -97,6 +115,18 @@ const MindPlan = () => {
       if (plansError) throw plansError;
       setPlans(plansData || []);
 
+      // Fetch all screening results for risk calculation
+      const { data: screeningData } = await supabase
+        .from("screening_results")
+        .select("screening_type, score, max_score, severity")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      
+      if (screeningData) {
+        setScreeningResults(screeningData);
+        calculateRiskProfile(screeningData);
+      }
+
       // Fetch assessment data
       await fetchAssessments(user.id);
     } catch (error) {
@@ -104,6 +134,160 @@ const MindPlan = () => {
       toast.error("Failed to load your data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const calculateRiskProfile = (results: ScreeningResult[]) => {
+    const latestResults: Record<string, ScreeningResult> = {};
+    results.forEach(result => {
+      if (!latestResults[result.screening_type]) {
+        latestResults[result.screening_type] = result;
+      }
+    });
+
+    let totalRiskScore = 0;
+    const factors: string[] = [];
+    const protectiveFactors: string[] = [];
+
+    // PHQ-9 Analysis
+    if (latestResults['PHQ-9']) {
+      const score = latestResults['PHQ-9'].score;
+      if (score >= 20) { totalRiskScore += 40; factors.push('Severe depression'); }
+      else if (score >= 15) { totalRiskScore += 30; factors.push('Moderately severe depression'); }
+      else if (score >= 10) { totalRiskScore += 20; factors.push('Moderate depression'); }
+      else if (score >= 5) { totalRiskScore += 10; factors.push('Mild depression'); }
+      else { protectiveFactors.push('Minimal depression'); }
+    }
+
+    // GAD-7 Analysis
+    if (latestResults['GAD-7']) {
+      const score = latestResults['GAD-7'].score;
+      if (score >= 15) { totalRiskScore += 35; factors.push('Severe anxiety'); }
+      else if (score >= 10) { totalRiskScore += 25; factors.push('Moderate anxiety'); }
+      else if (score >= 5) { totalRiskScore += 15; factors.push('Mild anxiety'); }
+      else { protectiveFactors.push('Minimal anxiety'); }
+    }
+
+    // WHO-5 Analysis
+    if (latestResults['WHO-5']) {
+      const percentScore = (latestResults['WHO-5'].score / 25) * 100;
+      if (percentScore < 28) { totalRiskScore += 25; factors.push('Poor well-being'); }
+      else if (percentScore < 50) { totalRiskScore += 15; factors.push('Below average well-being'); }
+      else { protectiveFactors.push('Good well-being'); }
+    }
+
+    let overallRisk: 'low' | 'moderate' | 'high' | 'critical' = 'low';
+    if (totalRiskScore >= 70) overallRisk = 'critical';
+    else if (totalRiskScore >= 45) overallRisk = 'high';
+    else if (totalRiskScore >= 20) overallRisk = 'moderate';
+
+    setRiskProfile({
+      overallRisk,
+      riskScore: Math.min(totalRiskScore, 100),
+      factors,
+      protectiveFactors
+    });
+  };
+
+  const generateAIWellnessPlan = async () => {
+    if (!riskProfile) {
+      toast.error("Please complete screenings first");
+      return;
+    }
+
+    setGeneratingAIPlan(true);
+    
+    try {
+      const latestResults: Record<string, number> = {};
+      screeningResults.forEach(r => {
+        if (!latestResults[r.screening_type]) {
+          latestResults[r.screening_type] = r.score;
+        }
+      });
+
+      const response = await supabase.functions.invoke('generate-wellness-plan', {
+        body: {
+          goals: ["Improve mental health", "Build resilience", "Reduce stress"],
+          availableTime: 60,
+          stressLevel: riskProfile.overallRisk === 'critical' ? 9 : 
+                       riskProfile.overallRisk === 'high' ? 7 : 
+                       riskProfile.overallRisk === 'moderate' ? 5 : 3,
+          preferences: "Evidence-based interventions tailored to my risk profile",
+          riskScore: riskProfile.riskScore,
+          riskLevel: riskProfile.overallRisk,
+          riskFactors: riskProfile.factors,
+          protectiveFactors: riskProfile.protectiveFactors,
+          screeningResults: {
+            phq9: latestResults['PHQ-9'],
+            gad7: latestResults['GAD-7'],
+            who5: latestResults['WHO-5'],
+            personality: assessments.personality?.archetype
+          }
+        }
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Failed to generate plan');
+      }
+
+      const plan = response.data;
+
+      // Save the AI-generated plan
+      const { error: saveError } = await supabase.from("mind_plans").insert({
+        user_id: userId,
+        title: plan.title || `AI Wellness Plan - ${riskProfile.overallRisk.toUpperCase()} Risk`,
+        interventions: {
+          goals: plan.description,
+          activities: plan.daily_routine?.map((r: any) => ({
+            id: r.activity.toLowerCase().replace(/\s+/g, '-'),
+            label: r.activity,
+            category: r.time,
+            icon: "🎯",
+            duration: r.duration,
+            description: r.description
+          })) || [],
+          recommendations: plan.tips || [],
+          weeklySchedule: plan.weekly_schedule,
+          professionalSupport: plan.professional_support,
+          assessmentSummary: {
+            riskScore: riskProfile.riskScore,
+            riskLevel: riskProfile.overallRisk,
+            factors: riskProfile.factors
+          }
+        },
+        duration_days: 21,
+        current_day: 1,
+        streak_count: 0,
+      });
+
+      if (saveError) throw saveError;
+
+      toast.success("AI Wellness Plan generated and saved!");
+      await fetchUserData();
+      setActiveTab("dashboard");
+    } catch (error) {
+      console.error("Error generating AI plan:", error);
+      toast.error("Failed to generate AI plan. Please try again.");
+    } finally {
+      setGeneratingAIPlan(false);
+    }
+  };
+
+  const getRiskBadgeVariant = (risk: string) => {
+    switch (risk) {
+      case 'critical': return 'destructive';
+      case 'high': return 'destructive';
+      case 'moderate': return 'secondary';
+      default: return 'default';
+    }
+  };
+
+  const getRiskColor = (risk: string) => {
+    switch (risk) {
+      case 'critical': return 'text-red-500';
+      case 'high': return 'text-orange-500';
+      case 'moderate': return 'text-yellow-500';
+      default: return 'text-green-500';
     }
   };
 
@@ -728,8 +912,105 @@ const MindPlan = () => {
                 )}
               </div>
 
-              {Object.keys(assessments).length > 0 && (
+              {(Object.keys(assessments).length > 0 || riskProfile) && (
                 <>
+                  {/* Risk-Based AI Plan Generation */}
+                  <Card className="bg-gradient-to-br from-primary/10 via-background to-accent/10 border-primary/30">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                            <Shield className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <CardTitle>Risk-Based AI Wellness Plan</CardTitle>
+                            <CardDescription>
+                              Generate a personalized plan based on your screening results
+                            </CardDescription>
+                          </div>
+                        </div>
+                        {riskProfile && (
+                          <Badge variant={getRiskBadgeVariant(riskProfile.overallRisk) as any}>
+                            {riskProfile.overallRisk.toUpperCase()} RISK
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {riskProfile ? (
+                        <>
+                          {/* Risk Score Visualization */}
+                          <div className="flex items-center gap-6">
+                            <div className="relative w-24 h-24">
+                              <svg className="w-24 h-24 transform -rotate-90">
+                                <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-muted" />
+                                <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
+                                  strokeDasharray={`${(riskProfile.riskScore / 100) * 251} 251`}
+                                  className={getRiskColor(riskProfile.overallRisk)}
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-xl font-bold">{riskProfile.riskScore}</span>
+                                <span className="text-xs text-muted-foreground">/100</span>
+                              </div>
+                            </div>
+                            <div className="flex-1 space-y-2">
+                              <div className="grid grid-cols-2 gap-2">
+                                {riskProfile.factors.length > 0 && (
+                                  <div className="p-2 bg-red-500/10 rounded-lg">
+                                    <p className="text-xs font-medium flex items-center gap-1">
+                                      <AlertTriangle className="h-3 w-3 text-red-500" />
+                                      Risk Factors
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">{riskProfile.factors.slice(0, 2).join(', ')}</p>
+                                  </div>
+                                )}
+                                {riskProfile.protectiveFactors.length > 0 && (
+                                  <div className="p-2 bg-green-500/10 rounded-lg">
+                                    <p className="text-xs font-medium flex items-center gap-1">
+                                      <CheckCircle className="h-3 w-3 text-green-500" />
+                                      Protective
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">{riskProfile.protectiveFactors.slice(0, 2).join(', ')}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <Button
+                            onClick={generateAIWellnessPlan}
+                            className="w-full gap-2"
+                            disabled={generatingAIPlan}
+                          >
+                            {generatingAIPlan ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Generating AI Plan...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4" />
+                                Generate AI Wellness Plan
+                              </>
+                            )}
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="text-center py-4">
+                          <Brain className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                          <p className="text-sm text-muted-foreground mb-3">
+                            Complete screenings to generate risk-based recommendations
+                          </p>
+                          <Button variant="outline" onClick={() => navigate('/secondary-care')} className="gap-2">
+                            Complete Screenings
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
                   <Card className="bg-gradient-to-br from-accent/5 to-primary/5 border-primary/20">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
