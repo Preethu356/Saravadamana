@@ -2,49 +2,55 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import appLogin from "@/assets/app-login.jpg";
-import appDashboard from "@/assets/app-dashboard.jpg";
-import appMoodTracker from "@/assets/app-mood-tracker.jpg";
-import appScreening from "@/assets/app-screening.jpg";
-import appMindSequencing from "@/assets/app-mind-sequencing.jpg";
-import appAnalytics from "@/assets/app-analytics.jpg";
+import carouselWelcome from "@/assets/carousel-welcome.jpg";
+import carouselMood from "@/assets/carousel-mood.jpg";
+import carouselScreening from "@/assets/carousel-screening.jpg";
+import carouselAIPlan from "@/assets/carousel-ai-plan.jpg";
+import carouselPractice from "@/assets/carousel-practice.jpg";
+import carouselProgress from "@/assets/carousel-progress.jpg";
 
 const features = [
   { 
-    image: appLogin, 
-    title: "Secure Access to Your Wellness Journey",
-    description: "Begin with a simple, secure sign-in. Create your account in seconds and access evidence-based mental health tools designed specifically for your needs. Your data is protected with bank-level encryption.",
-    route: "/login"
+    image: carouselWelcome, 
+    title: "Welcome to Your Calm Space",
+    description: "Open Sarvadamana and feel instantly welcomed. A warm, calming interface designed for Students, Professionals, Women, and Elderly. Your safe space for mental wellness begins here.",
+    route: "/start-journey",
+    step: 1
   },
   { 
-    image: appDashboard, 
-    title: "Personalized Dashboard & Navigation",
-    description: "Access your comprehensive mental wellness hub featuring Mood Tracker, AI Support, Wellness Tools, Professional Screening Tests, Mind Sequencing, Mind Your Diet/Gym/Sleep, and more. Track your wellness streak and celebrate your progress daily.",
-    route: "/dashboard"
+    image: carouselMood, 
+    title: "Track Your Daily Emotions",
+    description: "Express how you're feeling with intuitive mood tracking. Build emotional awareness through daily check-ins that help you understand your patterns and triggers.",
+    route: "/mood-tracking",
+    step: 2
   },
   { 
-    image: appMoodTracker, 
-    title: "Daily Mood Tracking & Emotional Awareness",
-    description: "Log your emotions with intuitive mood cards ranging from Great to Struggling. Monitor patterns with visual trend graphs, calendar views, and journal entries. Build emotional intelligence by understanding your mental health patterns over time.",
-    route: "/mood-tracking"
+    image: carouselScreening, 
+    title: "Complete Mental Health Assessments",
+    description: "Take validated clinical screenings (PHQ-9, GAD-7, WHO-5) to understand your mental health. Get personalized risk scores and evidence-based insights.",
+    route: "/screening-tools",
+    step: 3
   },
   { 
-    image: appScreening, 
-    title: "Professional Mental Health Assessments",
-    description: "Complete validated clinical screening tools including PHQ-9 for depression and GAD-7 for anxiety. Receive instant, evidence-based results with severity ratings and professional recommendations tailored to your mental health needs.",
-    route: "/depression-screening"
+    image: carouselAIPlan, 
+    title: "Receive AI-Powered Wellness Plans",
+    description: "Our AI analyzes your assessments and creates personalized 7-day wellness journeys. Adaptive micro-interventions tailored specifically for your needs.",
+    route: "/mind-plan",
+    step: 4
   },
   { 
-    image: appMindSequencing, 
-    title: "Personalized Intervention Plans",
-    description: "Generate AI-powered wellness sequences based on your assessment scores. Follow step-by-step guided interventions including meditation, breathing exercises, CBT activities, and mindfulness practices. Track completion with progress indicators and audio guidance.",
-    route: "/mind-sequencing"
+    image: carouselPractice, 
+    title: "Practice Guided Interventions",
+    description: "Follow calming meditations, breathing exercises, and mindfulness practices. Each session is designed to bring peace and build resilience in just minutes.",
+    route: "/mind-sequencing",
+    step: 5
   },
   { 
-    image: appAnalytics, 
-    title: "Comprehensive Progress Analytics",
-    description: "Visualize your mental wellness journey with detailed analytics dashboards. Monitor mood trends, assessment score improvements, activity completion rates, wellness streaks, and achievement milestones. Data-driven insights help you understand what works best for your mental health.",
-    route: "/analytics"
+    image: carouselProgress, 
+    title: "Celebrate Your Growth",
+    description: "Watch your progress unfold with beautiful analytics. Track improvements, celebrate milestones, and see how far you've come on your mental wellness journey.",
+    route: "/analytics",
+    step: 6
   },
 ];
 
@@ -55,7 +61,7 @@ const FeatureCarousel = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % features.length);
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, []);
@@ -79,11 +85,11 @@ const FeatureCarousel = () => {
           How Sarvadamana Works
         </h3>
         <p className="text-muted-foreground text-lg">
-          Your complete mental wellness journey from start to finish
+          Your journey to mental wellness in 6 simple steps
         </p>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl shadow-glow border border-border/50 bg-card">
+      <div className="relative overflow-hidden rounded-3xl shadow-comfort border border-border/30 bg-card/50 backdrop-blur-sm">
         <div 
           className="flex transition-transform duration-700 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -98,20 +104,26 @@ const FeatureCarousel = () => {
                 <img 
                   src={feature.image} 
                   alt={feature.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                
+                {/* Step indicator */}
+                <div className="absolute top-6 left-6 bg-primary/90 backdrop-blur-sm text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                  Step {feature.step} of {features.length}
+                </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-transparent p-8">
+              
+              <div className="absolute bottom-0 left-0 right-0 p-8">
                 <div className="max-w-4xl mx-auto">
-                  <h4 className="text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                  <h4 className="text-2xl md:text-3xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
                     {feature.title}
                   </h4>
-                  <p className="text-muted-foreground text-base leading-relaxed mb-3">
+                  <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-4">
                     {feature.description}
                   </p>
-                  <span className="text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 inline-flex items-center gap-2">
-                    Click to explore this feature →
+                  <span className="text-sm text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+                    Tap to explore →
                   </span>
                 </div>
               </div>
@@ -122,8 +134,8 @@ const FeatureCarousel = () => {
         <Button
           variant="outline"
           size="icon"
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background backdrop-blur-sm"
-          onClick={goToPrevious}
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background backdrop-blur-sm border-border/50 shadow-comfort"
+          onClick={(e) => { e.stopPropagation(); goToPrevious(); }}
         >
           <ChevronLeft className="h-6 w-6" />
         </Button>
@@ -131,23 +143,26 @@ const FeatureCarousel = () => {
         <Button
           variant="outline"
           size="icon"
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background backdrop-blur-sm"
-          onClick={goToNext}
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background backdrop-blur-sm border-border/50 shadow-comfort"
+          onClick={(e) => { e.stopPropagation(); goToNext(); }}
         >
           <ChevronRight className="h-6 w-6" />
         </Button>
 
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {/* Progress dots */}
+        <div className="absolute bottom-28 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {features.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`transition-all rounded-full ${
+              onClick={(e) => { e.stopPropagation(); setCurrentIndex(index); }}
+              className={`transition-all duration-300 rounded-full ${
                 index === currentIndex 
-                  ? "bg-primary w-10 h-3" 
-                  : "bg-muted-foreground/40 w-3 h-3 hover:bg-muted-foreground/60"
+                  ? "bg-primary w-10 h-3 shadow-glow" 
+                  : index < currentIndex
+                    ? "bg-primary/60 w-3 h-3"
+                    : "bg-muted-foreground/30 w-3 h-3 hover:bg-muted-foreground/50"
               }`}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={`Go to step ${index + 1}`}
             />
           ))}
         </div>
@@ -155,7 +170,7 @@ const FeatureCarousel = () => {
 
       <div className="mt-6 text-center">
         <p className="text-sm text-muted-foreground">
-          Step {currentIndex + 1} of {features.length} • Click any slide to explore
+          Step {currentIndex + 1}: {features[currentIndex].title}
         </p>
       </div>
     </div>
