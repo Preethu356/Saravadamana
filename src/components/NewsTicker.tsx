@@ -130,7 +130,7 @@ const NewsTicker = () => {
 
   return (
     <div 
-      className="py-4 overflow-hidden cursor-pointer"
+      className="py-4 overflow-hidden cursor-pointer bg-gradient-to-r from-blue-100/60 via-pink-50/50 to-purple-100/60 dark:from-blue-950/30 dark:via-pink-950/20 dark:to-purple-950/30 rounded-2xl mx-4 my-2"
       onClick={handleClick}
     >
       <div className="container mx-auto px-4">
