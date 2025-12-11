@@ -12,6 +12,9 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import BottomNav from "@/components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
 import { WeeklyWellnessSummary } from "@/components/WeeklyWellnessSummary";
+import WarmGreeting from "@/components/WarmGreeting";
+import MicroInterventions from "@/components/MicroInterventions";
+import AdaptiveJourney from "@/components/AdaptiveJourney";
 import { 
   Sparkles, 
   ArrowRight, 
@@ -24,7 +27,10 @@ import {
   Award,
   TrendingUp,
   Target,
-  Heart
+  Heart,
+  Music,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -72,7 +78,7 @@ const Index = () => {
       subtitle: "AI wellness journey",
       icon: Brain,
       route: "/mind-sequencing",
-      gradient: "from-violet-500 to-purple-600",
+      gradient: "from-primary to-accent",
       progress: sequenceCount > 0 ? Math.min((sequenceCount / 7) * 100, 100) : 0
     },
     {
@@ -81,7 +87,7 @@ const Index = () => {
       subtitle: "Daily check-in",
       icon: Smile,
       route: "/mood-tracker",
-      gradient: "from-amber-500 to-orange-500",
+      gradient: "from-comfort to-warm",
       progress: Math.min((wellnessStats.mood_entries / 30) * 100, 100)
     },
     {
@@ -90,7 +96,7 @@ const Index = () => {
       subtitle: "Better rest",
       icon: Moon,
       route: "/mind-your-sleep",
-      gradient: "from-indigo-500 to-blue-600"
+      gradient: "from-accent to-primary"
     },
     {
       id: "mind-diet",
@@ -98,7 +104,7 @@ const Index = () => {
       subtitle: "Nutrition plan",
       icon: Utensils,
       route: "/mind-your-diet",
-      gradient: "from-emerald-500 to-teal-600"
+      gradient: "from-secondary to-primary"
     },
     {
       id: "mind-gym",
@@ -106,7 +112,7 @@ const Index = () => {
       subtitle: "Exercise routine",
       icon: Dumbbell,
       route: "/mind-your-gym",
-      gradient: "from-rose-500 to-pink-600"
+      gradient: "from-warm to-comfort"
     },
     {
       id: "screening",
@@ -114,7 +120,7 @@ const Index = () => {
       subtitle: "Assessments",
       icon: Activity,
       route: "/start-journey",
-      gradient: "from-cyan-500 to-blue-500",
+      gradient: "from-primary to-secondary",
       progress: Math.min((screeningCount / 5) * 100, 100)
     }
   ];
@@ -151,12 +157,10 @@ const Index = () => {
   const fetchUserData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
-      // Get user name
       const name = session.user.user_metadata?.full_name?.split(' ')[0] || 
                    session.user.email?.split('@')[0] || 'Friend';
       setUserName(name);
 
-      // Fetch wellness stats
       const { data: statsData } = await supabase
         .from('user_wellness_stats')
         .select('current_streak, total_sessions, mood_entries, meditation_minutes')
@@ -167,7 +171,6 @@ const Index = () => {
         setWellnessStats(statsData);
       }
 
-      // Fetch screening count
       const { data: screeningData } = await supabase
         .from('screening_results')
         .select('id')
@@ -177,7 +180,6 @@ const Index = () => {
         setScreeningCount(screeningData.length);
       }
 
-      // Fetch sequence count
       const { data: sequenceData } = await supabase
         .from('sequences')
         .select('id')
@@ -239,37 +241,38 @@ const Index = () => {
     });
   };
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 17) return "Good Afternoon";
-    return "Good Evening";
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/50 via-pink-50/30 to-background dark:from-slate-950 dark:via-slate-900 dark:to-background">
+    <div className="min-h-screen gradient-comfort">
       {/* Background Music */}
       <audio ref={audioRef} loop preload="auto" className="hidden">
         <source src="/calm-meditation.mp3" type="audio/mpeg" />
       </audio>
       
-      {/* Draggable Listen Button */}
+      {/* Draggable Listen Button - Warm redesign */}
       <div
         className="fixed z-50 cursor-move"
         style={{ left: `${position.x}px`, top: `${position.y}px` }}
         onMouseDown={handleMouseDown}
       >
-        <div className={`relative ${isPlaying ? 'animate-pulse' : ''}`}>
-          <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-md opacity-50 ${isPlaying ? 'animate-pulse' : ''}`} />
+        <motion.div 
+          className="relative"
+          animate={isPlaying ? { scale: [1, 1.05, 1] } : {}}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-primary to-accent blur-md opacity-40 ${isPlaying ? 'animate-pulse-soft' : ''}`} />
           <Button
             onClick={toggleMusic}
             variant="ghost"
             size="sm"
-            className="relative w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 backdrop-blur-md border-2 border-white/30 shadow-xl hover:shadow-purple-500/50 transition-all hover:scale-105 p-0"
+            className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary via-accent to-warm hover:from-primary/90 hover:via-accent/90 hover:to-warm/90 backdrop-blur-md border-2 border-white/30 shadow-soft hover:shadow-glow transition-all hover:scale-105 p-0"
           >
-            <span className={`text-white font-semibold text-xs ${isPlaying ? 'animate-pulse' : ''}`}>Listen</span>
+            {isPlaying ? (
+              <Volume2 className="w-5 h-5 text-white" />
+            ) : (
+              <VolumeX className="w-5 h-5 text-white" />
+            )}
           </Button>
-        </div>
+        </motion.div>
       </div>
       
       <ConsentModal open={!hasConsent} onConsent={saveConsent} />
@@ -277,19 +280,10 @@ const Index = () => {
       {/* Quote Ticker */}
       <NewsTicker />
 
-      {/* Mini Dashboard Section */}
+      {/* Main Content */}
       <section className="container mx-auto px-4 py-6">
-        {/* Greeting */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
-            {getGreeting()}, <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{userName || 'Friend'}</span>
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">Your wellness journey continues</p>
-        </motion.div>
+        {/* Warm Greeting */}
+        <WarmGreeting userName={userName} />
 
         {/* Stats Row */}
         <motion.div
@@ -298,9 +292,9 @@ const Index = () => {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"
         >
-          <Card className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-200/50 dark:border-amber-800/50">
+          <Card className="bg-gradient-to-br from-comfort/10 to-warm/10 border-comfort/30 shadow-warm">
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-comfort to-warm flex items-center justify-center">
                 <Award className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -310,9 +304,9 @@ const Index = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border-emerald-200/50 dark:border-emerald-800/50">
+          <Card className="bg-gradient-to-br from-secondary/10 to-primary/10 border-secondary/30 shadow-soft">
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -322,9 +316,9 @@ const Index = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-violet-500/10 to-purple-500/10 border-violet-200/50 dark:border-violet-800/50">
+          <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 shadow-soft">
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <Target className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -334,9 +328,9 @@ const Index = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-rose-500/10 to-pink-500/10 border-rose-200/50 dark:border-rose-800/50">
+          <Card className="bg-gradient-to-br from-warm/10 to-accent/10 border-warm/30 shadow-warm">
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-warm to-accent flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -347,11 +341,31 @@ const Index = () => {
           </Card>
         </motion.div>
 
-        {/* Quick Modules Grid */}
+        {/* Micro Interventions - Quick Calm */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-6"
+        >
+          <MicroInterventions compact />
+        </motion.div>
+
+        {/* 7-Day Adaptive Journey - Compact */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="mb-6"
+        >
+          <AdaptiveJourney compact />
+        </motion.div>
+
+        {/* Quick Modules Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-4">
@@ -372,7 +386,7 @@ const Index = () => {
                   transition={{ delay: 0.1 + index * 0.05 }}
                 >
                   <Card 
-                    className="cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02] group overflow-hidden"
+                    className="cursor-pointer hover:shadow-soft transition-all hover:scale-[1.02] group overflow-hidden border-border/50"
                     onClick={() => navigate(module.route)}
                   >
                     <CardContent className="p-4">
@@ -404,29 +418,36 @@ const Index = () => {
 
       <Hero />
       
-      {/* Start Journey CTA */}
+      {/* Start Journey CTA - Warm redesign */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
         className="container mx-auto px-4 py-8"
       >
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-100/60 via-pink-50/50 to-purple-100/60 dark:from-blue-950/30 dark:via-pink-950/20 dark:to-purple-950/30 p-8 border border-primary/10">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-accent/10 to-warm/10 p-8 border border-primary/20 shadow-soft">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--accent)/0.1),transparent_50%)]" />
+          
           <div className="relative z-10 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/80 text-primary mb-4">
+            <motion.div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/80 text-primary mb-4 shadow-soft"
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
               <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-medium">Personalized Wellness</span>
-            </div>
+              <span className="text-sm font-medium">Personalized for You</span>
+            </motion.div>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
               Begin Your Mental Wellness Journey
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto mb-6">
-              Take our personalized assessment to discover your unique path to mental wellness
+              Take our personalized assessment to discover your unique path to mental wellness — designed for Students, Professionals, Women, and Elderly
             </p>
             <Button
               size="lg"
               onClick={() => navigate("/start-journey")}
-              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white shadow-lg"
+              className="bg-gradient-to-r from-primary via-accent to-warm hover:from-primary/90 hover:via-accent/90 hover:to-warm/90 text-white shadow-soft hover:shadow-glow transition-all"
             >
               Start Your Journey
               <ArrowRight className="ml-2 h-5 w-5" />
