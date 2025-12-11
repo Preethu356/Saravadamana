@@ -2,118 +2,158 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* SARVADAMANA Design System - Warm, Emotionally Intelligent, Calming
+   A compassionate AI companion for Students, Working Professionals, Women, and Elderly
+   All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 220 15% 20%;
+    /* Core Warm & Calming Palette */
+    --background: 35 30% 98%;
+    --foreground: 25 20% 18%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 20%;
+    --card: 40 25% 99%;
+    --card-foreground: 25 20% 18%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 20%;
+    --popover: 40 25% 99%;
+    --popover-foreground: 25 20% 18%;
 
-    --primary: 200 85% 45%;
+    /* Primary - Warm Teal (Trust & Calm) */
+    --primary: 175 55% 42%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 175 55% 55%;
 
-    --secondary: 150 40% 65%;
+    /* Secondary - Soft Sage (Growth & Healing) */
+    --secondary: 140 35% 55%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 30% 94%;
-    --muted-foreground: 220 15% 45%;
+    /* Muted - Warm Cream */
+    --muted: 35 25% 93%;
+    --muted-foreground: 25 15% 45%;
 
-    --accent: 270 60% 70%;
+    /* Accent - Gentle Lavender (Peace & Comfort) */
+    --accent: 280 45% 68%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    /* Warm Coral for Important Actions */
+    --warm: 15 75% 65%;
+    --warm-foreground: 0 0% 100%;
+
+    /* Comfort Gold for Achievements */
+    --comfort: 42 80% 55%;
+    --comfort-foreground: 25 20% 18%;
+
+    --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 200 85% 45%;
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 175 55% 42%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
     
-    --gradient-calm: linear-gradient(135deg, hsl(200 85% 60%), hsl(270 60% 70%));
-    --gradient-peaceful: linear-gradient(180deg, hsl(200 85% 95%), hsl(270 60% 95%));
-    --gradient-hero: linear-gradient(135deg, hsl(200 85% 50%) 0%, hsl(270 60% 65%) 100%);
+    /* Calming Gradients */
+    --gradient-calm: linear-gradient(135deg, hsl(175 55% 50%), hsl(280 45% 68%));
+    --gradient-peaceful: linear-gradient(180deg, hsl(35 30% 98%), hsl(175 55% 95%));
+    --gradient-hero: linear-gradient(135deg, hsl(175 55% 45%) 0%, hsl(280 45% 60%) 50%, hsl(15 75% 65%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(15 75% 60%) 0%, hsl(42 80% 55%) 100%);
+    --gradient-nature: linear-gradient(135deg, hsl(140 35% 50%) 0%, hsl(175 55% 45%) 100%);
+    --gradient-comfort: linear-gradient(180deg, hsl(40 25% 99%), hsl(35 30% 96%));
     --gradient-olive: linear-gradient(135deg, hsl(75 45% 35%) 0%, hsl(85 50% 45%) 50%, hsl(70 40% 30%) 100%);
+    
+    /* Emotional State Colors */
+    --mood-great: 140 50% 50%;
+    --mood-good: 175 55% 50%;
+    --mood-okay: 42 80% 55%;
+    --mood-down: 25 60% 55%;
+    --mood-struggling: 0 65% 55%;
+    
     --olive-light: 75 45% 55%;
     --olive-dark: 70 40% 30%;
     
-    --shadow-soft: 0 4px 20px -2px hsl(200 85% 45% / 0.15);
-    --shadow-card: 0 8px 30px -4px hsl(200 85% 45% / 0.1);
+    /* Soft Shadows for Depth */
+    --shadow-soft: 0 4px 20px -2px hsl(175 55% 45% / 0.12);
+    --shadow-card: 0 8px 30px -4px hsl(25 20% 30% / 0.08);
+    --shadow-glow: 0 0 40px hsl(175 55% 50% / 0.15);
+    --shadow-warm: 0 4px 20px -2px hsl(15 75% 55% / 0.15);
     
+    /* Smooth Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-gentle: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 40 25% 98%;
+    --sidebar-foreground: 25 20% 26%;
+    --sidebar-primary: 175 55% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 35 25% 95%;
+    --sidebar-accent-foreground: 25 20% 18%;
+    --sidebar-border: 35 20% 90%;
+    --sidebar-ring: 175 55% 50%;
   }
 
   .dark {
-    --background: 220 25% 12%;
-    --foreground: 210 40% 98%;
+    /* Dark Mode - Warm & Cozy Night */
+    --background: 25 20% 10%;
+    --foreground: 35 30% 95%;
 
-    --card: 220 20% 16%;
-    --card-foreground: 210 40% 98%;
+    --card: 25 18% 14%;
+    --card-foreground: 35 30% 95%;
 
-    --popover: 220 20% 16%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 25 18% 14%;
+    --popover-foreground: 35 30% 95%;
 
-    --primary: 200 85% 55%;
+    --primary: 175 55% 50%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 175 55% 60%;
 
-    --secondary: 150 40% 55%;
+    --secondary: 140 35% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 20%;
-    --muted-foreground: 220 15% 65%;
+    --muted: 25 15% 18%;
+    --muted-foreground: 35 20% 65%;
 
-    --accent: 270 60% 65%;
+    --accent: 280 45% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --warm: 15 75% 60%;
+    --warm-foreground: 0 0% 100%;
+
+    --comfort: 42 80% 50%;
+    --comfort-foreground: 25 20% 10%;
+
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 22%;
-    --input: 220 20% 22%;
-    --ring: 200 85% 55%;
+    --border: 25 15% 22%;
+    --input: 25 15% 22%;
+    --ring: 175 55% 50%;
     
-    --gradient-calm: linear-gradient(135deg, hsl(200 85% 45%), hsl(270 60% 55%));
-    --gradient-peaceful: linear-gradient(180deg, hsl(220 25% 16%), hsl(220 20% 20%));
-    --gradient-hero: linear-gradient(135deg, hsl(200 85% 40%) 0%, hsl(270 60% 50%) 100%);
+    --gradient-calm: linear-gradient(135deg, hsl(175 55% 40%), hsl(280 45% 50%));
+    --gradient-peaceful: linear-gradient(180deg, hsl(25 20% 12%), hsl(25 18% 16%));
+    --gradient-hero: linear-gradient(135deg, hsl(175 55% 35%) 0%, hsl(280 45% 45%) 50%, hsl(15 75% 50%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(15 75% 50%) 0%, hsl(42 80% 45%) 100%);
+    --gradient-nature: linear-gradient(135deg, hsl(140 35% 40%) 0%, hsl(175 55% 35%) 100%);
+    --gradient-comfort: linear-gradient(180deg, hsl(25 18% 14%), hsl(25 15% 18%));
     --gradient-olive: linear-gradient(135deg, hsl(75 45% 25%) 0%, hsl(85 50% 35%) 50%, hsl(70 40% 20%) 100%);
+    
     --olive-light: 75 45% 45%;
     --olive-dark: 70 40% 20%;
     
-    --shadow-soft: 0 4px 20px -2px hsl(200 85% 25% / 0.3);
-    --shadow-card: 0 8px 30px -4px hsl(200 85% 25% / 0.25);
+    --shadow-soft: 0 4px 20px -2px hsl(175 55% 30% / 0.25);
+    --shadow-card: 0 8px 30px -4px hsl(0 0% 0% / 0.3);
+    --shadow-glow: 0 0 40px hsl(175 55% 40% / 0.2);
+    --shadow-warm: 0 4px 20px -2px hsl(15 75% 45% / 0.2);
     
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 25 18% 12%;
+    --sidebar-foreground: 35 30% 95%;
+    --sidebar-primary: 175 55% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 25 15% 18%;
+    --sidebar-accent-foreground: 35 30% 95%;
+    --sidebar-border: 25 15% 20%;
+    --sidebar-ring: 175 55% 50%;
   }
 }
 
@@ -123,6 +163,162 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+/* Calming Animations */
+@layer utilities {
+  .animate-breathe {
+    animation: breathe 4s ease-in-out infinite;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-soft {
+    animation: pulse-soft 3s ease-in-out infinite;
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s ease-in-out infinite;
+  }
+  
+  .animate-gentle-bounce {
+    animation: gentle-bounce 2s ease-in-out infinite;
+  }
+
+  .gradient-calm {
+    background: var(--gradient-calm);
+  }
+  
+  .gradient-peaceful {
+    background: var(--gradient-peaceful);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .gradient-nature {
+    background: var(--gradient-nature);
+  }
+  
+  .gradient-comfort {
+    background: var(--gradient-comfort);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .shadow-warm {
+    box-shadow: var(--shadow-warm);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Calming Focus States */
+@layer components {
+  .focus-calm:focus {
+    @apply outline-none ring-2 ring-primary/30 ring-offset-2 ring-offset-background;
+  }
+  
+  .btn-comfort {
+    @apply bg-gradient-to-r from-primary to-accent text-primary-foreground px-6 py-3 rounded-xl font-medium shadow-soft transition-all duration-300 hover:shadow-glow hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .card-warm {
+    @apply bg-card rounded-2xl p-6 shadow-card border border-border/50 transition-all duration-300 hover:shadow-soft hover:border-primary/20;
+  }
+  
+  .text-gradient-calm {
+    @apply bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+}
+
+/* Selection styling */
+::selection {
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
 }
