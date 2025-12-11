@@ -30,7 +30,6 @@ interface RiskProfile {
 
 const SecondaryCare = () => {
   const [searchParams] = useSearchParams();
-  const [who5Score, setWho5Score] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [userId, setUserId] = useState<string | null>(null);
   const [screeningResults, setScreeningResults] = useState<ScreeningResult[]>([]);
@@ -39,10 +38,9 @@ const SecondaryCare = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const tool = searchParams.get('tool');
-    if (tool === 'who5') setActiveTab('who5');
-    if (tool === 'phq9') setActiveTab('overview');
-    if (tool === 'gad7') setActiveTab('overview');
+    const tab = searchParams.get('tab');
+    if (tab === 'services') setActiveTab('services');
+    if (tab === 'programs') setActiveTab('programs');
     
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserId(session?.user?.id || null);
@@ -122,71 +120,6 @@ const SecondaryCare = () => {
       factors,
       protectiveFactors
     });
-  };
-
-  const who5Questions = [
-    "I have felt cheerful and in good spirits",
-    "I have felt calm and relaxed",
-    "I have felt active and vigorous",
-    "I woke up feeling fresh and rested",
-    "My daily life has been filled with things that interest me"
-  ];
-
-  const [who5Responses, setWho5Responses] = useState<number[]>(Array(5).fill(-1));
-
-  const handleWho5Response = async (index: number, value: number) => {
-    const newResponses = [...who5Responses];
-    newResponses[index] = value;
-    setWho5Responses(newResponses);
-    
-    if (newResponses.every(r => r >= 0)) {
-      const total = newResponses.reduce((sum, val) => sum + val, 0);
-      setWho5Score(total);
-      
-      if (userId) {
-        await saveWho5Results(total);
-        fetchScreeningResults(userId);
-      }
-    }
-  };
-
-  const saveWho5Results = async (score: number) => {
-    if (!userId) return;
-
-    const percentageScore = score * 4;
-    const interpretation = getWho5Interpretation(score);
-
-    const { error } = await supabase
-      .from('screening_results')
-      .insert({
-        user_id: userId,
-        screening_type: 'WHO-5',
-        score: score,
-        max_score: 25,
-        percentage_score: percentageScore,
-        severity: interpretation.severity
-      });
-
-    if (error) {
-      console.error('Error saving WHO-5 results:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save screening results",
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "WHO-5 screening results saved to your progress",
-      });
-    }
-  };
-
-  const getWho5Interpretation = (score: number) => {
-    const rawScore = score * 4;
-    if (rawScore >= 50) return { severity: "Good Well-Being", color: "text-green-600", recommendation: "Maintain healthy lifestyle habits" };
-    if (rawScore >= 28) return { severity: "Moderate Well-Being", color: "text-yellow-600", recommendation: "Consider lifestyle improvements and stress management" };
-    return { severity: "Poor Well-Being", color: "text-red-600", recommendation: "Further evaluation recommended; consider professional support" };
   };
 
   const getRiskColor = (risk: string) => {
@@ -674,10 +607,9 @@ const SecondaryCare = () => {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Screening Tools</TabsTrigger>
             <TabsTrigger value="programs">Population Programs</TabsTrigger>
-            <TabsTrigger value="who5">WHO-5 Index</TabsTrigger>
             <TabsTrigger value="services">Referral Services</TabsTrigger>
           </TabsList>
 
@@ -749,24 +681,6 @@ const SecondaryCare = () => {
                           <Button className="w-full" variant="secondary">Start GAD-7 Screening</Button>
                         </Link>
                       </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border-2 border-secondary/20 hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-secondary" />
-                        WHO-5 Well-Being Index
-                        <Badge variant="outline">5 Questions</Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Short self-reported measure of current mental well-being. A score below 50% indicates poor well-being and warrants further clinical assessment.
-                      </p>
-                      <Button className="w-full" variant="outline" onClick={() => setActiveTab("who5")}>
-                        Take WHO-5 Assessment
-                      </Button>
                     </CardContent>
                   </Card>
 
@@ -888,76 +802,6 @@ const SecondaryCare = () => {
                 </Card>
               ))}
             </div>
-          </TabsContent>
-
-          <TabsContent value="who5" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>WHO-5 Well-Being Index</CardTitle>
-                <CardDescription>
-                  Over the last 2 weeks, how much of the time...
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {who5Questions.map((question, index) => (
-                  <div key={index} className="space-y-2">
-                    <p className="font-medium text-sm">{index + 1}. {question}</p>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                      {["All of the time", "Most of the time", "More than half", "Less than half", "Some of the time", "At no time"].map((option, optIndex) => (
-                        <Button
-                          key={optIndex}
-                          variant={who5Responses[index] === (5 - optIndex) ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleWho5Response(index, 5 - optIndex)}
-                          className="text-xs"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                {who5Score !== null && (
-                  <Card className="mt-6 border-2 border-primary/20">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-primary" />
-                        Your Results
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="grid md:grid-cols-3 gap-4">
-                          <div>
-                            <p className="text-sm text-muted-foreground">Raw Score</p>
-                            <p className="text-3xl font-bold">{who5Score} / 25</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-muted-foreground">Percentage Score</p>
-                            <p className="text-2xl font-bold">{(who5Score * 4)}%</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-muted-foreground">Assessment</p>
-                            <p className={`text-xl font-semibold ${getWho5Interpretation(who5Score).color}`}>
-                              {getWho5Interpretation(who5Score).severity}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="p-4 bg-muted rounded-lg">
-                          <p className="text-sm font-semibold mb-1">Recommendation:</p>
-                          <p className="text-sm">{getWho5Interpretation(who5Score).recommendation}</p>
-                        </div>
-                        <p className="text-xs text-muted-foreground border-t pt-4">
-                          <strong>Important:</strong> This is an informal screening assessment only, not a diagnostic tool. 
-                          A score below 50% may indicate poor well-being and warrants further evaluation by a mental health professional.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </CardContent>
-            </Card>
           </TabsContent>
 
           <TabsContent value="services" className="space-y-6">
