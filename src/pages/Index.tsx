@@ -11,6 +11,7 @@ import { ConsentModal } from "@/components/ConsentModal";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import BottomNav from "@/components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
+import { WeeklyWellnessSummary } from "@/components/WeeklyWellnessSummary";
 import { 
   Sparkles, 
   ArrowRight, 
@@ -389,6 +390,15 @@ const Index = () => {
               );
             })}
           </div>
+        </motion.div>
+
+        {/* Weekly Wellness Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <WeeklyWellnessSummary />
         </motion.div>
       </section>
 
