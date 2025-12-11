@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, Calendar, Sun, Moon, Sunrise, Sunset } from "lucide-react";
+import { Sparkles, Calendar, Sun, Moon, Sunrise, Sunset, Share2 } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface QuoteOfDay {
   quote: string;
@@ -22,6 +29,7 @@ const NewsTicker = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [timeOfDay, setTimeOfDay] = useState(getTimeOfDay());
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   const today = new Date();
   const dayName = format(today, 'EEEE');
@@ -74,6 +82,29 @@ const NewsTicker = () => {
 
   const handleClick = () => {
     setIsPaused(!isPaused);
+  };
+
+  const shareQuote = (platform: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!quote) return;
+    
+    const text = `"${quote.quote}" — ${quote.author}`;
+    const url = window.location.origin;
+    
+    const shareUrls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(text)}&u=${encodeURIComponent(url)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`,
+    };
+    
+    if (platform === 'copy') {
+      navigator.clipboard.writeText(text);
+      toast({ title: "Copied!", description: "Quote copied to clipboard" });
+      return;
+    }
+    
+    window.open(shareUrls[platform], '_blank', 'width=600,height=400');
   };
 
   const TimeIcon = timeOfDay.icon;
@@ -136,6 +167,35 @@ const NewsTicker = () => {
               ))}
             </div>
           </div>
+          
+          {/* Share Button */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                className="shrink-0 p-1.5 rounded-full hover:bg-primary/10 transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Share2 className="w-4 h-4 text-primary" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={(e) => shareQuote('twitter', e as any)}>
+                𝕏 Twitter
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => shareQuote('facebook', e as any)}>
+                Facebook
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => shareQuote('linkedin', e as any)}>
+                LinkedIn
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => shareQuote('whatsapp', e as any)}>
+                WhatsApp
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => shareQuote('copy', e as any)}>
+                Copy Quote
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {/* Pause Indicator */}
           {isPaused && (
