@@ -60,6 +60,7 @@ const StudentsScreening = lazy(() => import("./pages/screening/StudentsScreening
 const WomenScreening = lazy(() => import("./pages/screening/WomenScreening"));
 const WorkplaceScreening = lazy(() => import("./pages/screening/WorkplaceScreening"));
 const ElderlyScreening = lazy(() => import("./pages/screening/ElderlyScreening"));
+const ScreeningTools = lazy(() => import("./pages/ScreeningTools"));
 
 const queryClient = new QueryClient();
 
@@ -133,6 +134,7 @@ const App = () => {
                   <Route path="/screening/women" element={<ProtectedRoute><WomenScreening /></ProtectedRoute>} />
                   <Route path="/screening/workplace" element={<ProtectedRoute><WorkplaceScreening /></ProtectedRoute>} />
                   <Route path="/screening/elderly" element={<ProtectedRoute><ElderlyScreening /></ProtectedRoute>} />
+                  <Route path="/screening-tools" element={<ProtectedRoute><ScreeningTools /></ProtectedRoute>} />
                   
                   {/* Core Feature Routes */}
                   <Route path="/mood-tracker" element={<ProtectedRoute><MoodTracking /></ProtectedRoute>} />
