@@ -111,12 +111,12 @@ const NewsTicker = () => {
 
   if (isLoading) {
     return (
-      <div className={`bg-gradient-to-r ${timeOfDay.gradient} border-y border-primary/20 py-3 backdrop-blur-sm`}>
+      <div className="py-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-3">
             <div className="animate-pulse flex items-center gap-2">
-              <div className="h-4 w-4 bg-primary/30 rounded-full"></div>
-              <div className="h-3 w-48 bg-primary/20 rounded"></div>
+              <div className="h-4 w-4 bg-primary/20 rounded-full"></div>
+              <div className="h-3 w-48 bg-primary/10 rounded"></div>
             </div>
           </div>
         </div>
@@ -130,21 +130,21 @@ const NewsTicker = () => {
 
   return (
     <div 
-      className="bg-transparent border-y border-primary/10 py-3 overflow-hidden transition-all duration-500 cursor-pointer"
+      className="py-4 overflow-hidden cursor-pointer"
       onClick={handleClick}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-4">
           {/* Date & Day Badge */}
-          <div className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground px-4 py-1.5 rounded-full shadow-lg shrink-0">
+          <div className="hidden sm:flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full shrink-0 backdrop-blur-sm">
             <Calendar className="w-3.5 h-3.5" />
             <span className="font-semibold text-xs whitespace-nowrap">{dayName}</span>
-            <span className="text-xs opacity-80">•</span>
+            <span className="text-xs opacity-60">•</span>
             <TimeIcon className="w-3.5 h-3.5" />
           </div>
           
           {/* Mobile Badge */}
-          <div className="flex sm:hidden items-center gap-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1 rounded-full shadow-lg shrink-0">
+          <div className="flex sm:hidden items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full shrink-0 backdrop-blur-sm">
             <Sparkles className="w-3 h-3" />
             <span className="text-xs font-medium">Daily</span>
           </div>
@@ -154,13 +154,13 @@ const NewsTicker = () => {
             <div className={`flex whitespace-nowrap ${isPaused ? '' : 'animate-[scroll-continuous_45s_linear_infinite]'}`}>
               {[1, 2, 3].map((i) => (
                 <span key={i} className="inline-flex items-center text-sm pr-16">
-                  <span className="font-serif italic text-foreground/90">"{quote.quote}"</span>
-                  <span className="mx-2 text-primary font-semibold">—</span>
-                  <span className="font-medium text-primary">{quote.author}</span>
+                  <span className="font-serif italic text-muted-foreground">"{quote.quote}"</span>
+                  <span className="mx-2 text-primary/70 font-medium">—</span>
+                  <span className="font-medium text-primary/80">{quote.author}</span>
                   {quote.theme && (
                     <>
-                      <span className="mx-3 text-muted-foreground/50">•</span>
-                      <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full capitalize">{quote.theme}</span>
+                      <span className="mx-3 text-muted-foreground/30">•</span>
+                      <span className="text-xs text-muted-foreground/70 capitalize">{quote.theme}</span>
                     </>
                   )}
                 </span>
@@ -175,7 +175,7 @@ const NewsTicker = () => {
                 className="shrink-0 p-1.5 rounded-full hover:bg-primary/10 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <Share2 className="w-4 h-4 text-primary" />
+                <Share2 className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
@@ -199,7 +199,7 @@ const NewsTicker = () => {
           
           {/* Pause Indicator */}
           {isPaused && (
-            <div className="shrink-0 text-xs text-muted-foreground bg-muted/80 px-2 py-0.5 rounded-full">
+            <div className="shrink-0 text-xs text-muted-foreground/60 px-2 py-0.5">
               Paused
             </div>
           )}
