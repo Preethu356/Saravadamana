@@ -393,7 +393,17 @@ const Header = () => {
                   );
                 })}
 
-                {/* Background SARVADAMANA - Moved here */}
+                {/* Dashboard */}
+                <Link
+                  to="/dashboard"
+                  className="group flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-primary/10 hover:shadow-sm hover:translate-x-1"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Activity className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
+                  <span>Dashboard</span>
+                </Link>
+
+                {/* Background SARVADAMANA */}
                 <div className="mt-2">
                   <Collapsible open={aboutOpen} onOpenChange={setAboutOpen}>
                     <CollapsibleTrigger className="cursor-pointer flex items-center justify-between w-full text-sm font-semibold text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-purple-500/10 border-2 border-transparent hover:border-cyan-500/20 group">
@@ -423,16 +433,6 @@ const Header = () => {
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
-
-                {/* Dashboard */}
-                <Link
-                  to="/dashboard"
-                  className="group flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-all py-3 px-4 rounded-xl hover:bg-primary/10 hover:shadow-sm hover:translate-x-1"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Activity className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
-                  <span>Dashboard</span>
-                </Link>
 
                 {/* Mental Health Collapsible */}
                 <div className="mt-2">
