@@ -464,6 +464,293 @@ const SecondaryCare = () => {
     });
   };
 
+  const generateCombinedReportPDF = async () => {
+    setGeneratingPDF('combined');
+    const doc = new jsPDF();
+    const margin = 15;
+    let yPos = margin;
+
+    // Header
+    doc.setFillColor(41, 128, 185);
+    doc.rect(0, 0, 210, 35, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text("SARVADAMANA", margin, 18);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text("Comprehensive Mental Health Report", margin, 26);
+    
+    yPos = 45;
+
+    // Title
+    doc.setTextColor(41, 128, 185);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Combined Mental Health Assessment Report", margin, yPos);
+    yPos += 8;
+
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Report Generated: ${new Date().toLocaleDateString('en-IN', { dateStyle: 'full' })}`, margin, yPos);
+    yPos += 15;
+
+    // Overall Risk Score Section
+    doc.setFillColor(245, 247, 250);
+    doc.rect(margin - 5, yPos - 5, 185, 35, 'F');
+    
+    doc.setTextColor(41, 128, 185);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Overall Mental Health Risk Assessment", margin, yPos + 3);
+    yPos += 12;
+
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+
+    if (riskProfile) {
+      const riskText = `Risk Level: ${riskProfile.overallRisk.toUpperCase()} | Score: ${riskProfile.riskScore}/100`;
+      doc.text(riskText, margin, yPos);
+      yPos += 8;
+      
+      const interpretation = getRiskInterpretation(riskProfile.overallRisk);
+      const lines = doc.splitTextToSize(interpretation, 175);
+      doc.text(lines, margin, yPos);
+      yPos += (lines.length * 6);
+    }
+
+    yPos += 15;
+
+    // Individual Scale Results
+    doc.setTextColor(41, 128, 185);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Individual Screening Results", margin, yPos);
+    yPos += 12;
+
+    const scales = [
+      { name: 'PHQ-9', description: 'Depression Screening', maxScore: 27 },
+      { name: 'GAD-7', description: 'Anxiety Screening', maxScore: 21 },
+      { name: 'WHO-5', description: 'Well-Being Index', maxScore: 25 },
+      { name: 'Personality', description: 'Personality Assessment', maxScore: 100 }
+    ];
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    scales.forEach(scale => {
+      const result = screeningResults.find(r => r.screening_type === scale.name);
+      doc.setTextColor(60, 60, 60);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${scale.name} (${scale.description})`, margin, yPos);
+      yPos += 6;
+      
+      doc.setFont('helvetica', 'normal');
+      if (result) {
+        doc.text(`Score: ${result.score}/${result.max_score} | Severity: ${result.severity || 'Completed'}`, margin + 5, yPos);
+        yPos += 5;
+        const percentScore = Math.round((result.score / result.max_score) * 100);
+        doc.text(`Percentage: ${percentScore}%`, margin + 5, yPos);
+      } else {
+        doc.setTextColor(150, 150, 150);
+        doc.text("Not completed - Please complete this screening", margin + 5, yPos);
+      }
+      yPos += 10;
+    });
+
+    yPos += 5;
+
+    // Risk Factors Section
+    if (riskProfile && riskProfile.factors.length > 0) {
+      doc.setTextColor(220, 53, 69);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text("Identified Risk Factors", margin, yPos);
+      yPos += 8;
+
+      doc.setTextColor(60, 60, 60);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      riskProfile.factors.forEach(factor => {
+        doc.text(`• ${factor}`, margin + 5, yPos);
+        yPos += 6;
+      });
+      yPos += 5;
+    }
+
+    // Protective Factors Section
+    if (riskProfile && riskProfile.protectiveFactors.length > 0) {
+      doc.setTextColor(40, 167, 69);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text("Protective Factors", margin, yPos);
+      yPos += 8;
+
+      doc.setTextColor(60, 60, 60);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      riskProfile.protectiveFactors.forEach(factor => {
+        doc.text(`• ${factor}`, margin + 5, yPos);
+        yPos += 6;
+      });
+    }
+
+    // New page for recommendations
+    doc.addPage();
+    yPos = margin;
+
+    // Header on new page
+    doc.setFillColor(41, 128, 185);
+    doc.rect(0, 0, 210, 20, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Recommendations & Action Plan", margin, 13);
+    yPos = 30;
+
+    // Recommendations
+    doc.setTextColor(41, 128, 185);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Personalized Recommendations", margin, yPos);
+    yPos += 10;
+
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    const recommendations = getCombinedRecommendations(riskProfile?.overallRisk || 'low');
+    recommendations.forEach((rec, idx) => {
+      const lines = doc.splitTextToSize(`${idx + 1}. ${rec}`, 175);
+      doc.text(lines, margin, yPos);
+      yPos += (lines.length * 6) + 3;
+    });
+
+    yPos += 10;
+
+    // Next Steps
+    doc.setTextColor(41, 128, 185);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Recommended Next Steps", margin, yPos);
+    yPos += 10;
+
+    doc.setTextColor(60, 60, 60);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    const nextSteps = getNextSteps(riskProfile?.overallRisk || 'low');
+    nextSteps.forEach((step, idx) => {
+      const lines = doc.splitTextToSize(`${idx + 1}. ${step}`, 175);
+      doc.text(lines, margin, yPos);
+      yPos += (lines.length * 6) + 3;
+    });
+
+    yPos += 15;
+
+    // Crisis Resources
+    doc.setFillColor(239, 68, 68);
+    doc.rect(margin - 5, yPos - 5, 185, 35, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Emergency & Crisis Resources", margin, yPos + 3);
+    yPos += 12;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text("• National Mental Health Helpline: 1800-599-0019 (24/7, Toll-Free)", margin, yPos);
+    yPos += 6;
+    doc.text("• iCall: 9152987821 | Vandrevala Foundation: 1860-2662-345", margin, yPos);
+    yPos += 6;
+    doc.text("• NIMHANS Helpline: 080-46110007 | Snehi: 044-24640050", margin, yPos);
+
+    // Footer
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(8);
+    doc.text("This report is for informational purposes only and does not constitute medical advice.", margin, 275);
+    doc.text("Please consult a qualified mental health professional for diagnosis and treatment.", margin, 280);
+    doc.text(`Generated by Sarvadamana Mental Health Platform | ${new Date().toLocaleDateString()}`, margin, 285);
+
+    doc.save('combined-mental-health-report.pdf');
+    setGeneratingPDF(null);
+    
+    toast({
+      title: "Report Generated!",
+      description: "Your comprehensive mental health report has been downloaded.",
+    });
+  };
+
+  const getRiskInterpretation = (risk: string): string => {
+    switch (risk) {
+      case 'critical': return 'Your assessment indicates significant mental health concerns that require immediate professional attention. Please reach out to a mental health professional or crisis helpline.';
+      case 'high': return 'Your results suggest elevated mental health concerns. We strongly recommend consulting with a mental health professional for a thorough evaluation and support.';
+      case 'moderate': return 'Your assessment shows some areas of concern. Consider speaking with a counselor or therapist to develop coping strategies and preventive measures.';
+      default: return 'Your results indicate good overall mental health. Continue practicing self-care and maintain healthy habits to support your well-being.';
+    }
+  };
+
+  const getCombinedRecommendations = (riskLevel: string): string[] => {
+    const base = [
+      "Maintain a consistent sleep schedule of 7-9 hours per night",
+      "Practice mindfulness or meditation for 10-15 minutes daily",
+      "Engage in regular physical activity for at least 30 minutes daily",
+      "Stay connected with supportive friends and family",
+      "Limit alcohol and caffeine consumption"
+    ];
+    
+    if (riskLevel === 'critical' || riskLevel === 'high') {
+      return [
+        "Seek immediate consultation with a mental health professional",
+        "Consider therapy or counseling sessions",
+        "Share your concerns with a trusted person",
+        ...base
+      ];
+    } else if (riskLevel === 'moderate') {
+      return [
+        "Consider speaking with a counselor about your concerns",
+        "Join a support group or wellness program",
+        ...base
+      ];
+    }
+    return base;
+  };
+
+  const getNextSteps = (riskLevel: string): string[] => {
+    if (riskLevel === 'critical') {
+      return [
+        "Contact a mental health professional within the next 24-48 hours",
+        "If experiencing crisis symptoms, call a helpline immediately",
+        "Complete any screenings you haven't taken yet",
+        "Schedule a follow-up assessment in 2 weeks"
+      ];
+    } else if (riskLevel === 'high') {
+      return [
+        "Schedule an appointment with a mental health professional",
+        "Complete any screenings you haven't taken yet",
+        "Track your mood and symptoms daily",
+        "Reassess your mental health in 4 weeks"
+      ];
+    } else if (riskLevel === 'moderate') {
+      return [
+        "Consider consulting with a counselor",
+        "Complete all 4 screening tools for comprehensive assessment",
+        "Implement the wellness recommendations above",
+        "Reassess your mental health in 6-8 weeks"
+      ];
+    }
+    return [
+      "Continue with your current wellness practices",
+      "Complete any remaining screenings for full assessment",
+      "Reassess your mental health every 3 months",
+      "Stay informed about mental health and self-care"
+    ];
+  };
+
   const getWellnessRecommendations = (riskLevel: string, programId: string): string[] => {
     const baseRecommendations: Record<string, string[]> = {
       students: [
@@ -614,11 +901,152 @@ const SecondaryCare = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* Combined Mental Health Risk Score */}
+            <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-primary" />
+                  General Mental Health Risk Score
+                </CardTitle>
+                <CardDescription>
+                  Combined analysis of all 4 screening scales (PHQ-9, GAD-7, WHO-5, Personality)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {riskProfile ? (
+                  <>
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                      <div className="relative w-32 h-32">
+                        <svg className="w-32 h-32 transform -rotate-90">
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="56"
+                            stroke="currentColor"
+                            strokeWidth="12"
+                            fill="transparent"
+                            className="text-muted"
+                          />
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="56"
+                            stroke="currentColor"
+                            strokeWidth="12"
+                            fill="transparent"
+                            strokeDasharray={`${(riskProfile.riskScore / 100) * 352} 352`}
+                            className={riskProfile.overallRisk === 'critical' ? 'text-red-500' : 
+                                      riskProfile.overallRisk === 'high' ? 'text-orange-500' : 
+                                      riskProfile.overallRisk === 'moderate' ? 'text-yellow-500' : 'text-green-500'}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-2xl font-bold">{riskProfile.riskScore}</span>
+                          <span className="text-xs text-muted-foreground">/100</span>
+                        </div>
+                      </div>
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Badge variant={getRiskBadge(riskProfile.overallRisk)} className="text-sm">
+                            {riskProfile.overallRisk.toUpperCase()} RISK
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Based on your completed screenings across depression, anxiety, well-being, and personality assessments.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Individual Scale Results */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {['PHQ-9', 'GAD-7', 'WHO-5', 'Personality'].map(scale => {
+                        const result = screeningResults.find(r => r.screening_type === scale);
+                        return (
+                          <div key={scale} className="p-4 bg-muted/30 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-sm">{scale}</span>
+                              {result ? (
+                                <Badge variant="outline" className="text-xs">
+                                  {result.score}/{result.max_score}
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="text-xs">Not completed</Badge>
+                              )}
+                            </div>
+                            {result ? (
+                              <>
+                                <Progress value={(result.score / result.max_score) * 100} className="h-2 mb-1" />
+                                <p className="text-xs text-muted-foreground">{result.severity || 'Completed'}</p>
+                              </>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">Complete this screening to add to your risk profile</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Risk Factors & Protective Factors */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {riskProfile.factors.length > 0 && (
+                        <div className="p-4 bg-red-500/10 rounded-lg">
+                          <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                            Risk Factors
+                          </h4>
+                          <ul className="space-y-1">
+                            {riskProfile.factors.map((factor, idx) => (
+                              <li key={idx} className="text-sm text-muted-foreground">• {factor}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {riskProfile.protectiveFactors.length > 0 && (
+                        <div className="p-4 bg-green-500/10 rounded-lg">
+                          <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            Protective Factors
+                          </h4>
+                          <ul className="space-y-1">
+                            {riskProfile.protectiveFactors.map((factor, idx) => (
+                              <li key={idx} className="text-sm text-muted-foreground">• {factor}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+
+                    <Button onClick={() => generateCombinedReportPDF()} className="w-full gap-2" disabled={generatingPDF === 'combined'}>
+                      {generatingPDF === 'combined' ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating Report...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4" />
+                          Download Combined Mental Health Report (PDF)
+                        </>
+                      )}
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h4 className="font-semibold mb-2">No Screenings Completed Yet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Complete the screening tools below to generate your combined mental health risk score and comprehensive report.
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Comprehensive Screening Tools</CardTitle>
                 <CardDescription>
-                  Evidence-based assessment tools to measure mental health risk
+                  Evidence-based assessment tools to measure mental health risk - complete all 4 for comprehensive analysis
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -629,6 +1057,9 @@ const SecondaryCare = () => {
                         <Brain className="w-5 h-5 text-primary" />
                         PHQ-9 Depression Screening
                         <Badge variant="secondary">Gold Standard</Badge>
+                        {screeningResults.find(r => r.screening_type === 'PHQ-9') && (
+                          <CheckCircle className="h-4 w-4 text-green-500 ml-auto" />
+                        )}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -649,6 +1080,9 @@ const SecondaryCare = () => {
                         <Heart className="w-5 h-5 text-accent" />
                         GAD-7 Anxiety Screening
                         <Badge variant="secondary">WHO Validated</Badge>
+                        {screeningResults.find(r => r.screening_type === 'GAD-7') && (
+                          <CheckCircle className="h-4 w-4 text-green-500 ml-auto" />
+                        )}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -663,12 +1097,36 @@ const SecondaryCare = () => {
                     </CardContent>
                   </Card>
 
+                  <Card className="border-2 border-green-500/20 hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Star className="w-5 h-5 text-green-500" />
+                        WHO-5 Well-Being Index
+                        <Badge variant="secondary">WHO Validated</Badge>
+                        {screeningResults.find(r => r.screening_type === 'WHO-5') && (
+                          <CheckCircle className="h-4 w-4 text-green-500 ml-auto" />
+                        )}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        5-item scale measuring psychological well-being over the past 2 weeks. Scores range from 0-25, with percentage scores indicating overall mental wellness.
+                      </p>
+                      <Link to="/screening-tools?scale=who5">
+                        <Button className="w-full" variant="outline">Start WHO-5 Screening</Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+
                   <Card className="border-2 border-purple-500/20 hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
                         <Users className="w-5 h-5 text-purple-500" />
                         Personality Assessment
                         <Badge variant="outline">Comprehensive</Badge>
+                        {screeningResults.find(r => r.screening_type === 'Personality') && (
+                          <CheckCircle className="h-4 w-4 text-green-500 ml-auto" />
+                        )}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
