@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, RefreshCw, Calendar } from "lucide-react";
+import { Sparkles, RefreshCw, Calendar, Sun, Moon, Sunrise, Sunset, Quote } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import PageNavigation from "@/components/PageNavigation";
@@ -11,14 +11,26 @@ import { format } from "date-fns";
 interface QuoteOfDay {
   quote: string;
   author: string;
-  date?: string;
+  theme?: string;
 }
+
+const getTimeOfDay = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return { name: 'morning', icon: Sunrise, greeting: 'Good Morning', gradient: 'from-amber-500 via-orange-400 to-yellow-500' };
+  if (hour >= 12 && hour < 17) return { name: 'afternoon', icon: Sun, greeting: 'Good Afternoon', gradient: 'from-sky-500 via-blue-400 to-cyan-500' };
+  if (hour >= 17 && hour < 21) return { name: 'evening', icon: Sunset, greeting: 'Good Evening', gradient: 'from-purple-500 via-pink-400 to-rose-500' };
+  return { name: 'night', icon: Moon, greeting: 'Good Night', gradient: 'from-indigo-500 via-violet-400 to-purple-500' };
+};
 
 const QuotesPage = () => {
   const [quote, setQuote] = useState<QuoteOfDay | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const today = format(new Date(), "EEEE, MMMM d, yyyy");
+  const [timeOfDay] = useState(getTimeOfDay());
+  
+  const today = new Date();
+  const dayName = format(today, "EEEE");
+  const fullDate = format(today, "MMMM d, yyyy");
 
   useEffect(() => {
     fetchQuote();
@@ -27,18 +39,19 @@ const QuotesPage = () => {
   const fetchQuote = async () => {
     try {
       setLoading(true);
-      console.log('Fetching quote of the day...');
+      const todayISO = new Date().toISOString().split('T')[0];
+      
       const { data, error } = await supabase.functions.invoke('fetch-news', {
-        body: { type: 'quote-of-the-day', limit: 1 }
+        body: { type: 'quote-of-the-day', limit: 1, date: todayISO }
       });
       
       if (error) throw error;
       
       if (data?.quote) {
-        setQuote({ ...data.quote, date: today });
+        setQuote(data.quote);
         toast({
           title: "Quote Updated",
-          description: "Fresh quote loaded for today!",
+          description: `Today's ${dayName} inspiration is ready!`,
         });
       }
     } catch (error) {
@@ -53,57 +66,94 @@ const QuotesPage = () => {
     }
   };
 
+  const TimeIcon = timeOfDay.icon;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="text-center mb-12">
+        {/* Header with Time-based Greeting */}
+        <div className="text-center mb-8">
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${timeOfDay.gradient} text-white mb-6 shadow-lg`}>
+            <TimeIcon className="w-5 h-5" />
+            <span className="font-medium">{timeOfDay.greeting}</span>
+          </div>
+          
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
               Daily Inspiration
             </h1>
+            <Sparkles className="w-8 h-8 text-primary" />
           </div>
           <p className="text-muted-foreground text-lg">
-            A new quote to inspire your day, every day
+            A mindful quote curated for your {dayName}
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <Calendar className="w-5 h-5 text-primary" />
-          <p className="text-lg font-semibold text-foreground">{today}</p>
+        {/* Date Display */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="flex items-center gap-2 bg-card border border-border rounded-full px-5 py-2 shadow-sm">
+            <Calendar className="w-5 h-5 text-primary" />
+            <span className="font-semibold text-foreground">{dayName}</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground">{fullDate}</span>
+          </div>
         </div>
 
+        {/* Refresh Button */}
         <div className="flex justify-center mb-8">
           <Button
             onClick={fetchQuote}
             disabled={loading}
-            className="gap-2"
+            className="gap-2 shadow-md hover:shadow-lg transition-all"
+            size="lg"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh Quote
           </Button>
         </div>
 
+        {/* Quote Card */}
         {loading && !quote ? (
-          <Card className="p-12 bg-gradient-to-br from-primary/5 to-accent/5">
-            <div className="animate-pulse space-y-4">
-              <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-              <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
-              <div className="h-4 bg-muted rounded w-1/4 mx-auto"></div>
+          <Card className={`p-12 bg-gradient-to-br ${timeOfDay.gradient} opacity-20`}>
+            <div className="animate-pulse space-y-6">
+              <div className="h-6 bg-white/30 rounded w-3/4 mx-auto"></div>
+              <div className="h-6 bg-white/30 rounded w-2/3 mx-auto"></div>
+              <div className="h-4 bg-white/30 rounded w-1/3 mx-auto"></div>
             </div>
           </Card>
         ) : quote ? (
-          <Card className="p-12 bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/20 shadow-xl">
-            <blockquote className="space-y-6">
-              <p className="text-2xl md:text-3xl font-serif italic text-foreground leading-relaxed text-center">
-                "{quote.quote}"
-              </p>
-              <footer className="text-right">
-                <cite className="text-xl font-semibold text-primary not-italic">
-                  — {quote.author}
-                </cite>
-              </footer>
-            </blockquote>
+          <Card className="relative overflow-hidden border-2 border-primary/20 shadow-2xl">
+            {/* Background Gradient */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${timeOfDay.gradient} opacity-10`}></div>
+            
+            {/* Quote Mark */}
+            <div className="absolute top-4 left-6 opacity-10">
+              <Quote className="w-24 h-24 text-primary" />
+            </div>
+            
+            <div className="relative p-8 md:p-12">
+              <blockquote className="space-y-6">
+                <p className="text-2xl md:text-3xl font-serif italic text-foreground leading-relaxed text-center relative z-10">
+                  "{quote.quote}"
+                </p>
+                
+                <footer className="text-center space-y-4">
+                  <cite className={`text-xl font-semibold bg-gradient-to-r ${timeOfDay.gradient} bg-clip-text text-transparent not-italic block`}>
+                    — {quote.author}
+                  </cite>
+                  
+                  {quote.theme && (
+                    <div className="flex justify-center">
+                      <span className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full border border-border">
+                        <Sparkles className="w-3.5 h-3.5 text-primary" />
+                        <span className="capitalize">Today's theme: {quote.theme}</span>
+                      </span>
+                    </div>
+                  )}
+                </footer>
+              </blockquote>
+            </div>
           </Card>
         ) : (
           <Card className="p-12 text-center">
@@ -111,8 +161,14 @@ const QuotesPage = () => {
           </Card>
         )}
 
-        <div className="mt-12 text-center text-sm text-muted-foreground">
-          <p>Quote refreshes daily at midnight. Check back tomorrow for new inspiration!</p>
+        {/* Info Footer */}
+        <div className="mt-12 text-center space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Quotes are curated based on the day of the week and special mental health awareness dates.
+          </p>
+          <p className="text-xs text-muted-foreground/70">
+            Quote refreshes daily at midnight • Click to pause the ticker on the homepage
+          </p>
         </div>
       </div>
       

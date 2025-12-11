@@ -6,10 +6,39 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Day-wise mental health themes
+const dayThemes: Record<string, string> = {
+  'Sunday': 'rest, renewal, and spiritual well-being',
+  'Monday': 'fresh starts, motivation, and overcoming Monday anxiety',
+  'Tuesday': 'building momentum, productivity, and mental clarity',
+  'Wednesday': 'midweek resilience, balance, and perseverance',
+  'Thursday': 'gratitude, reflection, and positive thinking',
+  'Friday': 'achievement celebration, stress release, and self-reward',
+  'Saturday': 'self-care, joy, and mental health recovery'
+};
+
+// Special dates for mental health awareness
+const specialDates: Record<string, string> = {
+  '01-01': 'New Year mental health resolutions and fresh beginnings',
+  '01-26': 'Republic Day - mental strength and national pride',
+  '02-14': 'self-love and emotional connections',
+  '03-08': 'women mental health empowerment',
+  '04-07': 'World Health Day - holistic wellness',
+  '05-01': 'work-life balance and occupational wellness',
+  '06-21': 'International Yoga Day - mind-body connection',
+  '08-15': 'Independence Day - freedom from mental struggles',
+  '09-10': 'World Suicide Prevention Day - hope and help',
+  '10-02': 'Gandhi Jayanti - inner peace and non-violence to self',
+  '10-10': 'World Mental Health Day - awareness and acceptance',
+  '11-14': 'Children Day - childhood mental wellness',
+  '12-25': 'Christmas - joy, kindness, and emotional warmth'
+};
+
 // Input validation schema
 const requestSchema = z.object({
   type: z.enum(['quote-of-the-day', 'top-headlines', 'mental-health-india', 'research-updates']),
-  limit: z.number().int().min(1).max(50).default(10)
+  limit: z.number().int().min(1).max(50).default(10),
+  date: z.string().optional()
 });
 
 serve(async (req) => {
@@ -33,7 +62,7 @@ serve(async (req) => {
       );
     }
     
-    const { type, limit } = parseResult.data;
+    const { type, limit, date } = parseResult.data;
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
     if (!LOVABLE_API_KEY) {
@@ -44,8 +73,24 @@ serve(async (req) => {
     let userPrompt = '';
 
     if (type === 'quote-of-the-day') {
-      systemPrompt = 'You are a quote curator specializing in mental health, motivation, and self-care. Return only a JSON object with a single inspiring quote.';
-      userPrompt = `Generate one powerful, inspiring quote about mental health, self-care, mindfulness, emotional wellness, resilience, or personal growth. Return as JSON with format: {"quote": "...", "author": "..."}. Use quotes from real notable figures, psychologists, philosophers, or modern wellness experts. Make it deeply meaningful and relevant to mental wellness.`;
+      // Get current date info for day-specific quotes
+      const today = date ? new Date(date) : new Date();
+      const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+      const monthDay = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Check for special date theme
+      const specialTheme = specialDates[monthDay];
+      const dayTheme = dayThemes[dayName] || 'mental wellness and self-care';
+      const theme = specialTheme || dayTheme;
+      
+      systemPrompt = `You are a mental health quote curator. Today is ${dayName}. Return only a JSON object with one inspiring quote relevant to the theme.`;
+      userPrompt = `Today is ${dayName}, day ${dayOfYear} of the year. 
+Theme for today: ${theme}.
+Generate ONE powerful, meaningful quote specifically about ${theme}. 
+The quote should be from a real notable figure (psychologist, philosopher, author, wellness expert, spiritual leader).
+Return as JSON: {"quote": "...", "author": "...", "theme": "${theme}"}
+Make it deeply relevant to mental health and today's theme.`;
     } else if (type === 'top-headlines') {
       systemPrompt = 'You are a news aggregator. Return only a JSON array of news items.';
       userPrompt = `Generate ${limit} current top world news headlines. Return as JSON array with format: [{"title": "...", "source": "..."}]`;

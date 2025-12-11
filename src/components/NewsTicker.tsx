@@ -1,38 +1,38 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Calendar, Sun, Moon, Sunrise, Sunset } from "lucide-react";
+import { format } from "date-fns";
 
 interface QuoteOfDay {
   quote: string;
   author: string;
+  theme?: string;
 }
 
-const getTimeBasedGradient = () => {
+const getTimeOfDay = () => {
   const hour = new Date().getHours();
-  
-  if (hour >= 5 && hour < 12) {
-    return "bg-gradient-to-r from-orange-100/30 via-yellow-50/20 to-amber-100/30";
-  } else if (hour >= 12 && hour < 17) {
-    return "bg-gradient-to-r from-sky-100/30 via-blue-50/20 to-cyan-100/30";
-  } else if (hour >= 17 && hour < 21) {
-    return "bg-gradient-to-r from-purple-100/30 via-pink-50/20 to-rose-100/30";
-  } else {
-    return "bg-gradient-to-r from-indigo-100/30 via-violet-50/20 to-purple-100/30";
-  }
+  if (hour >= 5 && hour < 12) return { name: 'morning', icon: Sunrise, gradient: 'from-amber-500/20 via-orange-400/10 to-yellow-300/20' };
+  if (hour >= 12 && hour < 17) return { name: 'afternoon', icon: Sun, gradient: 'from-sky-500/20 via-blue-400/10 to-cyan-300/20' };
+  if (hour >= 17 && hour < 21) return { name: 'evening', icon: Sunset, gradient: 'from-purple-500/20 via-pink-400/10 to-rose-300/20' };
+  return { name: 'night', icon: Moon, gradient: 'from-indigo-500/20 via-violet-400/10 to-purple-300/20' };
 };
-
 
 const NewsTicker = () => {
   const [quote, setQuote] = useState<QuoteOfDay | null>(null);
-  const [gradient, setGradient] = useState(getTimeBasedGradient());
   const [isPaused, setIsPaused] = useState(false);
+  const [timeOfDay, setTimeOfDay] = useState(getTimeOfDay());
+  const [isLoading, setIsLoading] = useState(true);
+
+  const today = new Date();
+  const dayName = format(today, 'EEEE');
+  const dateStr = format(today, 'MMM d, yyyy');
 
   useEffect(() => {
     fetchQuoteOfDay();
     
-    // Update gradient every hour
-    const gradientInterval = setInterval(() => {
-      setGradient(getTimeBasedGradient());
+    // Update time of day every hour
+    const timeInterval = setInterval(() => {
+      setTimeOfDay(getTimeOfDay());
     }, 60 * 60 * 1000);
     
     // Auto-refresh quote daily at midnight
@@ -42,35 +42,33 @@ const NewsTicker = () => {
     
     const midnightTimeout = setTimeout(() => {
       fetchQuoteOfDay();
-      // Set up daily interval after first midnight
       const dailyInterval = setInterval(fetchQuoteOfDay, 24 * 60 * 60 * 1000);
       return () => clearInterval(dailyInterval);
     }, msUntilMidnight);
     
     return () => {
-      clearInterval(gradientInterval);
+      clearInterval(timeInterval);
       clearTimeout(midnightTimeout);
     };
   }, []);
 
   const fetchQuoteOfDay = async () => {
     try {
-      console.log('Fetching quote of the day...');
-      const { data, error } = await supabase.functions.invoke('fetch-news', {
-        body: { type: 'quote-of-the-day', limit: 1 }
-      });
+      setIsLoading(true);
+      const todayISO = new Date().toISOString().split('T')[0];
       
-      console.log('Quote response:', data, 'Error:', error);
+      const { data, error } = await supabase.functions.invoke('fetch-news', {
+        body: { type: 'quote-of-the-day', limit: 1, date: todayISO }
+      });
       
       if (error) throw error;
       if (data?.quote) {
-        console.log('Setting quote:', data.quote);
         setQuote(data.quote);
-      } else {
-        console.error('No quote in response:', data);
       }
     } catch (error) {
       console.error('Error fetching quote:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,36 +76,73 @@ const NewsTicker = () => {
     setIsPaused(!isPaused);
   };
 
+  const TimeIcon = timeOfDay.icon;
+
+  if (isLoading) {
+    return (
+      <div className={`bg-gradient-to-r ${timeOfDay.gradient} border-y border-primary/20 py-3 backdrop-blur-sm`}>
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center gap-3">
+            <div className="animate-pulse flex items-center gap-2">
+              <div className="h-4 w-4 bg-primary/30 rounded-full"></div>
+              <div className="h-3 w-48 bg-primary/20 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!quote || !quote.quote || !quote.author) {
-    console.log('Quote state:', quote);
     return null;
   }
 
-  const fullText = `"${quote.quote}" — ${quote.author}`;
-
   return (
     <div 
-      className={`${gradient} border-y border-primary/20 py-2 overflow-hidden backdrop-blur-sm transition-all duration-1000 cursor-pointer hover:opacity-90`}
+      className={`bg-gradient-to-r ${timeOfDay.gradient} border-y border-primary/20 py-3 overflow-hidden backdrop-blur-sm transition-all duration-500 cursor-pointer hover:shadow-md`}
       onClick={handleClick}
     >
-      <div className="relative flex items-center">
-        <div className="absolute left-0 z-10 flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1 rounded-r-full font-semibold text-xs shadow-lg whitespace-nowrap">
-          <Sparkles className="w-3.5 h-3.5" />
-          Quote of the Day {isPaused && "- Paused"}
-        </div>
-        
-        <div className="flex-1 pl-40 overflow-hidden">
-          <div className={`flex whitespace-nowrap ${isPaused ? '' : 'animate-[scroll-continuous_40s_linear_infinite]'}`}>
-            <span className="inline-flex text-sm pr-20 italic bg-gradient-to-r from-green-700 via-yellow-600 to-red-700 bg-clip-text text-transparent font-medium">
-              {fullText}
-            </span>
-            <span className="inline-flex text-sm pr-20 italic bg-gradient-to-r from-green-700 via-yellow-600 to-red-700 bg-clip-text text-transparent font-medium">
-              {fullText}
-            </span>
-            <span className="inline-flex text-sm pr-20 italic bg-gradient-to-r from-green-700 via-yellow-600 to-red-700 bg-clip-text text-transparent font-medium">
-              {fullText}
-            </span>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center gap-4">
+          {/* Date & Day Badge */}
+          <div className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground px-4 py-1.5 rounded-full shadow-lg shrink-0">
+            <Calendar className="w-3.5 h-3.5" />
+            <span className="font-semibold text-xs whitespace-nowrap">{dayName}</span>
+            <span className="text-xs opacity-80">•</span>
+            <TimeIcon className="w-3.5 h-3.5" />
           </div>
+          
+          {/* Mobile Badge */}
+          <div className="flex sm:hidden items-center gap-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1 rounded-full shadow-lg shrink-0">
+            <Sparkles className="w-3 h-3" />
+            <span className="text-xs font-medium">Daily</span>
+          </div>
+          
+          {/* Quote Ticker */}
+          <div className="flex-1 overflow-hidden">
+            <div className={`flex whitespace-nowrap ${isPaused ? '' : 'animate-[scroll-continuous_45s_linear_infinite]'}`}>
+              {[1, 2, 3].map((i) => (
+                <span key={i} className="inline-flex items-center text-sm pr-16">
+                  <span className="font-serif italic text-foreground/90">"{quote.quote}"</span>
+                  <span className="mx-2 text-primary font-semibold">—</span>
+                  <span className="font-medium text-primary">{quote.author}</span>
+                  {quote.theme && (
+                    <>
+                      <span className="mx-3 text-muted-foreground/50">•</span>
+                      <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full capitalize">{quote.theme}</span>
+                    </>
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Pause Indicator */}
+          {isPaused && (
+            <div className="shrink-0 text-xs text-muted-foreground bg-muted/80 px-2 py-0.5 rounded-full">
+              Paused
+            </div>
+          )}
         </div>
       </div>
     </div>
