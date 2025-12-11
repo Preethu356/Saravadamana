@@ -614,27 +614,6 @@ const SecondaryCare = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            {/* Quick Access to Population Screening */}
-            <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg mb-1">Population-Specific Screening</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Select your category (Students, Women, Workplace, Elderly) for tailored screening tools with risk scores and wellness PDF reports.
-                    </p>
-                  </div>
-                  <Link to="/screening-tools">
-                    <Button size="lg" className="gap-2">
-                      <Users className="h-4 w-4" />
-                      Start Screening
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle>Comprehensive Screening Tools</CardTitle>
@@ -707,6 +686,27 @@ const SecondaryCare = () => {
           </TabsContent>
 
           <TabsContent value="programs" className="space-y-6">
+            {/* Population-Specific Screening Entry */}
+            <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-1">Population-Specific Screening Tools</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select your category (Students, Women, Workplace, Elderly) for tailored screening tools with embedded risk scores, interpretations, and downloadable wellness PDF reports.
+                    </p>
+                  </div>
+                  <Link to="/screening-tools">
+                    <Button size="lg" className="gap-2 whitespace-nowrap">
+                      <Users className="h-4 w-4" />
+                      Start Screening
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
             <div className="grid gap-6">
               {populationPrograms.map((program) => (
                 <Card key={program.id} className="hover:shadow-lg transition-shadow overflow-hidden">
