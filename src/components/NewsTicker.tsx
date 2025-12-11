@@ -18,10 +18,10 @@ interface QuoteOfDay {
 
 const getTimeOfDay = () => {
   const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return { name: 'morning', icon: Sunrise, gradient: 'from-amber-500/20 via-orange-400/10 to-yellow-300/20' };
-  if (hour >= 12 && hour < 17) return { name: 'afternoon', icon: Sun, gradient: 'from-sky-500/20 via-blue-400/10 to-cyan-300/20' };
-  if (hour >= 17 && hour < 21) return { name: 'evening', icon: Sunset, gradient: 'from-purple-500/20 via-pink-400/10 to-rose-300/20' };
-  return { name: 'night', icon: Moon, gradient: 'from-indigo-500/20 via-violet-400/10 to-purple-300/20' };
+  if (hour >= 5 && hour < 12) return { name: 'morning', icon: Sunrise, gradient: 'from-transparent via-transparent to-transparent' };
+  if (hour >= 12 && hour < 17) return { name: 'afternoon', icon: Sun, gradient: 'from-transparent via-transparent to-transparent' };
+  if (hour >= 17 && hour < 21) return { name: 'evening', icon: Sunset, gradient: 'from-transparent via-transparent to-transparent' };
+  return { name: 'night', icon: Moon, gradient: 'from-transparent via-transparent to-transparent' };
 };
 
 const NewsTicker = () => {
@@ -130,7 +130,7 @@ const NewsTicker = () => {
 
   return (
     <div 
-      className={`bg-gradient-to-r ${timeOfDay.gradient} border-y border-primary/20 py-3 overflow-hidden backdrop-blur-sm transition-all duration-500 cursor-pointer hover:shadow-md`}
+      className="bg-transparent border-y border-primary/10 py-3 overflow-hidden transition-all duration-500 cursor-pointer"
       onClick={handleClick}
     >
       <div className="container mx-auto px-4">
