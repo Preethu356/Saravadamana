@@ -11,7 +11,18 @@ const requestSchema = z.object({
   goals: z.array(z.string().trim().min(1).max(200)).min(1).max(10),
   availableTime: z.number().int().min(5).max(480),
   stressLevel: z.number().int().min(1).max(10),
-  preferences: z.string().trim().max(1000).default('')
+  preferences: z.string().trim().max(1000).default(''),
+  // New risk-based fields
+  riskScore: z.number().int().min(0).max(100).optional(),
+  riskLevel: z.enum(['low', 'moderate', 'high', 'critical']).optional(),
+  riskFactors: z.array(z.string()).optional(),
+  protectiveFactors: z.array(z.string()).optional(),
+  screeningResults: z.object({
+    phq9: z.number().optional(),
+    gad7: z.number().optional(),
+    who5: z.number().optional(),
+    personality: z.string().optional()
+  }).optional()
 });
 
 serve(async (req) => {
@@ -35,27 +46,48 @@ serve(async (req) => {
       );
     }
     
-    const { goals, availableTime, stressLevel, preferences } = parseResult.data;
+    const { goals, availableTime, stressLevel, preferences, riskScore, riskLevel, riskFactors, protectiveFactors, screeningResults } = parseResult.data;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are a mental health wellness expert. Generate personalized wellness plans that are practical, evidence-based, and tailored to the user's needs. Always include specific activities with time estimates.`;
+    const systemPrompt = `You are a clinical mental health wellness expert. Generate personalized, evidence-based wellness plans that are practical and tailored to the user's mental health risk profile. Consider screening results when making recommendations. Prioritize interventions based on risk level - higher risk requires more intensive support recommendations.`;
+
+    let riskContext = '';
+    if (riskScore !== undefined || riskLevel) {
+      riskContext = `
+MENTAL HEALTH RISK PROFILE:
+- Overall Risk Score: ${riskScore ?? 'Not available'}/100
+- Risk Level: ${riskLevel?.toUpperCase() ?? 'Not assessed'}
+- Risk Factors: ${riskFactors?.join(', ') || 'None identified'}
+- Protective Factors: ${protectiveFactors?.join(', ') || 'None identified'}
+
+SCREENING RESULTS:
+- PHQ-9 (Depression): ${screeningResults?.phq9 ?? 'Not completed'}
+- GAD-7 (Anxiety): ${screeningResults?.gad7 ?? 'Not completed'}
+- WHO-5 (Well-being): ${screeningResults?.who5 ?? 'Not completed'}
+- Personality Type: ${screeningResults?.personality ?? 'Not assessed'}
+
+Based on this risk profile, tailor the wellness plan to address the specific risk factors while building on protective factors. ${riskLevel === 'critical' || riskLevel === 'high' ? 'IMPORTANT: Include recommendations for professional support and crisis resources.' : ''}
+`;
+    }
 
     const userPrompt = `Create a personalized mental health wellness plan with the following details:
 
+${riskContext}
 Goals: ${goals.join(', ')}
 Available time per day: ${availableTime} minutes
 Current stress level: ${stressLevel}/10
 Preferences: ${preferences}
 
 Please generate a comprehensive wellness plan that includes:
-1. A motivating title and description
-2. Daily routine with specific activities and time allocations
+1. A motivating title and description that acknowledges their current state
+2. Daily routine with specific activities and time allocations tailored to their risk level
 3. Weekly schedule with variety and progression
-4. Practical tips for success
+4. Practical tips for success based on their specific challenges
+5. ${riskLevel === 'critical' || riskLevel === 'high' ? 'Professional support recommendations and crisis resources' : 'Self-help strategies and preventive measures'}
 
 Format the response as JSON with this structure:
 {
@@ -76,7 +108,8 @@ Format the response as JSON with this structure:
       "activities": ["string"]
     }
   ],
-  "tips": ["string"]
+  "tips": ["string"],
+  "professional_support": ["string"] (only if high/critical risk)
 }`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -131,6 +164,10 @@ Format the response as JSON with this structure:
                     }
                   },
                   tips: {
+                    type: "array",
+                    items: { type: "string" }
+                  },
+                  professional_support: {
                     type: "array",
                     items: { type: "string" }
                   }

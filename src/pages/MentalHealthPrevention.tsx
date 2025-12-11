@@ -202,27 +202,61 @@ const MentalHealthPrevention = () => {
         </div>
 
         {/* Action Section */}
-        <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
+        <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20 mb-8">
           <CardHeader>
             <CardTitle>Start Your Prevention Journey</CardTitle>
             <CardDescription>
-              Use our tools to build resilience and maintain mental wellness
+              Complete screenings → View risk analysis → Generate personalized wellness plan → Track progress
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-4">
-              <Button onClick={() => navigate("/mood-tracker")} variant="default">
-                Track Your Wellness
+              <Button onClick={() => navigate("/secondary-care")} variant="default">
+                Complete Screenings
               </Button>
-              <Button onClick={() => navigate("/personality-screening")} variant="secondary">
-                Take Screening Assessment
+              <Button onClick={() => navigate("/mind-plan")} variant="secondary">
+                Risk-Based Wellness Plan
               </Button>
-              <Button onClick={() => navigate("/wellness-tools")} variant="outline">
-                Explore Prevention Tools
+              <Button onClick={() => navigate("/dashboard")} variant="outline">
+                View Dashboard & Progress
               </Button>
               <Button onClick={() => navigate("/ai-support")} variant="outline">
-                Get Personalized Guidance
+                Get AI Guidance
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Data Flow Visualization */}
+        <Card className="border-2 border-dashed border-muted-foreground/30">
+          <CardHeader>
+            <CardTitle className="text-lg">Your Wellness Data Flow</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center">
+              <div className="flex-1 p-4 bg-blue-500/10 rounded-lg">
+                <Activity className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                <p className="font-medium text-sm">1. Complete Screenings</p>
+                <p className="text-xs text-muted-foreground">PHQ-9, GAD-7, WHO-5, Personality</p>
+              </div>
+              <div className="hidden md:block text-2xl text-muted-foreground">→</div>
+              <div className="flex-1 p-4 bg-purple-500/10 rounded-lg">
+                <Brain className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                <p className="font-medium text-sm">2. Risk Analysis</p>
+                <p className="text-xs text-muted-foreground">Combined mental health score</p>
+              </div>
+              <div className="hidden md:block text-2xl text-muted-foreground">→</div>
+              <div className="flex-1 p-4 bg-green-500/10 rounded-lg">
+                <Shield className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                <p className="font-medium text-sm">3. Personalized Plan</p>
+                <p className="text-xs text-muted-foreground">AI-generated wellness activities</p>
+              </div>
+              <div className="hidden md:block text-2xl text-muted-foreground">→</div>
+              <div className="flex-1 p-4 bg-orange-500/10 rounded-lg">
+                <Users className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                <p className="font-medium text-sm">4. Track Progress</p>
+                <p className="text-xs text-muted-foreground">Dashboard analytics</p>
+              </div>
             </div>
           </CardContent>
         </Card>
