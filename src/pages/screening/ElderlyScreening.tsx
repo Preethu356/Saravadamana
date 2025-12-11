@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Users, ArrowRight, CheckCircle } from "lucide-react";
+import { Users, ArrowRight, CheckCircle, Brain } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import BackButton from "@/components/BackButton";
 import BottomNav from "@/components/BottomNav";
@@ -165,48 +166,97 @@ const ElderlyScreening = () => {
     };
   };
 
+  const getRiskScore = () => {
+    const totalScore = Object.values(answers).reduce((sum, score) => sum + score, 0);
+    const maxScore = questions.length * 4;
+    return Math.round((totalScore / maxScore) * 100);
+  };
+
   if (showResults) {
     const result = getResultInterpretation();
+    const riskScore = getRiskScore();
+    
     return (
       <div className="min-h-screen bg-background pb-24">
-        <BackButton fallbackPath="/start-journey" />
+        <BackButton fallbackPath="/screening-tools?category=elderly" />
         
         <div className="container mx-auto px-4 pt-16">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="max-w-lg mx-auto"
+            className="max-w-lg mx-auto space-y-6"
           >
-            <Card className="p-6 text-center bg-card/50 backdrop-blur-sm">
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Assessment Complete!</h2>
-              <div className={`text-3xl font-bold ${result.color} mb-4`}>
-                {result.level}
+            <Card className={`p-6 ${
+              riskScore >= 70 ? 'bg-destructive/10 border-destructive/30' :
+              riskScore >= 50 ? 'bg-amber-500/10 border-amber-500/30' :
+              riskScore >= 30 ? 'bg-blue-500/10 border-blue-500/30' : 'bg-green-500/10 border-green-500/30'
+            }`}>
+              <div className="text-center">
+                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
+                <h2 className="text-xl font-bold mb-1">Assessment Complete!</h2>
+                <div className={`text-4xl font-bold ${result.color} mb-2`}>
+                  {riskScore}%
+                </div>
+                <Badge variant={riskScore >= 50 ? "destructive" : "secondary"} className="mb-3">
+                  {result.level}
+                </Badge>
+                <Progress value={riskScore} className="h-3 mb-3" />
+                <p className="text-sm text-muted-foreground">{result.message}</p>
               </div>
-              <p className="text-muted-foreground mb-6">{result.message}</p>
-              
-              <div className="space-y-3">
-                <p className="font-medium text-foreground">Recommended Next Steps:</p>
+            </Card>
+
+            <Card className="p-4 bg-card/50 backdrop-blur-sm">
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <Brain className="h-4 w-4 text-primary" />
+                Risk Interpretation
+              </h3>
+              <div className="space-y-2 text-sm">
+                {riskScore >= 70 && (
+                  <p className="text-destructive">• Significant support needs detected. Professional evaluation recommended.</p>
+                )}
+                {riskScore >= 50 && riskScore < 70 && (
+                  <p className="text-amber-600">• Moderate concerns. Increased social & wellness activities recommended.</p>
+                )}
+                {riskScore >= 30 && riskScore < 50 && (
+                  <p className="text-blue-600">• Good wellness with some areas for enhancement.</p>
+                )}
+                {riskScore < 30 && (
+                  <p className="text-green-600">• Excellent wellness! Keep up your healthy engagement.</p>
+                )}
+                <p className="text-muted-foreground mt-2">Score saved to your wellness dashboard.</p>
+              </div>
+            </Card>
+
+            <Card className="p-4 bg-card/50 backdrop-blur-sm">
+              <h3 className="font-semibold mb-3">Recommended Next Steps</h3>
+              <div className="space-y-2">
                 {result.actions.map((action) => (
                   <Button
                     key={action}
                     variant="outline"
-                    className="w-full"
+                    className="w-full justify-start"
                     onClick={() => navigate(`/${action.toLowerCase().replace(/\s+/g, "-")}`)}
                   >
+                    <ArrowRight className="mr-2 h-4 w-4" />
                     {action}
                   </Button>
                 ))}
               </div>
-
-              <Button
-                className="w-full mt-6"
-                onClick={() => navigate("/mind-plan")}
-              >
-                Generate My Mind Plan
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
             </Card>
+
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="default" onClick={() => navigate("/dashboard")}>
+                View Dashboard
+              </Button>
+              <Button variant="outline" onClick={() => navigate("/screening-tools?category=elderly")}>
+                More Screenings
+              </Button>
+            </div>
+
+            <Button className="w-full" size="lg" onClick={() => navigate("/mind-plan")}>
+              Generate My Mind Plan
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </motion.div>
         </div>
         
