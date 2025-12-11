@@ -30,27 +30,27 @@ const features = [
     step: 3
   },
   { 
+    image: carouselAIChat, 
+    title: "Talk to Your Mind",
+    route: "/ai-support",
+    step: 4
+  },
+  { 
     image: carouselAIPlan, 
     title: "AI-Powered Wellness Plan",
     route: "/mind-plan",
-    step: 4
+    step: 5
   },
   { 
     image: carouselPractice, 
     title: "Guided Meditation & Breathing",
     route: "/mind-sequencing",
-    step: 5
+    step: 6
   },
   { 
     image: carouselProgress, 
     title: "Track Your Progress",
     route: "/analytics",
-    step: 6
-  },
-  { 
-    image: carouselAIChat, 
-    title: "Talk to Your Mind",
-    route: "/ai-support",
     step: 7
   },
 ];
