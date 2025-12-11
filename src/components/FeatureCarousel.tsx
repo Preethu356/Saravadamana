@@ -98,11 +98,11 @@ const FeatureCarousel = () => {
               className="min-w-full relative cursor-pointer group"
               onClick={() => handleSlideClick(feature.route)}
             >
-              <div className="aspect-video relative overflow-hidden">
+              <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
                 <img 
                   src={feature.image} 
                   alt={feature.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
                 
