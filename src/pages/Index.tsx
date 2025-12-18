@@ -27,10 +27,7 @@ import {
   Award,
   TrendingUp,
   Target,
-  Heart,
-  Music,
-  Volume2,
-  VolumeX
+  Heart
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -55,11 +52,6 @@ const Index = () => {
   const navigate = useNavigate();
   const { hasConsent, saveConsent } = useAnalytics();
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [position, setPosition] = useState({ x: 16, y: 100 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [userName, setUserName] = useState<string>("");
   const [wellnessStats, setWellnessStats] = useState<WellnessStats>({
     current_streak: 0,
@@ -132,27 +124,43 @@ const Index = () => {
       audioRef.current.volume = volume;
     }
 
-    const playAudio = async () => {
-      if (audioRef.current && !hasInteracted) {
+    // Auto-play on first user interaction
+    const startAudio = async () => {
+      if (audioRef.current) {
         try {
           await audioRef.current.play();
-          setIsPlaying(true);
-          setHasInteracted(true);
         } catch (error) {
-          console.log("Please click the play button to start music");
+          // Browser blocked autoplay, will play on interaction
         }
       }
     };
     
-    playAudio();
+    startAudio();
+
+    // Play on any user interaction if not already playing
+    const handleInteraction = () => {
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().catch(() => {});
+      }
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+    };
+
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
+    document.addEventListener('keydown', handleInteraction);
 
     return () => {
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
     };
-  }, [hasInteracted]);
+  }, []);
 
   const fetchUserData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -191,89 +199,12 @@ const Index = () => {
     }
   };
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
-        setPosition({
-          x: e.clientX - dragOffset.x,
-          y: e.clientY - dragOffset.y,
-        });
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, dragOffset]);
-
-  const toggleMusic = async () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        try {
-          await audioRef.current.play();
-          setIsPlaying(true);
-          setHasInteracted(true);
-        } catch (error) {
-          console.log("Error playing audio:", error);
-        }
-      }
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setDragOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    });
-  };
-
   return (
     <div className="min-h-screen gradient-comfort">
-      {/* Background Music */}
+      {/* Background Music - Auto plays on interaction */}
       <audio ref={audioRef} loop preload="auto" className="hidden">
         <source src="/calm-meditation.mp3" type="audio/mpeg" />
       </audio>
-      
-      {/* Draggable Listen Button - Warm redesign */}
-      <div
-        className="fixed z-50 cursor-move"
-        style={{ left: `${position.x}px`, top: `${position.y}px` }}
-        onMouseDown={handleMouseDown}
-      >
-        <motion.div 
-          className="relative"
-          animate={isPlaying ? { scale: [1, 1.05, 1] } : {}}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-primary to-accent blur-md opacity-40 ${isPlaying ? 'animate-pulse-soft' : ''}`} />
-          <Button
-            onClick={toggleMusic}
-            variant="ghost"
-            size="sm"
-            className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary via-accent to-warm hover:from-primary/90 hover:via-accent/90 hover:to-warm/90 backdrop-blur-md border-2 border-white/30 shadow-soft hover:shadow-glow transition-all hover:scale-105 p-0"
-          >
-            {isPlaying ? (
-              <Volume2 className="w-5 h-5 text-white" />
-            ) : (
-              <VolumeX className="w-5 h-5 text-white" />
-            )}
-          </Button>
-        </motion.div>
-      </div>
       
       <ConsentModal open={!hasConsent} onConsent={saveConsent} />
       
