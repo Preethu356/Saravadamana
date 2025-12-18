@@ -1144,6 +1144,33 @@ const SecondaryCare = () => {
           </TabsContent>
 
           <TabsContent value="programs" className="space-y-6">
+            {/* Child Mental Health - Early Intervention */}
+            <Card className="bg-gradient-to-r from-cyan-500/10 to-teal-500/10 border-cyan-500/20 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-cyan-500/20">
+                      <Baby className="h-8 w-8 text-cyan-600" />
+                    </div>
+                    <div>
+                      <Badge className="mb-2 bg-cyan-500/20 text-cyan-700 hover:bg-cyan-500/30">Early Intervention</Badge>
+                      <h3 className="font-semibold text-lg mb-1">Child Mental Health - ASD & Developmental</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Comprehensive early intervention center for children with Autism Spectrum Disorder (ASD) and developmental challenges. Includes the Mind Physics™ Engine for cognitive-behavioral tools.
+                      </p>
+                    </div>
+                  </div>
+                  <Link to="/child-mental-health">
+                    <Button size="lg" className="gap-2 whitespace-nowrap bg-cyan-600 hover:bg-cyan-700">
+                      <Brain className="h-4 w-4" />
+                      Explore Program
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Population-Specific Screening Entry */}
             <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
               <CardContent className="p-6">

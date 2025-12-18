@@ -55,6 +55,14 @@ const NeuralFingerprinting = lazy(() => import("./pages/NeuralFingerprinting"));
 const MindClimate = lazy(() => import("./pages/MindClimate"));
 const PitchDeck = lazy(() => import("./pages/PitchDeck"));
 
+// Child Mental Health & Mind Physics Routes
+const ChildMentalHealth = lazy(() => import("./pages/ChildMentalHealth"));
+const MindPhysics = lazy(() => import("./pages/MindPhysics"));
+const ThoughtModule = lazy(() => import("./pages/ThoughtModule"));
+const EmotionModule = lazy(() => import("./pages/EmotionModule"));
+const BehaviourModule = lazy(() => import("./pages/BehaviourModule"));
+const AttractionModule = lazy(() => import("./pages/AttractionModule"));
+
 // Screening pages
 const StudentsScreening = lazy(() => import("./pages/screening/StudentsScreening"));
 const WomenScreening = lazy(() => import("./pages/screening/WomenScreening"));
@@ -175,6 +183,14 @@ const App = () => {
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                   <Route path="/neural-fingerprinting" element={<ProtectedRoute><NeuralFingerprinting /></ProtectedRoute>} />
                   <Route path="/pitch-deck" element={<ProtectedRoute><PitchDeck /></ProtectedRoute>} />
+                  
+                  {/* Child Mental Health & Mind Physics Routes */}
+                  <Route path="/child-mental-health" element={<ProtectedRoute><ChildMentalHealth /></ProtectedRoute>} />
+                  <Route path="/mind-physics" element={<ProtectedRoute><MindPhysics /></ProtectedRoute>} />
+                  <Route path="/thought-module" element={<ProtectedRoute><ThoughtModule /></ProtectedRoute>} />
+                  <Route path="/emotion-module" element={<ProtectedRoute><EmotionModule /></ProtectedRoute>} />
+                  <Route path="/behaviour-module" element={<ProtectedRoute><BehaviourModule /></ProtectedRoute>} />
+                  <Route path="/attraction-module" element={<ProtectedRoute><AttractionModule /></ProtectedRoute>} />
                   
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
