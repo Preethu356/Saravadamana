@@ -411,7 +411,7 @@ const BehaviourModule = () => {
                     <RotateCcw className="w-4 h-4" /> Start Over
                   </Button>
                 </Link>
-                <Link to="/mind-physics/attraction">
+                <Link to="/attraction-module">
                   <Button className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
                     <Sparkles className="w-4 h-4" /> Apply to My Life
                   </Button>

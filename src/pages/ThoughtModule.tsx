@@ -333,7 +333,7 @@ The thought is: "${currentThought}"`
             transition={{ delay: 0.3 }}
             className="text-center"
           >
-            <Link to="/mind-physics/emotion">
+            <Link to="/emotion-module">
               <Button size="lg" className="gap-2 bg-gradient-to-r from-blue-500 to-pink-500 hover:from-blue-600 hover:to-pink-600">
                 Regulate Emotion
                 <ArrowRight className="w-4 h-4" />

@@ -8,10 +8,10 @@ const PAGE_ORDER = [
   "/about",
   "/quotes",
   "/dashboard",
-  "/school-mental-health",
-  "/workplace-mental-health",
-  "/women-mental-health",
-  "/old-age-mental-health",
+  "/screening/students",
+  "/screening/workplace",
+  "/screening/women",
+  "/screening/elderly",
   "/mental-health-prevention",
   "/primary-care",
   "/secondary-care",
@@ -21,9 +21,14 @@ const PAGE_ORDER = [
   "/wellness-plan",
   "/resources",
   "/journal",
-  "/wellness-tools",
   "/cbt-consultation",
-  "/mind-climate"
+  "/mind-climate",
+  "/mind-physics",
+  "/thought-module",
+  "/emotion-module",
+  "/behaviour-module",
+  "/attraction-module",
+  "/child-mental-health"
 ];
 
 const PageNavigation = () => {

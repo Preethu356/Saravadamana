@@ -384,7 +384,7 @@ const EmotionModule = () => {
             transition={{ delay: 0.3 }}
             className="text-center"
           >
-            <Link to="/mind-physics/behaviour">
+            <Link to="/behaviour-module">
               <Button size="lg" className="gap-2 bg-gradient-to-r from-pink-500 to-green-500 hover:from-pink-600 hover:to-green-600">
                 Choose Behaviour
                 <ArrowRight className="w-4 h-4" />
