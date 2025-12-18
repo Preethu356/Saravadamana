@@ -58,7 +58,7 @@ const MindPhysics = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
-      <PageNavigation currentPage="Mind Physics Engine" />
+      <PageNavigation />
       
       <section className="py-12 px-4">
         <div className="container mx-auto max-w-6xl">
