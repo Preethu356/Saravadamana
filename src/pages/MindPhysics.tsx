@@ -21,7 +21,7 @@ const MindPhysics = () => {
       bgColor: "bg-blue-500/10",
       textColor: "text-blue-500",
       features: ["Label a thought", "Reframe a thought", "Park a thought (worry container)"],
-      link: "/mind-physics/thought"
+      link: "/thought-module"
     },
     {
       id: "emotion",
@@ -33,7 +33,7 @@ const MindPhysics = () => {
       bgColor: "bg-pink-500/10",
       textColor: "text-pink-500",
       features: ["Guided breathing (30s-2min)", "Emotion naming", "Body scan"],
-      link: "/mind-physics/emotion"
+      link: "/emotion-module"
     },
     {
       id: "behaviour",
@@ -45,7 +45,7 @@ const MindPhysics = () => {
       bgColor: "bg-green-500/10",
       textColor: "text-green-500",
       features: ["2-minute action", "Avoidance breaker", "Habit micro-step"],
-      link: "/mind-physics/behaviour"
+      link: "/behaviour-module"
     }
   ];
 
@@ -198,7 +198,7 @@ const MindPhysics = () => {
                   </div>
                 </div>
                 <div className="flex justify-center">
-                  <Link to="/mind-physics/attraction">
+                  <Link to="/attraction-module">
                     <Button size="lg" className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
                       <Sparkles className="w-4 h-4" />
                       Apply to My Life
