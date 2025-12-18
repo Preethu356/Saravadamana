@@ -204,6 +204,8 @@ const Header = () => {
   ];
 
   const mindMattersLinks = [
+    { to: "/mind-physics", label: "Mind Physics™ Engine", icon: "⚛️", color: "text-indigo-500" },
+    { to: "/child-mental-health", label: "Child Mental Health (ASD)", icon: "👶", color: "text-cyan-500" },
     { to: "/mind-your-diet", label: "Mind Your Diet", icon: "🥗", color: "text-green-500" },
     { to: "/mind-your-gym", label: "Mind Your Gym", icon: "💪", color: "text-blue-500" },
     { to: "/mind-your-sleep", label: "Mind Your Sleep", icon: "😴", color: "text-purple-500" },
