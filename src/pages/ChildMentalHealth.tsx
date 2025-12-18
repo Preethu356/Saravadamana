@@ -157,7 +157,7 @@ const ChildMentalHealth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
-      <PageNavigation currentPage="Child Mental Health" />
+      <PageNavigation />
       
       {/* Hero Section */}
       <section className="py-12 px-4">
