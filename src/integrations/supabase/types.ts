@@ -526,37 +526,67 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
+          age: number | null
+          bad_habits: string[] | null
           created_at: string
           email: string | null
           full_name: string | null
+          good_habits: string[] | null
+          happiness_score: number | null
+          height_cm: number | null
           id: string
+          job: string | null
+          loneliness_score: number | null
           mental_state: string | null
           onboarding_completed: boolean | null
+          sex: string | null
           updated_at: string
           user_id: string
           user_type: string | null
+          weight_kg: number | null
         }
         Insert: {
+          address?: string | null
+          age?: number | null
+          bad_habits?: string[] | null
           created_at?: string
           email?: string | null
           full_name?: string | null
+          good_habits?: string[] | null
+          happiness_score?: number | null
+          height_cm?: number | null
           id?: string
+          job?: string | null
+          loneliness_score?: number | null
           mental_state?: string | null
           onboarding_completed?: boolean | null
+          sex?: string | null
           updated_at?: string
           user_id: string
           user_type?: string | null
+          weight_kg?: number | null
         }
         Update: {
+          address?: string | null
+          age?: number | null
+          bad_habits?: string[] | null
           created_at?: string
           email?: string | null
           full_name?: string | null
+          good_habits?: string[] | null
+          happiness_score?: number | null
+          height_cm?: number | null
           id?: string
+          job?: string | null
+          loneliness_score?: number | null
           mental_state?: string | null
           onboarding_completed?: boolean | null
+          sex?: string | null
           updated_at?: string
           user_id?: string
           user_type?: string | null
+          weight_kg?: number | null
         }
         Relationships: []
       }
