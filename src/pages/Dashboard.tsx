@@ -6,13 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award, Brain, Rocket, Shield, AlertTriangle, CheckCircle, Target, Download, ChevronRight } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Smile, ClipboardList, Stethoscope, HeartHandshake, TrendingUp, Award, Brain, Rocket, Shield, AlertTriangle, CheckCircle, Target, Download, ChevronRight, LayoutDashboard, UserCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import { useNeuralTrends } from "@/hooks/useNeuralTrends";
 import BottomNav from "@/components/BottomNav";
+import DemographicDashboard from "@/components/DemographicDashboard";
 
 interface ScreeningResult {
   screening_type: string;
@@ -256,7 +258,7 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-8"
+          className="mb-6"
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-2">
             <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
@@ -267,6 +269,25 @@ const Dashboard = () => {
             Welcome to your mental wellness journey
           </p>
         </motion.div>
+
+        {/* Dashboard Tabs */}
+        <Tabs defaultValue="overview" className="mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="insights" className="flex items-center gap-2">
+              <UserCircle className="h-4 w-4" />
+              Profile & Insights
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="insights">
+            <DemographicDashboard />
+          </TabsContent>
+
+          <TabsContent value="overview">
 
         {/* Quick Action - Start Journey */}
         <motion.div
@@ -612,6 +633,8 @@ const Dashboard = () => {
             </Card>
           </motion.div>
         )}
+          </TabsContent>
+        </Tabs>
       </div>
       <ComplianceFooter />
       <BottomNav />
