@@ -6,6 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 import { 
   User, 
   CheckCircle, 
@@ -20,7 +25,20 @@ import {
   Heart,
   Activity,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Scale,
+  Ruler,
+  Calendar,
+  MapPin,
+  Mail,
+  Briefcase,
+  ThumbsUp,
+  ThumbsDown,
+  Users,
+  Smile,
+  Edit,
+  Save,
+  X
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
@@ -31,6 +49,16 @@ interface ProfileData {
   user_type: string | null;
   mental_state: string | null;
   onboarding_completed: boolean | null;
+  weight_kg: number | null;
+  height_cm: number | null;
+  age: number | null;
+  sex: string | null;
+  address: string | null;
+  job: string | null;
+  good_habits: string[] | null;
+  bad_habits: string[] | null;
+  loneliness_score: number | null;
+  happiness_score: number | null;
 }
 
 interface LifestyleLog {
@@ -59,11 +87,16 @@ interface CorrelationInsight {
 const DemographicDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [editedProfile, setEditedProfile] = useState<Partial<ProfileData>>({});
   const [lifestyleLogs, setLifestyleLogs] = useState<LifestyleLog[]>([]);
   const [screeningResults, setScreeningResults] = useState<ScreeningResult[]>([]);
   const [profileCompletion, setProfileCompletion] = useState(0);
   const [insights, setInsights] = useState<CorrelationInsight[]>([]);
+  const [goodHabitInput, setGoodHabitInput] = useState("");
+  const [badHabitInput, setBadHabitInput] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -140,10 +173,113 @@ const DemographicDashboard = () => {
       data.email,
       data.user_type,
       data.mental_state,
-      data.onboarding_completed
+      data.onboarding_completed,
+      data.weight_kg,
+      data.height_cm,
+      data.age,
+      data.sex,
+      data.address,
+      data.job,
+      data.good_habits?.length,
+      data.bad_habits?.length,
+      data.loneliness_score,
+      data.happiness_score
     ];
-    const completed = fields.filter(f => f !== null && f !== undefined && f !== '').length;
+    const completed = fields.filter(f => f !== null && f !== undefined && f !== '' && f !== 0).length;
     setProfileCompletion(Math.round((completed / fields.length) * 100));
+  };
+
+  const calculateBMI = (weight: number | null, height: number | null): string => {
+    if (!weight || !height) return "N/A";
+    const heightM = height / 100;
+    const bmi = weight / (heightM * heightM);
+    return bmi.toFixed(1);
+  };
+
+  const getBMICategory = (bmi: string): { label: string; color: string } => {
+    const bmiNum = parseFloat(bmi);
+    if (isNaN(bmiNum)) return { label: "Unknown", color: "text-muted-foreground" };
+    if (bmiNum < 18.5) return { label: "Underweight", color: "text-yellow-500" };
+    if (bmiNum < 25) return { label: "Normal", color: "text-green-500" };
+    if (bmiNum < 30) return { label: "Overweight", color: "text-orange-500" };
+    return { label: "Obese", color: "text-red-500" };
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update(editedProfile)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, ...editedProfile } : null);
+      calculateProfileCompletion({ ...profile, ...editedProfile } as ProfileData);
+      setIsEditing(false);
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast.error("Failed to save profile");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const addGoodHabit = () => {
+    if (!goodHabitInput.trim()) return;
+    const currentHabits = editedProfile.good_habits || profile?.good_habits || [];
+    setEditedProfile(prev => ({
+      ...prev,
+      good_habits: [...currentHabits, goodHabitInput.trim()]
+    }));
+    setGoodHabitInput("");
+  };
+
+  const addBadHabit = () => {
+    if (!badHabitInput.trim()) return;
+    const currentHabits = editedProfile.bad_habits || profile?.bad_habits || [];
+    setEditedProfile(prev => ({
+      ...prev,
+      bad_habits: [...currentHabits, badHabitInput.trim()]
+    }));
+    setBadHabitInput("");
+  };
+
+  const removeGoodHabit = (index: number) => {
+    const currentHabits = editedProfile.good_habits || profile?.good_habits || [];
+    setEditedProfile(prev => ({
+      ...prev,
+      good_habits: currentHabits.filter((_, i) => i !== index)
+    }));
+  };
+
+  const removeBadHabit = (index: number) => {
+    const currentHabits = editedProfile.bad_habits || profile?.bad_habits || [];
+    setEditedProfile(prev => ({
+      ...prev,
+      bad_habits: currentHabits.filter((_, i) => i !== index)
+    }));
+  };
+
+  const startEditing = () => {
+    setEditedProfile({
+      weight_kg: profile?.weight_kg,
+      height_cm: profile?.height_cm,
+      age: profile?.age,
+      sex: profile?.sex,
+      address: profile?.address,
+      job: profile?.job,
+      good_habits: profile?.good_habits || [],
+      bad_habits: profile?.bad_habits || [],
+      loneliness_score: profile?.loneliness_score,
+      happiness_score: profile?.happiness_score
+    });
+    setIsEditing(true);
   };
 
   const generateCorrelationInsights = (logs: LifestyleLog[], screenings: ScreeningResult[]) => {
@@ -257,11 +393,18 @@ const DemographicDashboard = () => {
     diet: (log.diet_quality || 0) * 20, // Scale to 0-100
   }));
 
+  const bmi = calculateBMI(profile?.weight_kg || null, profile?.height_cm || null);
+  const bmiCategory = getBMICategory(bmi);
+
   const profileFields = [
     { label: 'Full Name', value: profile?.full_name, icon: User },
-    { label: 'User Type', value: profile?.user_type, icon: Activity },
-    { label: 'Mental State', value: profile?.mental_state, icon: Brain },
-    { label: 'Onboarding', value: profile?.onboarding_completed ? 'Complete' : 'Pending', icon: CheckCircle },
+    { label: 'Email', value: profile?.email, icon: Mail },
+    { label: 'Age', value: profile?.age ? `${profile.age} years` : null, icon: Calendar },
+    { label: 'Sex', value: profile?.sex, icon: User },
+    { label: 'Job', value: profile?.job, icon: Briefcase },
+    { label: 'Address', value: profile?.address, icon: MapPin },
+    { label: 'Weight', value: profile?.weight_kg ? `${profile.weight_kg} kg` : null, icon: Scale },
+    { label: 'Height', value: profile?.height_cm ? `${profile.height_cm} cm` : null, icon: Ruler },
   ];
 
   if (loading) {
@@ -291,8 +434,24 @@ const DemographicDashboard = () => {
                   <CardDescription>Complete your profile for personalized insights</CardDescription>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="flex items-center gap-4">
                 <span className="text-3xl font-bold text-primary">{profileCompletion}%</span>
+                {!isEditing ? (
+                  <Button variant="outline" size="sm" onClick={startEditing}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" onClick={handleSaveProfile} disabled={saving}>
+                      <Save className="h-4 w-4 mr-2" />
+                      {saving ? "Saving..." : "Save"}
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </CardHeader>
@@ -315,19 +474,275 @@ const DemographicDashboard = () => {
                 </div>
               ))}
             </div>
-            {profileCompletion < 100 && (
-              <Button 
-                className="w-full mt-4" 
-                variant="outline"
-                onClick={() => navigate("/profile")}
-              >
-                Complete Your Profile
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            )}
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* BMI & Scores Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5 text-primary" />
+              Body & Wellness Scores
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-primary/10 rounded-xl text-center">
+                <Scale className="h-6 w-6 mx-auto mb-2 text-primary" />
+                <div className="text-2xl font-bold text-foreground">{bmi}</div>
+                <div className={`text-xs ${bmiCategory.color}`}>{bmiCategory.label}</div>
+                <div className="text-xs text-muted-foreground mt-1">BMI</div>
+              </div>
+              <div className="p-4 bg-pink-500/10 rounded-xl text-center">
+                <Smile className="h-6 w-6 mx-auto mb-2 text-pink-500" />
+                <div className="text-2xl font-bold text-foreground">
+                  {profile?.happiness_score ?? "N/A"}{profile?.happiness_score ? "/10" : ""}
+                </div>
+                <div className="text-xs text-muted-foreground">Happiness</div>
+              </div>
+              <div className="p-4 bg-blue-500/10 rounded-xl text-center">
+                <Users className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                <div className="text-2xl font-bold text-foreground">
+                  {profile?.loneliness_score ?? "N/A"}{profile?.loneliness_score ? "/10" : ""}
+                </div>
+                <div className="text-xs text-muted-foreground">Loneliness</div>
+              </div>
+              <div className="p-4 bg-accent/10 rounded-xl text-center">
+                <Calendar className="h-6 w-6 mx-auto mb-2 text-accent" />
+                <div className="text-2xl font-bold text-foreground">
+                  {profile?.age ?? "N/A"}{profile?.age ? " yrs" : ""}
+                </div>
+                <div className="text-xs text-muted-foreground">Age</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Edit Form */}
+      {isEditing && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Edit Profile Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="weight">Weight (kg)</Label>
+                  <Input
+                    id="weight"
+                    type="number"
+                    value={editedProfile.weight_kg ?? ""}
+                    onChange={(e) => setEditedProfile(prev => ({ ...prev, weight_kg: e.target.value ? parseFloat(e.target.value) : null }))}
+                    placeholder="70"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="height">Height (cm)</Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    value={editedProfile.height_cm ?? ""}
+                    onChange={(e) => setEditedProfile(prev => ({ ...prev, height_cm: e.target.value ? parseFloat(e.target.value) : null }))}
+                    placeholder="170"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="age">Age</Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    value={editedProfile.age ?? ""}
+                    onChange={(e) => setEditedProfile(prev => ({ ...prev, age: e.target.value ? parseInt(e.target.value) : null }))}
+                    placeholder="25"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sex">Sex</Label>
+                  <Select
+                    value={editedProfile.sex ?? ""}
+                    onValueChange={(value) => setEditedProfile(prev => ({ ...prev, sex: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Job & Address */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="job">Job/Occupation</Label>
+                  <Input
+                    id="job"
+                    value={editedProfile.job ?? ""}
+                    onChange={(e) => setEditedProfile(prev => ({ ...prev, job: e.target.value }))}
+                    placeholder="Software Developer"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={editedProfile.address ?? ""}
+                    onChange={(e) => setEditedProfile(prev => ({ ...prev, address: e.target.value }))}
+                    placeholder="City, Country"
+                  />
+                </div>
+              </div>
+
+              {/* Scores */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="happiness">Happiness Score (1-10)</Label>
+                  <Input
+                    id="happiness"
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={editedProfile.happiness_score ?? ""}
+                    onChange={(e) => setEditedProfile(prev => ({ ...prev, happiness_score: e.target.value ? parseInt(e.target.value) : null }))}
+                    placeholder="7"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="loneliness">Loneliness Score (1-10)</Label>
+                  <Input
+                    id="loneliness"
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={editedProfile.loneliness_score ?? ""}
+                    onChange={(e) => setEditedProfile(prev => ({ ...prev, loneliness_score: e.target.value ? parseInt(e.target.value) : null }))}
+                    placeholder="3"
+                  />
+                </div>
+              </div>
+
+              {/* Habits */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2 text-green-600">
+                    <ThumbsUp className="h-4 w-4" />
+                    Good Habits
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={goodHabitInput}
+                      onChange={(e) => setGoodHabitInput(e.target.value)}
+                      placeholder="Add a good habit"
+                      onKeyPress={(e) => e.key === 'Enter' && addGoodHabit()}
+                    />
+                    <Button type="button" variant="outline" onClick={addGoodHabit}>Add</Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(editedProfile.good_habits || []).map((habit, i) => (
+                      <Badge key={i} variant="secondary" className="bg-green-500/20 text-green-600">
+                        {habit}
+                        <button onClick={() => removeGoodHabit(i)} className="ml-2 hover:text-red-500">×</button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2 text-red-600">
+                    <ThumbsDown className="h-4 w-4" />
+                    Bad Habits
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={badHabitInput}
+                      onChange={(e) => setBadHabitInput(e.target.value)}
+                      placeholder="Add a bad habit"
+                      onKeyPress={(e) => e.key === 'Enter' && addBadHabit()}
+                    />
+                    <Button type="button" variant="outline" onClick={addBadHabit}>Add</Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(editedProfile.bad_habits || []).map((habit, i) => (
+                      <Badge key={i} variant="secondary" className="bg-red-500/20 text-red-600">
+                        {habit}
+                        <button onClick={() => removeBadHabit(i)} className="ml-2 hover:text-red-800">×</button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Habits Display (when not editing) */}
+      {!isEditing && (profile?.good_habits?.length || profile?.bad_habits?.length) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Your Habits
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {profile?.good_habits?.length ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-green-600 font-medium">
+                      <ThumbsUp className="h-4 w-4" />
+                      Good Habits
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.good_habits.map((habit, i) => (
+                        <Badge key={i} className="bg-green-500/20 text-green-600 border-green-500/30">
+                          {habit}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {profile?.bad_habits?.length ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-red-600 font-medium">
+                      <ThumbsDown className="h-4 w-4" />
+                      Bad Habits
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.bad_habits.map((habit, i) => (
+                        <Badge key={i} className="bg-red-500/20 text-red-600 border-red-500/30">
+                          {habit}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Lifestyle Metrics Overview */}
       <motion.div
