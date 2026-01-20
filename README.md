@@ -27,8 +27,9 @@ Before you begin, ensure you have the following installed:
 #### 1️⃣ Clone the Repository
 
 ```sh
-# Clone this repository
+# Clone this repository (or your fork)
 git clone https://github.com/Preethu356/Saravadamana.git
+# If you forked this repo, replace the URL above with your fork's URL
 
 # Navigate to the project directory
 cd Saravadamana

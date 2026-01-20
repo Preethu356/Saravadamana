@@ -14,8 +14,9 @@ This guide will help you set up and run the MindCare platform on your local mach
 ### Required Software
 
 1. **Node.js** (v18 or higher)
-   - **macOS/Linux:** Use [nvm](https://github.com/nvm-sh/nvm)
+   - **macOS/Linux:** Use [nvm](https://github.com/nvm-sh/nvm) (verify script integrity before running)
      ```bash
+     # Visit https://github.com/nvm-sh/nvm for the latest version
      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
      nvm install 18
      nvm use 18
@@ -117,8 +118,9 @@ npm install
 pip install -r requirements.txt
 
 # Or using a virtual environment (recommended)
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Note: Use .venv or a custom name to avoid confusion
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 

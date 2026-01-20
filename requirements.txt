@@ -1,1 +1,3 @@
+# Streamlit Framework
+# Note: Standard library modules (json, datetime) don't need to be listed
 streamlit>=1.28.0

@@ -29,10 +29,10 @@ __pycache__/
 *$py.class
 *.so
 .Python
+.venv/
 venv/
 ENV/
 env/
-.venv
 pip-log.txt
 pip-delete-this-directory.txt
 .pytest_cache/
