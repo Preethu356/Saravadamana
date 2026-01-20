@@ -12,6 +12,8 @@ MindCare is a dual-application platform:
 
 ## 🚀 Quick Start - Running Locally
 
+> **📖 For detailed setup instructions, see [SETUP.md](./SETUP.md)**
+
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
