@@ -76,13 +76,11 @@ const ResourcesPage = () => {
   };
 
   const fetchMemberCount = async (communityId: string) => {
-    const { count, error } = await supabase
-      .from('community_members')
-      .select('*', { count: 'exact', head: true })
-      .eq('community_id', communityId);
+    const { data, error } = await supabase
+      .rpc('get_community_member_count', { community_uuid: communityId });
 
-    if (!error && count !== null) {
-      setMemberCounts(prev => ({ ...prev, [communityId]: count }));
+    if (!error && data !== null) {
+      setMemberCounts(prev => ({ ...prev, [communityId]: data }));
     }
   };
 
