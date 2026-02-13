@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+
 import Header from "./components/Header";
 import Watermark from "./components/Watermark";
 import Footer from "./components/Footer";
@@ -103,9 +103,7 @@ const App = () => {
     setShowSplash(false);
   };
 
-  if (showSplash && isAuthenticated) {
-    return <SplashScreen onComplete={handleSplashComplete} />;
-  }
+  // SplashScreen is now rendered as an overlay instead of replacing the entire tree
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -115,10 +113,10 @@ const App = () => {
         <BrowserRouter>
           <ScrollToTop />
           <Watermark />
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
+          {showSplash && isAuthenticated && (
+            <SplashScreen onComplete={handleSplashComplete} />
+          )}
+          <div 
             className="flex flex-col min-h-screen relative z-10"
           >
             <Header />
@@ -198,7 +196,7 @@ const App = () => {
               </Suspense>
             </main>
             <Footer />
-          </motion.div>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
