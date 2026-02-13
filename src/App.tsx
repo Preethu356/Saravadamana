@@ -121,7 +121,7 @@ const App = () => {
           >
             <Header />
             <main className="flex-1 pb-16">
-              <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <Suspense fallback={<div className="flex items-center justify-center flex-1 py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
                 <Routes>
                   {/* Public Routes */}
                   <Route path="/login" element={<Login />} />
