@@ -11,7 +11,7 @@ import Watermark from "./components/Watermark";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SplashScreen from "./components/SplashScreen";
+const SplashScreen = lazy(() => import("./components/SplashScreen"));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy load page components
