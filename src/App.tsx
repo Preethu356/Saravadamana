@@ -21,6 +21,8 @@ const ResourcesPage = lazy(() => import("./pages/Resources"));
 const Journal = lazy(() => import("./pages/Journal"));
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 const StartJourney = lazy(() => import("./pages/StartJourney"));
@@ -126,6 +128,8 @@ const App = () => {
                   {/* Public Routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<SignUp />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/onboarding" element={<Onboarding />} />
                   <Route path="/about" element={<About />} />
                   

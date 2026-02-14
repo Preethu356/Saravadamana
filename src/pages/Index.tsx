@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "@/components/Hero";
+import FeedbackSection from "@/components/FeedbackSection";
 import ComplianceFooter from "@/components/ComplianceFooter";
 import Gallery from "@/components/Gallery";
 import NewsTicker from "@/components/NewsTicker";
@@ -388,6 +389,7 @@ const Index = () => {
       </motion.div>
       
       <Gallery />
+      <FeedbackSection />
       <ComplianceFooter />
       <BottomNav />
     </div>
