@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { Helmet } from "react-helmet-async";
 import { Heart, Loader2 } from "lucide-react";
 
 const Login = () => {
@@ -87,8 +88,26 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
-      <Card className="w-full max-w-md">
+    <>
+      <Helmet>
+        <title>Sign In to SARVADAMANA | Your Calm Companion</title>
+        <meta name="description" content="Sign in to SARVADAMANA for personalized mental wellness support, calming practices, and your private wellness journey." />
+        <link rel="canonical" href="https://selfheal.sarvadamana.com/login" />
+        <meta property="og:title" content="Sign In to SARVADAMANA" />
+        <meta property="og:description" content="Continue your private wellness journey with your calm, emotionally intelligent companion." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://selfheal.sarvadamana.com/login" />
+        <meta property="og:image" content="https://selfheal.sarvadamana.com/login-social-thumbnail.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="SARVADAMANA — Your calm companion" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Sign In to SARVADAMANA" />
+        <meta name="twitter:description" content="Continue your private wellness journey with your calm, emotionally intelligent companion." />
+        <meta name="twitter:image" content="https://selfheal.sarvadamana.com/login-social-thumbnail.jpg" />
+      </Helmet>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
@@ -135,8 +154,9 @@ const Login = () => {
             <Link to="/signup" className="text-primary hover:underline font-medium">Sign up</Link>
           </div>
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </>
   );
 };
 
