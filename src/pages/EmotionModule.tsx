@@ -23,7 +23,7 @@ const EmotionModule = () => {
   const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
   const [emotionIntensity, setEmotionIntensity] = useState(50);
   const [bodyScanStep, setBodyScanStep] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { toast } = useToast();
 
   const emotions = [
