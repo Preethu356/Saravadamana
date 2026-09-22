@@ -22,7 +22,7 @@ const PracticeModal = ({ open, onOpenChange, practice }: PracticeModalProps) => 
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isActive && !completed) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 1);
